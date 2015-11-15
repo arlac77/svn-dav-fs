@@ -9,4 +9,9 @@ const NS_SVNDAV_LOG_REVPROPS    = "http://subversion.tigris.org/xmlns/dav/svn/lo
 const NS_SVNDAV_ATOMIC_REVPROPS = "http://subversion.tigris.org/xmlns/dav/svn/atomic-revprops";
 const NS_SVNDAV_PARTIAL_REPLAY  = "http://subversion.tigris.org/xmlns/dav/svn/partial-replay";
 
-SVN = {};
+const SVN = {};
+
+export function init()
+{
+  return 1;
+}

@@ -5,7 +5,7 @@
   "scripts": {
     "compile": "babel -d lib src",
     "prepublish": "rimraf lib && babel -d lib src",
-    "test": "mocha --compilers js:babel --recursive",
+    "test": "npm run compile && mocha --compilers js:babel-core/register --recursive",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {

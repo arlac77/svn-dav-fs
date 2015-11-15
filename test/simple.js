@@ -8,6 +8,8 @@ const chai = require('chai'),
   expect = chai.expect,
   should = chai.should();
 
+const svn = require('../lib/svn');
+
 describe('t1', function () {
-  assert.equal("a", "b");
+  assert.equal(svn.init(), 1);
 });
