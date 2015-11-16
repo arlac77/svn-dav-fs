@@ -15,18 +15,15 @@ const SVN = {
   }
 };
 
-export function init()
+export function init(url)
 {
-  fetch('https://github.com/')
+  return fetch(url)
     .then(function(res) {
-      console.log(`then: ${res}`);
-
         return res.text();
     }).then(function(body) {
         console.log(body);
+        return Object.create(SVN);
     },function(err) {
       console.log(`error: ${err}`);
     });
-
-  return Object.create(SVN);
 }

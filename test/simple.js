@@ -3,12 +3,9 @@
 
 "use strict";
 
-/*
 const chai = require('chai'),
-  assert = chai.assert,
   expect = chai.expect,
   should = chai.should();
-*/
 
 import assert from 'assert';
 import {
@@ -16,8 +13,12 @@ import {
 }
 from '../lib/svn';
 
+
 describe('initialize', function () {
-  it('has toString', function () {
-    assert.equal(`${init()}`, "svn");
+  it('has toString', function (done) {
+    init('http://github.com').then(function(svn) {
+      assert.equal(`${svn}`, "svn");
+      done();
+    });
   });
 });
