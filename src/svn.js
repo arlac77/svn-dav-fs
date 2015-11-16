@@ -1,4 +1,4 @@
-import fetch from 'fetch';
+import fetch from 'node-fetch';
 
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
@@ -17,5 +17,16 @@ const SVN = {
 
 export function init()
 {
+  fetch('https://github.com/')
+    .then(function(res) {
+      console.log(`then: ${res}`);
+
+        return res.text();
+    }).then(function(body) {
+        console.log(body);
+    },function(err) {
+      console.log(`error: ${err}`);
+    });
+
   return Object.create(SVN);
 }
