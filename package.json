@@ -13,7 +13,8 @@
     "url": "git+https://github.com/arlac77/svn-dav-fs.git"
   },
   "keywords": [
-    "dav", "svn"
+    "dav",
+    "svn"
   ],
   "author": "Markus Felten <markus.felten@gmx.de>",
   "license": "BSD-2-Clause",
@@ -24,10 +25,11 @@
   "devDependencies": {
     "babel": "^6.1.18",
     "babel-cli": "^6.1.18",
+    "babel-core": "^6.1.21",
     "babel-preset-es2015": "^6.1.18",
-    "istanbul": "0.4.0",
     "chai": "3.4.1",
     "chai-as-promised": "5.1.0",
+    "istanbul": "0.4.0",
     "mocha": "2.3.3",
     "semantic-release": "6.0.3"
   },
