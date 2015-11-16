@@ -10,15 +10,14 @@ cache:
     - node_modules
 notifications:
   email:
-    - torstenlink@gmx.de
     - markus.felten@gmx.de
-before_install:
+xbefore_install:
   - npm i -g npm@^2.0.0
 before_script:
   - npm prune
-script:
+xscript:
   - npm run-script cover
-after_script:
+xafter_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-after_success:
+xafter_success:
   - npm run semantic-release
