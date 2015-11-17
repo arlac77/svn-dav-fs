@@ -26,4 +26,21 @@ describe('initialize', function () {
       done();
     }, done);
   });
+
+  it('has basicAuthorization', function (done) {
+    init('https://subversion.assembla.com/svn/delivery_notes', {
+      credentials: {
+        password: 'xxx',
+        user: 'yyy'
+      }
+    }).then(function (svn) {
+      try {
+        assert.equal(svn.basicAuthorization, "Basic eXl5Onh4eA==");
+        done();
+      }
+      catch(e) {
+        done(e);
+      }
+    }, done);
+  });
 });

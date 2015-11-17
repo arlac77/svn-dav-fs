@@ -10,54 +10,61 @@ const NS_SVNDAV_LOG_REVPROPS = 'http://subversion.tigris.org/xmlns/dav/svn/log-r
 const NS_SVNDAV_ATOMIC_REVPROPS = 'http://subversion.tigris.org/xmlns/dav/svn/atomic-revprops';
 const NS_SVNDAV_PARTIAL_REPLAY = 'http://subversion.tigris.org/xmlns/dav/svn/partial-replay';
 
+const headers = [
+  'SVN-Repository-UUID',
+  'SVN-Repository-Root',
+  'SVN-Rev-Root-Stub',
+  'SVN-Rev-Stub',
+  'SVN-Txn-Root-Stub',
+  'SVN-Txn-Stub',
+  'SVN-Me-Resource'
+];
+
 const SVN = {
   toString() {
       return "svn";
     },
-    get basicAthorization() {
+    get basicAuthorization() {
       return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
+    },
+    get vccDefault() {
+      return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
     }
 };
 
 export function init(url, options) {
+
+  const attributes = {};
 
   const svn = Object.create(SVN, {
     credentials: {
       get() {
         return options.credentials;
       }
-    }
+    },
+    attributes: {
+      get() {
+        return attributes;
+      }
+    },
   });
 
   return fetch(url, {
     method: 'OPTIONS',
     body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set/></D:options>\n',
     headers: {
-      "Authorization": svn.basicAthorization,
-      //  "Authorization": 'Basic ' + window.btoa(svn.credentials.user + ':' + svn.credentials.password),
+      "Authorization": svn.basicAuthorization,
       "DAV": [NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS].join(','),
       "Content-type": "text/xml; charset=UTF-8"
     }
   }).then(function (response) {
-    var headers = {
-      'SVN-Repository-UUID': 'uuid',
-      'SVN-Repository-Root': 'root',
-      'SVN-Rev-Root-Stub': 'revisionRootStub',
-      'SVN-Rev-Stub': 'revisionStub',
-      'SVN-Txn-Root-Stub': 'transactionRootStub',
-      'SVN-Txn-Stub': 'transactionStub',
-      'SVN-Me-Resource': 'meResource'
-    };
+    headers.forEach( h => {
+      attributes[h] = response.headers.get(h);
+    });
 
-    for (var i in headers) {
-      var h = headers[i];
-      svn[h] = response.headers.get(i);
-      console.log(`${h}: ${svn[h]}`);
-    }
+    attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
 
-    svn.youngestRevision = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
-
-    svn.vccDefault = svn.root + "/" + "!svn/vcc/default";
+    console.log(`${JSON.stringify(attributes)}`);
     return svn;
   });
 }
