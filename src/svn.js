@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+const btoa = require('btoa');
 
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
@@ -11,18 +12,28 @@ const NS_SVNDAV_PARTIAL_REPLAY = 'http://subversion.tigris.org/xmlns/dav/svn/par
 
 const SVN = {
   toString() {
-    return "svn";
-  }
+      return "svn";
+    },
+    get basicAthorization() {
+      return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
+    }
 };
 
-export function init(url) {
+export function init(url, options) {
 
-  const svn = Object.create(SVN);
+  const svn = Object.create(SVN, {
+    credentials: {
+      get() {
+        return options.credentials;
+      }
+    }
+  });
 
   return fetch(url, {
     method: 'OPTIONS',
     body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set/></D:options>\n',
     headers: {
+      "Authorization": svn.basicAthorization,
       //  "Authorization": 'Basic ' + window.btoa(svn.credentials.user + ':' + svn.credentials.password),
       "DAV": [NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS].join(','),
       "Content-type": "text/xml; charset=UTF-8"
