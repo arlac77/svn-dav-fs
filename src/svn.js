@@ -15,15 +15,38 @@ const SVN = {
   }
 };
 
-export function init(url)
-{
-  return fetch(url)
-    .then(function(res) {
-        return res.text();
-    }).then(function(body) {
-        console.log(body);
-        return Object.create(SVN);
-    },function(err) {
-      console.log(`error: ${err}`);
-    });
+export function init(url) {
+
+  const svn = Object.create(SVN);
+
+  return fetch(url, {
+    method: 'OPTIONS',
+    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set/></D:options>\n',
+    headers: {
+      //  "Authorization": 'Basic ' + window.btoa(svn.credentials.user + ':' + svn.credentials.password),
+      "DAV": [NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS].join(','),
+      "Content-type": "text/xml; charset=UTF-8"
+    }
+  }).then(function (response) {
+    var headers = {
+      'SVN-Repository-UUID': 'uuid',
+      'SVN-Repository-Root': 'root',
+      'SVN-Rev-Root-Stub': 'revisionRootStub',
+      'SVN-Rev-Stub': 'revisionStub',
+      'SVN-Txn-Root-Stub': 'transactionRootStub',
+      'SVN-Txn-Stub': 'transactionStub',
+      'SVN-Me-Resource': 'meResource'
+    };
+
+    for (var i in headers) {
+      var h = headers[i];
+      svn[h] = response.headers.get(i);
+      console.log(`${h}: ${svn[h]}`);
+    }
+
+    svn.youngestRevision = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
+
+    svn.vccDefault = svn.root + "/" + "!svn/vcc/default";
+    return svn;
+  });
 }
