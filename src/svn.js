@@ -29,7 +29,29 @@ const SVN = {
     },
     get vccDefault() {
       return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
-    }
+    },
+    report(url,start,end) {
+  		if(end - start > 1000) start = end - 1000;
+
+  		var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
+  		xml += '<S:log-report xmlns:S="svn:">\n';
+  		xml += '<S:start-revision>'+start+'</S:start-revision>\n';
+  		xml += '<S:end-revision>'+end+'</S:end-revision>\n';
+
+  		const properties = ['svn:author','svn:date','svn:log'];
+  		properties.forEach((item) => { xml += '<S:revprop>' + item + '</S:revprop>'; });
+  		xml += '<S:path/>\n';
+  		xml += '</S:log-report>\n';
+
+  		return fetch(url,{
+  			method: 'REPORT',
+  			body: xml,
+  			headers: {
+  				"Authorization" : svn.basicAuthorization,
+  				"DAV" : [ NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS ].join(','),
+  				"Content-type" : "text/xml; charset=UTF-8"
+  			}});
+      }
 };
 
 export function init(url, options) {
