@@ -18,6 +18,7 @@ const headers = [
   'SVN-Txn-Root-Stub',
   'SVN-Txn-Stub',
   'SVN-Me-Resource'
+  // 'SVN-Youngest-Rev' Integer
 ];
 
 const SVN = {
@@ -29,6 +30,32 @@ const SVN = {
     },
     get vccDefault() {
       return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
+    },
+    propfind(url,properties,depth = 1)
+    {
+      var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
+      xml += '<D:propfind xmlns:D="DAV:">\n';
+
+      if(properties) {
+        for(var p in properties) {
+          xml += '<D:prop><' + p + ' xmlns=\"' + properties[p] + '\"/></D:prop>';
+        }
+      }
+      else {
+        xml += '<D:allprop/>\n';
+      }
+
+      xml += '</D:propfind>\n';
+
+      return fetch(url,{
+        method: 'PROPFIND',
+        body: xml,
+        headers: {
+          "Authorization" : svn.basicAuthorization,
+          //"DAV" : [ NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS ].join(','),
+          "Depth" : depth,
+          "Content-type" : "text/xml; charset=UTF-8"
+        }});
     },
     report(url,start,end) {
   		if(end - start > 1000) start = end - 1000;
@@ -54,6 +81,22 @@ const SVN = {
       }
 };
 
+/*
+OPTIONS /svn/delivery_notes HTTP/1.1
+Host: subversion.assembla.com
+Authorization: Basic YXJsYWM3NzpzdGFydDEyMw==
+User-Agent: SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8
+Content-Type: text/xml
+Connection: keep-alive
+Accept-Encoding: gzip
+DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
+DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+Content-Length: 131
+
+<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
+*/
+
 export function init(url, options) {
 
   const attributes = {};
@@ -73,11 +116,12 @@ export function init(url, options) {
 
   return fetch(url, {
     method: 'OPTIONS',
-    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set/></D:options>\n',
+    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>\n',
     headers: {
       "Authorization": svn.basicAuthorization,
+      //"User-Agent": "SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8",
       "DAV": [NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS].join(','),
-      "Content-type": "text/xml; charset=UTF-8"
+      "Content-type": "text/xml"
     }
   }).then(function (response) {
     headers.forEach( h => {
@@ -86,7 +130,7 @@ export function init(url, options) {
 
     attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
 
-    console.log(`${JSON.stringify(attributes)}`);
+    console.log(`Attributes: ${JSON.stringify(attributes)}`);
     return svn;
   });
 }
