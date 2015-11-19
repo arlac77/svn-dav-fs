@@ -3,12 +3,35 @@ const btoa = require('btoa');
 
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
-const NS_SVNDAV = 'http://subversion.tigris.org/xmlns/dav/';
-const NS_SVNDAV_DEPTH = 'http://subversion.tigris.org/xmlns/dav/svn/depth';
-const NS_SVNDAV_MERGINFO = 'http://subversion.tigris.org/xmlns/dav/svn/mergeinfo';
-const NS_SVNDAV_LOG_REVPROPS = 'http://subversion.tigris.org/xmlns/dav/svn/log-revprops';
-const NS_SVNDAV_ATOMIC_REVPROPS = 'http://subversion.tigris.org/xmlns/dav/svn/atomic-revprops';
-const NS_SVNDAV_PARTIAL_REPLAY = 'http://subversion.tigris.org/xmlns/dav/svn/partial-replay';
+
+const NS_SVN_DAV = "http://subversion.tigris.org/xmlns/dav/";
+const NS_SVN_DAV_DEPTH = NS_SVN_DAV + "svn/depth";
+const NS_SVN_DAV_MERGINFO = NS_SVN_DAV + "svn/mergeinfo";
+const NS_SVN_DAV_LOG_REVPROPS = NS_SVN_DAV + "svn/log-revprops";
+const NS_SVN_DAV_ATOMIC_REVPROPS = NS_SVN_DAV + "svn/atomic-revprops";
+const NS_SVN_DAV_PARTIAL_REPLAY = NS_SVN_DAV + "svn/partial-replay";
+
+const DAVFeatures = {
+  '1': {},
+  '2': {},
+  'version-control': {},
+  'checkout': {},
+  'working-resource': {},
+  'merge': {},
+  'baseline': {},
+  'activity': {},
+  'version-controlled-collection': {},
+  'http://subversion.tigris.org/xmlns/dav/svn/inherited-props': {},
+  'http://subversion.tigris.org/xmlns/dav/svn/inline-props': {},
+  'http://subversion.tigris.org/xmlns/dav/svn/reverse-file-revs': {},
+  'http://subversion.tigris.org/xmlns/dav/svn/ephemeral-txnprops': {},
+  'http://subversion.tigris.org/xmlns/dav/svn/replay-rev-resource': {},
+  [NS_SVN_DAV_MERGINFO]: {},
+  [NS_SVN_DAV_PARTIAL_REPLAY]: {},
+  [NS_SVN_DAV_DEPTH]: {},
+  [NS_SVN_DAV_LOG_REVPROPS]: {},
+  [NS_SVN_DAV_ATOMIC_REVPROPS]: {}
+};
 
 const headers = [
   'SVN-Repository-UUID',
@@ -31,54 +54,56 @@ const SVN = {
     get vccDefault() {
       return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
     },
-    propfind(url,properties,depth = 1)
-    {
+    propfind(url, properties, depth = 1) {
       var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
       xml += '<D:propfind xmlns:D="DAV:">\n';
 
-      if(properties) {
-        for(var p in properties) {
+      if (properties) {
+        for (var p in properties) {
           xml += '<D:prop><' + p + ' xmlns=\"' + properties[p] + '\"/></D:prop>';
         }
-      }
-      else {
+      } else {
         xml += '<D:allprop/>\n';
       }
 
       xml += '</D:propfind>\n';
 
-      return fetch(url,{
+      return fetch(url, {
         method: 'PROPFIND',
         body: xml,
         headers: {
-          "Authorization" : svn.basicAuthorization,
+          "Authorization": svn.basicAuthorization,
           //"DAV" : [ NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS ].join(','),
-          "Depth" : depth,
-          "Content-type" : "text/xml; charset=UTF-8"
-        }});
+          "Depth": depth,
+          "Content-type": "text/xml; charset=UTF-8"
+        }
+      });
     },
-    report(url,start,end) {
-  		if(end - start > 1000) start = end - 1000;
+    report(url, start, end) {
+      if (end - start > 1000) start = end - 1000;
 
-  		var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
-  		xml += '<S:log-report xmlns:S="svn:">\n';
-  		xml += '<S:start-revision>'+start+'</S:start-revision>\n';
-  		xml += '<S:end-revision>'+end+'</S:end-revision>\n';
+      var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
+      xml += '<S:log-report xmlns:S="svn:">\n';
+      xml += '<S:start-revision>' + start + '</S:start-revision>\n';
+      xml += '<S:end-revision>' + end + '</S:end-revision>\n';
 
-  		const properties = ['svn:author','svn:date','svn:log'];
-  		properties.forEach((item) => { xml += '<S:revprop>' + item + '</S:revprop>'; });
-  		xml += '<S:path/>\n';
-  		xml += '</S:log-report>\n';
+      const properties = ['svn:author', 'svn:date', 'svn:log'];
+      properties.forEach((item) => {
+        xml += '<S:revprop>' + item + '</S:revprop>';
+      });
+      xml += '<S:path/>\n';
+      xml += '</S:log-report>\n';
 
-  		return fetch(url,{
-  			method: 'REPORT',
-  			body: xml,
-  			headers: {
-  				"Authorization" : svn.basicAuthorization,
-  				"DAV" : [ NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS ].join(','),
-  				"Content-type" : "text/xml; charset=UTF-8"
-  			}});
-      }
+      return fetch(url, {
+        method: 'REPORT',
+        body: xml,
+        headers: {
+          "Authorization": svn.basicAuthorization,
+          "DAV": [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(','),
+          "Content-type": "text/xml; charset=UTF-8"
+        }
+      });
+    }
 };
 
 /*
@@ -120,12 +145,17 @@ export function init(url, options) {
     headers: {
       "Authorization": svn.basicAuthorization,
       //"User-Agent": "SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8",
-      "DAV": [NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS].join(','),
+      "DAV": [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(','),
       "Content-type": "text/xml"
     }
   }).then(function (response) {
-    headers.forEach( h => {
-      attributes[h] = response.headers.get(h);
+
+    //console.log(`${JSON.stringify(Object.keys(response.headers._headers))}`);
+
+    headers.forEach(h => {
+      if (response.headers.has(h)) {
+        attributes[h] = response.headers.get(h);
+      }
     });
 
     attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
