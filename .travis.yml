@@ -11,13 +11,13 @@ cache:
 notifications:
   email:
     - markus.felten@gmx.de
-xbefore_install:
-  - npm i -g npm@^2.0.0
+before_install:
+  - npm i -g npm@latest
 before_script:
   - npm prune
-xscript:
+script:
   - npm run-script cover
-xafter_script:
+after_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 xafter_success:
   - npm run semantic-release
