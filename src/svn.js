@@ -1,4 +1,7 @@
-import fetch from 'node-fetch';
+//import fetch from 'node-fetch';
+
+import fetch from 'isomorphic-fetch';
+
 const btoa = require('btoa');
 
 const NS_S = 'svn:';
@@ -33,7 +36,7 @@ const DAVFeatures = {
   [NS_SVN_DAV_ATOMIC_REVPROPS]: {}
 };
 
-const headers = [
+const SVNHeaders = [
   'SVN-Repository-UUID',
   'SVN-Repository-Root',
   'SVN-Rev-Root-Stub',
@@ -125,6 +128,7 @@ Content-Length: 131
 export function init(url, options) {
 
   const attributes = {};
+  let davFeatures = new Set();
 
   const svn = Object.create(SVN, {
     credentials: {
@@ -135,6 +139,11 @@ export function init(url, options) {
     attributes: {
       get() {
         return attributes;
+      }
+    },
+    davFeatures: {
+      get() {
+        return davFeatures;
       }
     },
   });
@@ -149,18 +158,28 @@ export function init(url, options) {
       "Content-type": "text/xml"
     }
   }).then(function (response) {
+    const headers = response.headers._headers;
 
-    //console.log(`${JSON.stringify(Object.keys(response.headers._headers))}`);
+    //console.log(`${JSON.stringify(headers)}`);
+    //console.log(`RAW headers: ${JSON.stringify(headers.raw)}`);
 
-    headers.forEach(h => {
-      if (response.headers.has(h)) {
-        attributes[h] = response.headers.get(h);
+    SVNHeaders.forEach(h => {
+      if (headers[h]) {
+        attributes[h] = headers[h];
+        console.log(`${h}: ${headers[h]}`);
       }
     });
 
-    attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
+    const dav = headers.dav;
+    if (dav) {
+      davFeatures = new Set(dav[0].split(/\s*,\s*/));
+      //console.log(`DAV: ${[...davFeatures.values()]}`);
+    }
 
-    console.log(`Attributes: ${JSON.stringify(attributes)}`);
+    attributes['SVN-Youngest-Rev'] = parseInt(headers['SVN-Youngest-Rev'], 10);
+
+    //console.log(`rev: ${headers['SVN-Youngest-Rev']}`);
+    //console.log(`Attributes: ${JSON.stringify(attributes)}`);
     return svn;
   });
 }
