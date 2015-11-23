@@ -37,7 +37,7 @@ describe('initialize', function () {
   });
 
   it('has davFeatures', function (done) {
-    init('https://subversion.assembla.com/svn/delivery_notes', {
+    init('https://subversion.assembla.com/svn/delivery_notes/', {
       credentials: credentials
     }).then(function (svn) {
       //console.log(`${[...svn.davFeatures]}`);
@@ -55,7 +55,7 @@ describe('initialize', function () {
   });
 
   it('has basicAuthorization', function (done) {
-    init('https://subversion.assembla.com/svn/delivery_notes', {
+    init('https://subversion.assembla.com/svn/delivery_notes/', {
       credentials: credentials
     }).then(function (svn) {
       try {

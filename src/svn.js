@@ -39,12 +39,18 @@ const DAVFeatures = {
 const SVNHeaders = [
   'SVN-Repository-UUID',
   'SVN-Repository-Root',
-  'SVN-Rev-Root-Stub',
-  'SVN-Rev-Stub',
-  'SVN-Txn-Root-Stub',
-  'SVN-Txn-Stub',
-  'SVN-Me-Resource'
-  // 'SVN-Youngest-Rev' Integer
+  'SVN-Rev-Root-Stub', // /svn/delivery_notes/!svn/rvr
+  'SVN-Rev-Stub', // /svn/delivery_notes/!svn/rev
+  'SVN-Txn-Root-Stub', // /svn/delivery_notes/!svn/vtxr
+  'SVN-Txn-Stub', // /svn/delivery_notes/!svn/txn
+
+  'SVN-Me-Resource', // /svn/delivery_notes/!svn/me
+  'SVN-Rev-Root-Stub', // /svn/delivery_notes/!svn/rvr
+
+  'SVN-Youngest-Rev', // Integer
+  'SVN-Allow-Bulk-Updates', // Prefer
+  'SVN-Supported-Posts', // create-txn create-txn-with-props
+  'SVN-Repository-MergeInfo' // yes
 ];
 
 const SVN = {
@@ -56,6 +62,9 @@ const SVN = {
     },
     get vccDefault() {
       return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
+    },
+    davHeader() {
+      return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
     },
     propfind(url, properties, depth = 1) {
       var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
@@ -76,7 +85,7 @@ const SVN = {
         body: xml,
         headers: {
           "Authorization": svn.basicAuthorization,
-          //"DAV" : [ NS_SVNDAV_DEPTH, NS_SVNDAV_MERGINFO, NS_SVNDAV_LOG_REVPROPS ].join(','),
+          "DAV": this.davHeader(),
           "Depth": depth,
           "Content-type": "text/xml; charset=UTF-8"
         }
@@ -102,7 +111,7 @@ const SVN = {
         body: xml,
         headers: {
           "Authorization": svn.basicAuthorization,
-          "DAV": [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(','),
+          "DAV": this.davHeader(),
           "Content-type": "text/xml; charset=UTF-8"
         }
       });
@@ -150,17 +159,16 @@ export function init(url, options) {
 
   return fetch(url, {
     method: 'OPTIONS',
-    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>\n',
+    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>',
     headers: {
       "Authorization": svn.basicAuthorization,
-      //"User-Agent": "SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8",
-      "DAV": [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(','),
+      "DAV": svn.davHeader(),
       "Content-type": "text/xml"
     }
   }).then(function (response) {
     const headers = response.headers._headers;
 
-    //console.log(`${JSON.stringify(headers)}`);
+    console.log(`${JSON.stringify(headers)}`);
     //console.log(`RAW headers: ${JSON.stringify(headers.raw)}`);
 
     SVNHeaders.forEach(h => {
