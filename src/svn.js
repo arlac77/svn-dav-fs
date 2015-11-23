@@ -172,8 +172,7 @@ export function init(url, options) {
 
     const dav = headers.dav;
     if (dav) {
-      davFeatures = new Set(dav[0].split(/\s*,\s*/));
-      //console.log(`DAV: ${[...davFeatures.values()]}`);
+      dav.forEach(al => al.split(/\s*,\s*/).forEach(f => davFeatures.add(f)));
     }
 
     attributes['SVN-Youngest-Rev'] = parseInt(headers['SVN-Youngest-Rev'], 10);
