@@ -17,7 +17,7 @@ before_script:
   - npm prune
 script:
   - npm run-script cover
-after_script:
+xafter_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 xafter_success:
   - npm run semantic-release
