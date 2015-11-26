@@ -15,7 +15,7 @@ before_install:
   - npm i -g npm@latest
 before_script:
   - npm prune
-script:
+xscript:
   - npm run-script cover
 xafter_script:
   - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
