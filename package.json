@@ -1,7 +1,9 @@
 {
   "name": "svn-dav-fs",
+  "version": "0.0.0",
   "description": "svn dav",
   "main": "lib/svn.js",
+  "esnext:main": "src/svn.js",
   "scripts": {
     "cover": "node --harmony ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports test",
     "compile": "babel --presets es2015 -d lib src",
