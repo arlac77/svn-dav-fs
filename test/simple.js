@@ -36,11 +36,11 @@ describe('initialize', function () {
     }, done);
   });
 
-  it('has davFeatures', function (done) {
+  xit('has davFeatures', function (done) {
     init('https://subversion.assembla.com/svn/delivery_notes/', {
       credentials: credentials
     }).then(function (svn) {
-      //console.log(`${[...svn.davFeatures]}`);
+      console.log(`DAV: ${[...svn.davFeatures]}`);
       assert.equal(svn.davFeatures.has('1'), true);
       assert.equal(svn.davFeatures.has('2'), true);
       assert.equal(svn.davFeatures.has('baseline'), true);

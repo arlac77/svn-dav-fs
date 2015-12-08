@@ -1,5 +1,3 @@
-//import fetch from 'node-fetch';
-
 import fetch from 'isomorphic-fetch';
 
 const btoa = require('btoa');
