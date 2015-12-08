@@ -36,23 +36,25 @@ describe('initialize', function () {
     }, done);
   });
 
-  xit('has davFeatures', function (done) {
-    init('https://subversion.assembla.com/svn/delivery_notes/', {
-      credentials: credentials
-    }).then(function (svn) {
-      console.log(`DAV: ${[...svn.davFeatures]}`);
-      assert.equal(svn.davFeatures.has('1'), true);
-      assert.equal(svn.davFeatures.has('2'), true);
-      assert.equal(svn.davFeatures.has('baseline'), true);
-      assert.equal(svn.davFeatures.has('version-control'), true);
-      assert.equal(svn.davFeatures.has('checkout'), true);
-      assert.equal(svn.davFeatures.has('working-resource'), true);
-      assert.equal(svn.davFeatures.has('merge'), true);
-      assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
-      assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
-      done();
-    }, done);
-  });
+  if (process.env.SVN_USER) {
+    it('has davFeatures', function (done) {
+      init('https://subversion.assembla.com/svn/delivery_notes/', {
+        credentials: credentials
+      }).then(function (svn) {
+        console.log(`DAV: ${[...svn.davFeatures]}`);
+        assert.equal(svn.davFeatures.has('1'), true);
+        assert.equal(svn.davFeatures.has('2'), true);
+        assert.equal(svn.davFeatures.has('baseline'), true);
+        assert.equal(svn.davFeatures.has('version-control'), true);
+        assert.equal(svn.davFeatures.has('checkout'), true);
+        assert.equal(svn.davFeatures.has('working-resource'), true);
+        assert.equal(svn.davFeatures.has('merge'), true);
+        assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
+        assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
+        done();
+      }, done);
+    });
+  }
 
   it('has basicAuthorization', function (done) {
     init('https://subversion.assembla.com/svn/delivery_notes/', {
