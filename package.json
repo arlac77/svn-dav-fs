@@ -33,7 +33,7 @@
     "chai-as-promised": "5.1.0",
     "coveralls": "^2.11.4",
     "es6-module-loader": "^0.17.8",
-    "istanbul": "0.4.1",
+    "istanbul": "^1.0.0-alpha.2",
     "mocha": "2.3.4",
     "semantic-release": "6.0.3"
   },
