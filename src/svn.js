@@ -135,7 +135,8 @@ Content-Length: 131
 export function init(url, options) {
 
   const attributes = {};
-  let davFeatures = new Set();
+  const davFeatures = new Set();
+  const allowedMethods = new Set();
 
   const svn = Object.create(SVN, {
     credentials: {
@@ -153,6 +154,11 @@ export function init(url, options) {
         return davFeatures;
       }
     },
+    allowedMethods: {
+      get() {
+        return allowedMethods;
+      }
+    }
   });
 
   return fetch(url, {
@@ -166,7 +172,7 @@ export function init(url, options) {
   }).then(function (response) {
     const headers = response.headers._headers;
 
-    console.log(`${JSON.stringify(headers)}`);
+    //console.log(`${JSON.stringify(headers)}`);
     //console.log(`RAW headers: ${JSON.stringify(headers.raw)}`);
 
     SVNHeaders.forEach(h => {
@@ -176,10 +182,8 @@ export function init(url, options) {
       }
     });
 
-    const dav = headers.dav;
-    if (dav) {
-      dav.forEach(al => al.split(/\s*,\s*/).forEach(f => davFeatures.add(f)));
-    }
+    headerIntoSet(headers.dav, davFeatures);
+    headerIntoSet(headers.allow, allowedMethods);
 
     attributes['SVN-Youngest-Rev'] = parseInt(headers['SVN-Youngest-Rev'], 10);
 
@@ -187,4 +191,10 @@ export function init(url, options) {
     //console.log(`Attributes: ${JSON.stringify(attributes)}`);
     return svn;
   });
+}
+
+function headerIntoSet(header, target) {
+  if (header) {
+    header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
+  }
 }

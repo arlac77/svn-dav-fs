@@ -41,7 +41,6 @@ describe('initialize', function () {
       init('https://subversion.assembla.com/svn/delivery_notes/', {
         credentials: credentials
       }).then(function (svn) {
-        console.log(`DAV: ${[...svn.davFeatures]}`);
         assert.equal(svn.davFeatures.has('1'), true);
         assert.equal(svn.davFeatures.has('2'), true);
         assert.equal(svn.davFeatures.has('baseline'), true);
@@ -51,6 +50,16 @@ describe('initialize', function () {
         assert.equal(svn.davFeatures.has('merge'), true);
         assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
         assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
+        done();
+      }, done);
+    });
+
+    it('has allowedMethods', function (done) {
+      init('https://subversion.assembla.com/svn/delivery_notes/', {
+        credentials: credentials
+      }).then(function (svn) {
+        assert.equal(svn.allowedMethods.has('GET'), true);
+        assert.equal(svn.allowedMethods.has('OPTIONS'), true);
         done();
       }, done);
     });
