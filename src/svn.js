@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 
 const btoa = require('btoa');
 
+const XML_HEADER = '<?xml version="1.0" encoding="UTF-8" ?>';
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
 
@@ -65,22 +66,21 @@ const SVN = {
       return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
     },
     propfind(url, properties, depth = 1) {
-      var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
-      xml += '<D:propfind xmlns:D="DAV:">\n';
+      const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
       if (properties) {
-        for (var p in properties) {
-          xml += '<D:prop><' + p + ' xmlns=\"' + properties[p] + '\"/></D:prop>';
+        for (let p in properties) {
+          xmls.push('<D:prop><' + p + ' xmlns=\"' + properties[p] + '\"/></D:prop>');
         }
       } else {
-        xml += '<D:allprop/>\n';
+        xmls.push('<D:allprop/>');
       }
 
-      xml += '</D:propfind>\n';
+      xmls.push('</D:propfind>');
 
       return fetch(url, {
         method: 'PROPFIND',
-        body: xml,
+        body: xmls.join('\n'),
         headers: {
           "Authorization": this.basicAuthorization,
           "DAV": this.davHeader,
@@ -92,20 +92,19 @@ const SVN = {
     report(url, start, end) {
       if (end - start > 1000) start = end - 1000;
 
-      let xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
-      xml += '<S:log-report xmlns:S="svn:">\n';
-      xml += '<S:start-revision>' + start + '</S:start-revision>\n';
-      xml += '<S:end-revision>' + end + '</S:end-revision>\n';
-      xml += ['svn:author', 'svn:date', 'svn:log'].map(item => {
-        '<S:revprop>' + item + '</S:revprop>';
-      }).join('');
+      const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
+      xmls.push('<S:start-revision>' + start + '</S:start-revision>');
+      xmls.push('<S:end-revision>' + end + '</S:end-revision>');
+      ['svn:author', 'svn:date', 'svn:log'].forEach(item => {
+        xmls.push('<S:revprop>' + item + '</S:revprop>');
+      });
 
-      xml += '<S:path/>\n';
-      xml += '</S:log-report>\n';
+      xmls.push('<S:path/>');
+      xmls.push('</S:log-report>');
 
       return fetch(url, {
         method: 'REPORT',
-        body: xml,
+        body: xmls.join('\n'),
         headers: {
           "Authorization": this.basicAuthorization,
           "DAV": this.davHeader,
@@ -162,7 +161,9 @@ export function init(url, options) {
 
   return fetch(url, {
     method: 'OPTIONS',
-    body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>',
+    body: [XML_HEADER, '<D:options xmlns:D="DAV:">', '<D:activity-collection-set></D:activity-collection-set>',
+      '</D:options>'
+    ].join('\n'),
     headers: {
       "Authorization": svn.basicAuthorization,
       "DAV": svn.davHeader,
