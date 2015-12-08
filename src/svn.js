@@ -61,7 +61,7 @@ const SVN = {
     get vccDefault() {
       return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
     },
-    davHeader() {
+    get davHeader() {
       return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
     },
     propfind(url, properties, depth = 1) {
@@ -82,8 +82,8 @@ const SVN = {
         method: 'PROPFIND',
         body: xml,
         headers: {
-          "Authorization": svn.basicAuthorization,
-          "DAV": this.davHeader(),
+          "Authorization": this.basicAuthorization,
+          "DAV": this.davHeader,
           "Depth": depth,
           "Content-type": "text/xml; charset=UTF-8"
         }
@@ -92,15 +92,14 @@ const SVN = {
     report(url, start, end) {
       if (end - start > 1000) start = end - 1000;
 
-      var xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
+      let xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
       xml += '<S:log-report xmlns:S="svn:">\n';
       xml += '<S:start-revision>' + start + '</S:start-revision>\n';
       xml += '<S:end-revision>' + end + '</S:end-revision>\n';
+      xml += ['svn:author', 'svn:date', 'svn:log'].map(item => {
+        '<S:revprop>' + item + '</S:revprop>';
+      }).join('');
 
-      const properties = ['svn:author', 'svn:date', 'svn:log'];
-      properties.forEach((item) => {
-        xml += '<S:revprop>' + item + '</S:revprop>';
-      });
       xml += '<S:path/>\n';
       xml += '</S:log-report>\n';
 
@@ -108,8 +107,8 @@ const SVN = {
         method: 'REPORT',
         body: xml,
         headers: {
-          "Authorization": svn.basicAuthorization,
-          "DAV": this.davHeader(),
+          "Authorization": this.basicAuthorization,
+          "DAV": this.davHeader,
           "Content-type": "text/xml; charset=UTF-8"
         }
       });
@@ -166,7 +165,7 @@ export function init(url, options) {
     body: '<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>',
     headers: {
       "Authorization": svn.basicAuthorization,
-      "DAV": svn.davHeader(),
+      "DAV": svn.davHeader,
       "Content-type": "text/xml"
     }
   }).then(function (response) {
