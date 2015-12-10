@@ -3,6 +3,8 @@ import fetch from 'isomorphic-fetch';
 const btoa = require('btoa');
 
 const XML_HEADER = '<?xml version="1.0" encoding="UTF-8" ?>';
+const XML_CONTENT_TYPE = 'text/xml; charset=UTF-8';
+
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
 
@@ -85,7 +87,7 @@ const SVN = {
           "Authorization": this.basicAuthorization,
           "DAV": this.davHeader,
           "Depth": depth,
-          "Content-type": "text/xml; charset=UTF-8"
+          "Content-type": XML_CONTENT_TYPE
         }
       });
     },
@@ -108,7 +110,7 @@ const SVN = {
         headers: {
           "Authorization": this.basicAuthorization,
           "DAV": this.davHeader,
-          "Content-type": "text/xml; charset=UTF-8"
+          "Content-type": XML_CONTENT_TYPE
         }
       });
     }
@@ -167,7 +169,7 @@ export function init(url, options) {
     headers: {
       "Authorization": svn.basicAuthorization,
       "DAV": svn.davHeader,
-      "Content-type": "text/xml"
+      "Content-type": XML_CONTENT_TYPE
     }
   }).then(function (response) {
     const headers = response.headers._headers;
