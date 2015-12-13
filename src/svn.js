@@ -2,8 +2,8 @@ import fetch from 'isomorphic-fetch';
 
 const btoa = require('btoa');
 
-const XML_HEADER = '<?xml version="1.0" encoding="UTF-8" ?>';
-const XML_CONTENT_TYPE = 'text/xml; charset=UTF-8';
+const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
+const XML_CONTENT_TYPE = 'text/xml';
 
 const NS_S = 'svn:';
 const NS_D = 'DAV:';
@@ -161,11 +161,27 @@ export function init(url, options) {
     }
   });
 
+  /*
+  OPTIONS /svn/delivery_notes/data HTTP/1.1
+  Host: subversion.assembla.com
+  Authorization: Basic XXX
+  User-Agent: SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8
+  Content-Type: text/xml
+  Connection: keep-alive
+  Accept-Encoding: gzip
+  DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
+  DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+  DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+  Content-Length: 131
+
+  <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
+  */
+
   return fetch(url, {
     method: 'OPTIONS',
     body: [XML_HEADER, '<D:options xmlns:D="DAV:">', '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
-    ].join('\n'),
+    ].join(''),
     headers: {
       "Authorization": svn.basicAuthorization,
       "DAV": svn.davHeader,
