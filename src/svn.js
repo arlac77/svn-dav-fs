@@ -72,7 +72,7 @@ const SVN = {
 
       if (properties) {
         for (let p in properties) {
-          xmls.push('<D:prop><' + p + ' xmlns=\"' + properties[p] + '\"/></D:prop>');
+          xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
         }
       } else {
         xmls.push('<D:allprop/>');
@@ -84,10 +84,10 @@ const SVN = {
         method: 'PROPFIND',
         body: xmls.join('\n'),
         headers: {
-          "Authorization": this.basicAuthorization,
-          "DAV": this.davHeader,
-          "Depth": depth,
-          "Content-type": XML_CONTENT_TYPE
+          "authorization": this.basicAuthorization,
+          "dav": this.davHeader,
+          "depth": depth,
+          "content-type": XML_CONTENT_TYPE
         }
       });
     },
@@ -95,10 +95,10 @@ const SVN = {
       if (end - start > 1000) start = end - 1000;
 
       const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
-      xmls.push('<S:start-revision>' + start + '</S:start-revision>');
-      xmls.push('<S:end-revision>' + end + '</S:end-revision>');
+      xmls.push(`<S:start-revision>${start}</S:start-revision>`);
+      xmls.push(`<S:end-revision>${end}</S:end-revision>`);
       ['svn:author', 'svn:date', 'svn:log'].forEach(item => {
-        xmls.push('<S:revprop>' + item + '</S:revprop>');
+        xmls.push(`<S:revprop>${item}</S:revprop>`);
       });
 
       xmls.push('<S:path/>');
@@ -108,9 +108,9 @@ const SVN = {
         method: 'REPORT',
         body: xmls.join('\n'),
         headers: {
-          "Authorization": this.basicAuthorization,
-          "DAV": this.davHeader,
-          "Content-type": XML_CONTENT_TYPE
+          "authorization": this.basicAuthorization,
+          "dav": this.davHeader,
+          "content-type": XML_CONTENT_TYPE
         }
       });
     }
@@ -183,14 +183,16 @@ export function init(url, options) {
       '</D:options>'
     ].join(''),
     headers: {
-      "Authorization": svn.basicAuthorization,
-      "DAV": svn.davHeader,
-      "Content-type": XML_CONTENT_TYPE
+      "authorization": svn.basicAuthorization,
+      "dav": svn.davHeader,
+      //'user-agent': 'SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8',
+      //'connection': "keep-alive",
+      "content-type": XML_CONTENT_TYPE
     }
   }).then(function (response) {
     const headers = response.headers._headers;
 
-    //console.log(`${JSON.stringify(headers)}`);
+    //console.log(`Headers ${JSON.stringify(headers)}`);
     //console.log(`RAW headers: ${JSON.stringify(headers.raw)}`);
 
     SVNHeaders.forEach(h => {
