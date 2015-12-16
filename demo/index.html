@@ -21,12 +21,13 @@
   <footer>
   </footer>
 
-  <script src="./es6-module-loader.js"></script>
+  <script src="all.js"></script>
   <script>
     function buttonClick() {
       System.import('test2.js').then(function(module) {
+        console.log("module: " + module);
         new module.Foo();
-      });
+      },function(err) { console.log(err); });
     }
   </script>
 </body>
