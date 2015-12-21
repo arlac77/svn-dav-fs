@@ -1,19 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
+<html>
 <head>
+    <meta charset="utf-8">
+    <title>webpack Babel demo</title>
 </head>
 <body>
-  <div role="main">
-    <button onclick="buttonClick()">Load test2</button>
-  </div>
-  <footer>
-  </footer>
 
-  <script src="fetch.js"></script>
-  <script src="all.js"></script>
-  <script>
-    function buttonClick() {
-      var h = init('https://subversion.assembla.com/svn/delivery_notes', {});
-    }
-  </script>
+<h1>webpack Babel demo</h1>
+
+<div id="output"></div>
+
+<script src="bundle.js"></script>
 </body>
 </html>
