@@ -39,7 +39,6 @@
     "es6-module-loader": "^0.17.8",
     "istanbul": "^1.0.0-alpha.2",
     "mocha": "2.3.4",
-    "rollup-plugin-npm": "^1.1.0",
     "semantic-release": "6.0.3",
     "webpack": "^2.0.1-beta",
     "copy-webpack-plugin": "^0.3.3"
