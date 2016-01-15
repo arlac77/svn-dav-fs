@@ -45,6 +45,6 @@
   },
   "dependencies": {
     "btoa": "^1.1.2",
-    "isomorphic-fetch": "^2.2.0"
+    "isomorphic-fetch": "^2.2.1"
   }
 }
