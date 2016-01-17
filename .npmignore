@@ -1,6 +1,7 @@
 coverage
 node_modules
 build
+tests
 *.log
 *.tmp
 .DS_Store
@@ -10,3 +11,5 @@ build
 .npmrc
 .npmignore
 .vscode
+.travis.yml
+demo

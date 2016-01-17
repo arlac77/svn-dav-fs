@@ -5,10 +5,10 @@
   "main": "lib/svn.js",
   "esnext:main": "src/svn.js",
   "scripts": {
-    "cover": "node --harmony ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports test",
+    "cover": "node --harmony ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests",
     "compile": "babel --presets es2015 -d lib src",
     "prepublish": "npm run compile",
-    "test": "npm run compile && mocha --compilers js:babel-core/register --recursive",
+    "test": "npm run compile && mocha --compilers js:babel-core/register --recursive tests/*",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "build": "webpack --optimize-minimize",
     "watch": "webpack --optimize-minimize --watch"

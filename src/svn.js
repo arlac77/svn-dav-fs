@@ -1,3 +1,8 @@
+/* global describe, it, xit */
+/* jslint node: true, esnext: true */
+
+"use strict";
+
 import fetch from 'isomorphic-fetch';
 
 const btoa = require('btoa');
@@ -189,7 +194,7 @@ export function init(url, options) {
       //'connection': "keep-alive",
       "content-type": XML_CONTENT_TYPE
     }
-  }).then(function (response) {
+  }).then(response => {
     const headers = response.headers._headers;
 
     //console.log(`Headers ${JSON.stringify(headers)}`);
