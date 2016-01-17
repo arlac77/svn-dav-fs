@@ -15,9 +15,10 @@ before_install:
   - npm i -g npm@latest
 before_script:
   - npm prune
-xscript:
+  - npm install -g codecov
+script:
   - npm run-script cover
-xafter_script:
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+after_script:
+  - codecov
 xafter_success:
   - npm run semantic-release
