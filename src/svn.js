@@ -76,7 +76,7 @@ const SVN = {
       const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
       if (properties) {
-        for (let p in properties) {
+        for (const p in properties) {
           xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
         }
       } else {
