@@ -40,7 +40,7 @@
     "istanbul": "^1.0.0-alpha.2",
     "mocha": "2.4.5",
     "semantic-release": "^6.2.0",
-    "webpack": "^2.0.5-beta"
+    "webpack": "^2.0.6-beta"
   },
   "dependencies": {
     "btoa": "^1.1.2",

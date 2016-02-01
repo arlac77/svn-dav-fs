@@ -1,22 +1,28 @@
-/* global describe, it, xit */
 /* jslint node: true, esnext: true */
 
 "use strict";
 
-import fetch from 'isomorphic-fetch';
-
+// nodejs
+//if (IS_NODE) {
 const btoa = require('btoa');
+import fetch from 'isomorphic-fetch';
+//} else {
+// browser
+//  import fetch from 'fetch';
+//}
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
 
-const NS_S = 'svn:';
-const NS_D = 'DAV:';
+//const NS_S = 'svn:';
+//const NS_D = 'DAV:';
 
 const NS_SVN_DAV = "http://subversion.tigris.org/xmlns/dav/";
 const NS_SVN_DAV_DEPTH = NS_SVN_DAV + "svn/depth";
 const NS_SVN_DAV_MERGINFO = NS_SVN_DAV + "svn/mergeinfo";
 const NS_SVN_DAV_LOG_REVPROPS = NS_SVN_DAV + "svn/log-revprops";
+
+/*
 const NS_SVN_DAV_ATOMIC_REVPROPS = NS_SVN_DAV + "svn/atomic-revprops";
 const NS_SVN_DAV_PARTIAL_REPLAY = NS_SVN_DAV + "svn/partial-replay";
 
@@ -41,6 +47,7 @@ const DAVFeatures = {
   [NS_SVN_DAV_LOG_REVPROPS]: {},
   [NS_SVN_DAV_ATOMIC_REVPROPS]: {}
 };
+*/
 
 const SVNHeaders = [
   'SVN-Repository-UUID',
@@ -97,14 +104,14 @@ const SVN = {
       });
     },
     report(url, start, end) {
-      if (end - start > 1000) start = end - 1000;
+      if (end - start > 1000) {
+        start = end - 1000;
+      }
 
       const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
       xmls.push(`<S:start-revision>${start}</S:start-revision>`);
       xmls.push(`<S:end-revision>${end}</S:end-revision>`);
-      ['svn:author', 'svn:date', 'svn:log'].forEach(item => {
-        xmls.push(`<S:revprop>${item}</S:revprop>`);
-      });
+      ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
 
       xmls.push('<S:path/>');
       xmls.push('</S:log-report>');
@@ -195,25 +202,25 @@ export function init(url, options) {
       "content-type": XML_CONTENT_TYPE
     }
   }).then(response => {
-    const headers = response.headers._headers;
+    const headers = response.headers.map;
 
+    //const headers = response.headers._headers;
     //console.log(`Headers ${JSON.stringify(headers)}`);
-    //console.log(`RAW headers: ${JSON.stringify(headers.raw)}`);
+    //console.log(`RAW headers: ${JSON.stringify(response.headers.map)}`);
 
-    SVNHeaders.forEach(h => {
-      if (headers[h]) {
-        attributes[h] = headers[h];
-        console.log(`${h}: ${headers[h]}`);
-      }
-    });
+    if (headers) {
+      SVNHeaders.forEach(h => {
+        if (headers[h]) {
+          attributes[h] = headers[h];
+          console.log(`${h}: ${headers[h]}`);
+        }
+      });
 
-    headerIntoSet(headers.dav, davFeatures);
-    headerIntoSet(headers.allow, allowedMethods);
+      headerIntoSet(headers.dav, davFeatures);
+      headerIntoSet(headers.allow, allowedMethods);
 
-    attributes['SVN-Youngest-Rev'] = parseInt(headers['SVN-Youngest-Rev'], 10);
-
-    //console.log(`rev: ${headers['SVN-Youngest-Rev']}`);
-    //console.log(`Attributes: ${JSON.stringify(attributes)}`);
+      attributes['svn-youngest-rev'] = parseInt(headers['svn-youngest-rev'], 10);
+    }
     return svn;
   });
 }
