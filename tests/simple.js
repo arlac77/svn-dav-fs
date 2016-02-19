@@ -26,21 +26,20 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
-describe('initialize', function () {
-  it('has toString', function (done) {
+describe('initialize', () => {
+
+
+  it('has toString', () =>
     init('https://subversion.assembla.com/svn/delivery_notes', {
       credentials: credentials
-    }).then(function (svn) {
-      assert.equal(`${svn}`, "svn");
-      done();
-    }, done);
-  });
+    }).then(svn => assert.equal(`${svn}`, "svn"))
+  );
 
   if (process.env.SVN_USER) {
-    it('has davFeatures', function (done) {
+    it('has davFeatures', () =>
       init('https://subversion.assembla.com/svn/delivery_notes/', {
         credentials: credentials
-      }).then(function (svn) {
+      }).then(svn => {
         assert.equal(svn.davFeatures.has('1'), true);
         assert.equal(svn.davFeatures.has('2'), true);
         assert.equal(svn.davFeatures.has('baseline'), true);
@@ -50,35 +49,28 @@ describe('initialize', function () {
         assert.equal(svn.davFeatures.has('merge'), true);
         assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
         assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
-        done();
-      }, done);
-    });
+      })
+    );
 
-    it('has allowedMethods', function (done) {
+    it('has allowedMethods', () =>
       init('https://subversion.assembla.com/svn/delivery_notes/', {
         credentials: credentials
-      }).then(function (svn) {
+      }).then(svn => {
         assert.equal(svn.allowedMethods.has('GET'), true);
         assert.equal(svn.allowedMethods.has('OPTIONS'), true);
-        done();
-      }, done);
-    });
+      })
+    );
   }
 
-  it('has basicAuthorization', function (done) {
+  it('has basicAuthorization', () =>
     init('https://subversion.assembla.com/svn/delivery_notes/', {
       credentials: credentials
-    }).then(function (svn) {
-      try {
-        if (process.env.SVN_USER) {
-          assert.equal(svn.basicAuthorization.substring(0, 6), "Basic ");
-        } else {
-          assert.equal(svn.basicAuthorization, "Basic eXl5Onh4eA==");
-        }
-        done();
-      } catch (e) {
-        done(e);
+    }).then(svn => {
+      if (process.env.SVN_USER) {
+        assert.equal(svn.basicAuthorization.substring(0, 6), "Basic ");
+      } else {
+        assert.equal(svn.basicAuthorization, "Basic eXl5Onh4eA==");
       }
-    }, done);
-  });
+    })
+  );
 });
