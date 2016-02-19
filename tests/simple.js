@@ -28,18 +28,15 @@ if (process.env.SVN_PASSWORD) {
 
 describe('initialize', () => {
 
+  const svn = init('https://subversion.assembla.com/svn/delivery_notes', {
+    credentials: credentials
+  });
 
-  it('has toString', () =>
-    init('https://subversion.assembla.com/svn/delivery_notes', {
-      credentials: credentials
-    }).then(svn => assert.equal(`${svn}`, "svn"))
-  );
+  it('has toString', () => svn.then(svn => assert.equal(`${svn}`, "svn")));
 
   if (process.env.SVN_USER) {
     it('has davFeatures', () =>
-      init('https://subversion.assembla.com/svn/delivery_notes/', {
-        credentials: credentials
-      }).then(svn => {
+      svn.then(svn => {
         assert.equal(svn.davFeatures.has('1'), true);
         assert.equal(svn.davFeatures.has('2'), true);
         assert.equal(svn.davFeatures.has('baseline'), true);
@@ -53,9 +50,7 @@ describe('initialize', () => {
     );
 
     it('has allowedMethods', () =>
-      init('https://subversion.assembla.com/svn/delivery_notes/', {
-        credentials: credentials
-      }).then(svn => {
+      svn.then(svn => {
         assert.equal(svn.allowedMethods.has('GET'), true);
         assert.equal(svn.allowedMethods.has('OPTIONS'), true);
       })
@@ -63,9 +58,7 @@ describe('initialize', () => {
   }
 
   it('has basicAuthorization', () =>
-    init('https://subversion.assembla.com/svn/delivery_notes/', {
-      credentials: credentials
-    }).then(svn => {
+    svn.then(svn => {
       if (process.env.SVN_USER) {
         assert.equal(svn.basicAuthorization.substring(0, 6), "Basic ");
       } else {
@@ -73,4 +66,13 @@ describe('initialize', () => {
       }
     })
   );
+
+  if (process.env.SVN_USER) {
+    it('has basicAuthorization', () =>
+      svn.then(svn => svn.report('https://subversion.assembla.com/svn/delivery_notes/', 0).then(h => {
+        console.log(h);
+      }))
+    );
+  }
+
 });
