@@ -70,7 +70,7 @@ describe('initialize', () => {
   if (process.env.SVN_USER) {
     it('has basicAuthorization', () =>
       svn.then(svn => svn.report('https://subversion.assembla.com/svn/delivery_notes/', 0).then(h => {
-        console.log(h);
+        //console.log(h);
       }))
     );
   }

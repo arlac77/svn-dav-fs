@@ -124,6 +124,15 @@ const SVN = {
           "dav": this.davHeader,
           "content-type": XML_CONTENT_TYPE
         }
+      }).then(response => {
+        const rs = response.body;
+
+        rs.pipe(process.stdout);
+
+        //console.log(rs.read(10));
+
+        //console.log(`READABLE: ${rs.readable}`);
+        return rs;
       });
     }
 };
