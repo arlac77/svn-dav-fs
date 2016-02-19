@@ -202,10 +202,10 @@ export function init(url, options) {
       "content-type": XML_CONTENT_TYPE
     }
   }).then(response => {
-    const headers = response.headers.map;
+    const headers = response.headers._headers ? response.headers._headers : response.headers.map;
 
     //const headers = response.headers._headers;
-    //console.log(`Headers ${JSON.stringify(headers)}`);
+    //console.log(`Headers ${JSON.stringify(response)}`);
     //console.log(`RAW headers: ${JSON.stringify(response.headers.map)}`);
 
     if (headers) {
