@@ -159,7 +159,6 @@ const SVN = {
             case 'S:date':
               consume = text => {
                 entry.date = new Date(text);
-                //entry.date = text;
                 consume = ignore;
               };
               break;
@@ -182,9 +181,7 @@ const SVN = {
         saxStream.on("closetag", name => {
           switch (name) {
             case 'S:log-item':
-              if (entry) {
-                entries.push(entry);
-              }
+              entries.push(entry);
               break;
           }
         });
