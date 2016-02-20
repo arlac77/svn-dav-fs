@@ -4,7 +4,8 @@
 
 // nodejs
 //if (IS_NODE) {
-const btoa = require('btoa');
+const btoa = require('btoa'),
+  sax = require('sax');
 import fetch from 'isomorphic-fetch';
 //} else {
 // browser
@@ -127,12 +128,76 @@ const SVN = {
       }).then(response => {
         const rs = response.body;
 
-        rs.pipe(process.stdout);
+        /*
+        <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
+        <S:log-item>
+        <D:version-name>0</D:version-name>
+        <S:date>2011-09-18T13:20:54.561302Z</S:date>
+        </S:log-item>
+        <S:log-item>
+        */
+        const saxStream = sax.createStream(true, {});
 
-        //console.log(rs.read(10));
+        const entries = [];
+        let entry;
 
-        //console.log(`READABLE: ${rs.readable}`);
-        return rs;
+        function ignore() {}
+        let consume = ignore;
+
+        saxStream.on("opentag", node => {
+          switch (node.name) {
+            case 'S:log-item':
+              entry = {};
+              consume = ignore;
+              break;
+            case 'D:version-name':
+              consume = text => {
+                entry.version = parseInt(text, 10);
+                consume = ignore;
+              };
+              break;
+            case 'S:date':
+              consume = text => {
+                entry.date = new Date(text);
+                //entry.date = text;
+                consume = ignore;
+              };
+              break;
+            case 'D:comment':
+              consume = text => {
+                entry.message = entry.message ? entry.message + text : text;
+              };
+              break;
+            case 'D:creator-displayname':
+              consume = text => {
+                entry.creator = text;
+                consume = ignore;
+              };
+              break;
+            default:
+              consume = ignore;
+          }
+        });
+
+        saxStream.on("closetag", name => {
+          switch (name) {
+            case 'S:log-item':
+              if (entry) {
+                entries.push(entry);
+              }
+              break;
+          }
+        });
+
+        saxStream.on("text", text => {
+          consume(text);
+        });
+
+        return new Promise((fullfill, reject) => {
+          saxStream.on("end", () => fullfill(entries));
+          saxStream.on("error", reject);
+          rs.pipe(saxStream);
+        });
       });
     }
 };

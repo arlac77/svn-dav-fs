@@ -5,9 +5,11 @@
 
 const chai = require('chai'),
   expect = chai.expect,
+  assert = chai.assert,
   should = chai.should();
 
-import assert from 'assert';
+chai.use(require('chai-datetime'));
+
 import {
   init
 }
@@ -68,9 +70,13 @@ describe('initialize', () => {
   );
 
   if (process.env.SVN_USER) {
-    it('has basicAuthorization', () =>
-      svn.then(svn => svn.report('https://subversion.assembla.com/svn/delivery_notes/', 0).then(h => {
-        //console.log(h);
+    it('report', () =>
+      svn.then(svn => svn.report('https://subversion.assembla.com/svn/delivery_notes/', 0, 20).then(r => {
+        assert.equal(r[0].version, 0);
+        assert.afterDate(r[0].date, new Date(2011, 1, 1));
+        assert.beforeDate(r[0].date, new Date(2015, 1, 1));
+        assert.include(r[1].message, 'Automatically created readme.textile');
+        console.log(JSON.stringify(r));
       }))
     );
   }
