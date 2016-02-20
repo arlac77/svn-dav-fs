@@ -76,9 +76,17 @@ describe('initialize', () => {
         assert.afterDate(r[0].date, new Date(2011, 1, 1));
         assert.beforeDate(r[0].date, new Date(2015, 1, 1));
         assert.include(r[1].message, 'Automatically created readme.textile');
-        console.log(JSON.stringify(r));
+        //console.log(JSON.stringify(r));
       }))
     );
-  }
 
+    it('propfind', () =>
+      svn.then(svn => svn.propfind('https://subversion.assembla.com/svn/delivery_notes/data').then(
+        r => {
+          assert.equal(r[1].name, 'data/releases.json');
+
+          //console.log(JSON.stringify(r));
+        }))
+    );
+  }
 });

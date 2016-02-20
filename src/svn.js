@@ -67,6 +67,8 @@ const SVNHeaders = [
   'SVN-Repository-MergeInfo' // yes
 ];
 
+function ignore() {}
+
 const SVN = {
   toString() {
       return "svn";
@@ -75,7 +77,7 @@ const SVN = {
       return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
     },
     get vccDefault() {
-      return [this.attributes['SVN-Repository-Root'], "!svn/vcc/default"].join('/');
+      return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
     },
     get davHeader() {
       return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
@@ -83,12 +85,12 @@ const SVN = {
     propfind(url, properties, depth = 1) {
       const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
-      if (properties) {
+      if (properties === undefined) {
+        xmls.push('<D:allprop/>');
+      } else {
         for (const p in properties) {
           xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
         }
-      } else {
-        xmls.push('<D:allprop/>');
       }
 
       xmls.push('</D:propfind>');
@@ -97,11 +99,57 @@ const SVN = {
         method: 'PROPFIND',
         body: xmls.join('\n'),
         headers: {
-          "authorization": this.basicAuthorization,
-          "dav": this.davHeader,
-          "depth": depth,
-          "content-type": XML_CONTENT_TYPE
+          'authorization': this.basicAuthorization,
+          'dav': this.davHeader,
+          'depth': depth,
+          'content-type': XML_CONTENT_TYPE
         }
+      }).then(response => {
+        return new Promise((fullfill, reject) => {
+          const entries = [];
+          let entry;
+          let consume = ignore;
+
+          const saxStream = sax.createStream(true, {});
+
+          saxStream.on('opentag', node => {
+            switch (node.name) {
+              case 'D:response':
+                break;
+              case 'D:prop':
+                entry = {};
+                consume = ignore;
+                break;
+              case 'D:collection':
+                entry.collection = true;
+                break;
+
+              case 'lp2:baseline-relative-path':
+                consume = text => {
+                  entry.name = text;
+                  consume = ignore;
+                };
+                break;
+            }
+          });
+
+          saxStream.on('closetag', name => {
+            switch (name) {
+              case 'D:prop':
+                entries.push(entry);
+                break;
+            }
+          });
+
+          saxStream.on('text', text => {
+            consume(text);
+          });
+
+          saxStream.on('end', () => fullfill(entries));
+          saxStream.on('error', reject);
+          response.body.pipe(saxStream);
+        });
+
       });
     },
     report(url, start, end) {
@@ -121,9 +169,9 @@ const SVN = {
         method: 'REPORT',
         body: xmls.join('\n'),
         headers: {
-          "authorization": this.basicAuthorization,
-          "dav": this.davHeader,
-          "content-type": XML_CONTENT_TYPE
+          'authorization': this.basicAuthorization,
+          'dav': this.davHeader,
+          'content-type': XML_CONTENT_TYPE
         }
       }).then(response => {
         const rs = response.body;
@@ -140,11 +188,9 @@ const SVN = {
 
         const entries = [];
         let entry;
-
-        function ignore() {}
         let consume = ignore;
 
-        saxStream.on("opentag", node => {
+        saxStream.on('opentag', node => {
           switch (node.name) {
             case 'S:log-item':
               entry = {};
@@ -178,7 +224,7 @@ const SVN = {
           }
         });
 
-        saxStream.on("closetag", name => {
+        saxStream.on('closetag', name => {
           switch (name) {
             case 'S:log-item':
               entries.push(entry);
@@ -186,13 +232,13 @@ const SVN = {
           }
         });
 
-        saxStream.on("text", text => {
+        saxStream.on('text', text => {
           consume(text);
         });
 
         return new Promise((fullfill, reject) => {
-          saxStream.on("end", () => fullfill(entries));
-          saxStream.on("error", reject);
+          saxStream.on('end', () => fullfill(entries));
+          saxStream.on('error', reject);
           rs.pipe(saxStream);
         });
       });
@@ -266,11 +312,11 @@ export function init(url, options) {
       '</D:options>'
     ].join(''),
     headers: {
-      "authorization": svn.basicAuthorization,
-      "dav": svn.davHeader,
+      'authorization': svn.basicAuthorization,
+      'dav': svn.davHeader,
       //'user-agent': 'SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8',
       //'connection': "keep-alive",
-      "content-type": XML_CONTENT_TYPE
+      'content-type': XML_CONTENT_TYPE
     }
   }).then(response => {
     const headers = response.headers._headers ? response.headers._headers : response.headers.map;
