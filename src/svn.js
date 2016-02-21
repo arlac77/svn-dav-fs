@@ -113,6 +113,7 @@ const SVN = {
           const entries = [];
           let entry;
           let consume = ignore;
+          let rootPathPrefixLength;
 
           const saxStream = sax.createStream(true, {
             xmlns: true,
@@ -130,9 +131,20 @@ const SVN = {
               case 'collection':
                 entry.collection = true;
                 break;
+              case 'creationdate':
+                consume = text => {
+                  entry.creationDate = new Date(text);
+                  consume = ignore;
+                };
+                break;
               case 'baseline-relative-path':
                 consume = text => {
-                  entry.name = text;
+                  if (rootPathPrefixLength) {
+                    entry.name = text.substring(rootPathPrefixLength);
+                  } else {
+                    rootPathPrefixLength = text.length + 1;
+                    entry = undefined;
+                  }
                   consume = ignore;
                 };
                 break;
@@ -151,7 +163,9 @@ const SVN = {
           saxStream.on('closetag', name => {
             switch (name) {
               case 'D:prop':
-                entries.push(entry);
+                if (entry !== undefined) {
+                  entries.push(entry);
+                }
                 break;
             }
           });
@@ -166,6 +180,8 @@ const SVN = {
             }
           }));
           saxStream.on('error', reject);
+          //response.body.pipe(process.stdout);
+
           response.body.pipe(saxStream);
         });
 

@@ -85,14 +85,27 @@ describe('initialize', () => {
         cursor => {
           let i = 0;
 
+          const entries = [{
+            name: 'releases.json'
+          }, {
+            name: 'servers'
+          }, {
+            name: 'comp1'
+          }, {
+            name: 'config.json'
+          }, {
+            name: 'releases'
+          }, {
+            name: 'environments.json'
+          }];
           for (const e of cursor()) {
             e.then(entry => {
-              console.log(`${JSON.stringify(entry)}`);
-            });
-            if (i === 1) {
-              e.then(entry => assert.equal(entry.name, 'data/releases.json'))
-            }
-            i++;
+              if (entries[i]) {
+                assert.equal(entry.name, entries[i].name);
+              }
+              console.log(`${i} ${JSON.stringify(entry)}`);
+              i++;
+            }).catch(console.log);
           }
         }))
     );
