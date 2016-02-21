@@ -295,7 +295,11 @@ const SVN = {
               consume(text);
             });
             saxStream.on('end', () => {
-              fullfill(entries);
+              fullfill(function* () {
+                for (const i in entries) {
+                  yield Promise.resolve(entries[i]);
+                }
+              });
             });
             saxStream.on('error', reject);
             response.body.pipe(saxStream);

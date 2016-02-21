@@ -74,12 +74,21 @@ describe('initialize', () => {
       svn.then(svn => svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
         version: 0,
         chunkSize: 10
-      }).then(h => {
-        assert.equal(h[0].version, 0);
-        assert.afterDate(h[0].date, new Date(2011, 1, 1));
-        assert.beforeDate(h[0].date, new Date(2015, 1, 1));
-        assert.include(h[1].message, 'Automatically created readme.textile');
-        //console.log(JSON.stringify(r));
+      }).then(cursor => {
+        let i = 0;
+
+        for (const e of cursor()) {
+          e.then(entry => {
+            //console.log(entry);
+            if (i === 0) {
+              assert.equal(entry.version, 0);
+              assert.afterDate(entry.date, new Date(2011, 1, 1));
+              assert.beforeDate(entry.date, new Date(2015, 1, 1));
+              assert.include(entry.message, 'Automatically created readme.textile');
+            }
+            i++;
+          });
+        }
       }).catch(console.log))
     );
 
@@ -108,7 +117,7 @@ describe('initialize', () => {
               }
               console.log(`${i} ${JSON.stringify(entry)}`);
               i++;
-            }).catch(console.log);
+            });
           }
         }))
     );
