@@ -201,7 +201,7 @@ const SVN = {
         this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
 
       return p.then(start => {
-        const direction = options.direction || 'forward';
+        const direction = options.direction || options.version === undefined ? 'backward' : 'forward';
         const chunkSize = options.chunkSize || 1000;
 
         let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
