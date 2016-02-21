@@ -13,7 +13,7 @@ chai.use(require('chai-datetime'));
 import {
   init
 }
-from '../lib/svn';
+from '../src/svn';
 
 var credentials = {
   password: 'xxx',
@@ -82,10 +82,18 @@ describe('initialize', () => {
 
     it('propfind', () =>
       svn.then(svn => svn.propfind('https://subversion.assembla.com/svn/delivery_notes/data').then(
-        r => {
-          assert.equal(r[1].name, 'data/releases.json');
+        cursor => {
+          let i = 0;
 
-          //console.log(JSON.stringify(r));
+          for (const e of cursor()) {
+            e.then(entry => {
+              console.log(`${JSON.stringify(entry)}`);
+            });
+            if (i === 1) {
+              e.then(entry => assert.equal(entry.name, 'data/releases.json'))
+            }
+            i++;
+          }
         }))
     );
   }

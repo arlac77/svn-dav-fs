@@ -82,7 +82,11 @@ const SVN = {
     get davHeader() {
       return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
     },
-    propfind(url, properties, depth = 1) {
+    propfind(url, properties, depth) {
+      if (depth === undefined) {
+        depth = 1;
+      }
+
       const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
       if (properties === undefined) {
@@ -110,26 +114,37 @@ const SVN = {
           let entry;
           let consume = ignore;
 
-          const saxStream = sax.createStream(true, {});
+          const saxStream = sax.createStream(true, {
+            xmlns: true,
+            position: false
+          });
 
           saxStream.on('opentag', node => {
-            switch (node.name) {
-              case 'D:response':
+            switch (node.local) {
+              case 'response':
                 break;
-              case 'D:prop':
+              case 'prop':
                 entry = {};
                 consume = ignore;
                 break;
-              case 'D:collection':
+              case 'collection':
                 entry.collection = true;
                 break;
-
-              case 'lp2:baseline-relative-path':
+              case 'baseline-relative-path':
                 consume = text => {
                   entry.name = text;
                   consume = ignore;
                 };
                 break;
+                /*  case 'resourcetype':
+                    consume = text => { 
+                      console.log(`resourcetype: ${text}`);
+                      //consume = ignore;
+                    };
+                    break;
+                              default:
+                                console.log(`${node.name} ${node.local} ${node.uri}`);
+                                */
             }
           });
 
@@ -145,7 +160,11 @@ const SVN = {
             consume(text);
           });
 
-          saxStream.on('end', () => fullfill(entries));
+          saxStream.on('end', () => fullfill(function* () {
+            for (const i in entries) {
+              yield Promise.resolve(entries[i]);
+            }
+          }));
           saxStream.on('error', reject);
           response.body.pipe(saxStream);
         });
@@ -174,8 +193,6 @@ const SVN = {
           'content-type': XML_CONTENT_TYPE
         }
       }).then(response => {
-        const rs = response.body;
-
         /*
         <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
         <S:log-item>
@@ -184,36 +201,39 @@ const SVN = {
         </S:log-item>
         <S:log-item>
         */
-        const saxStream = sax.createStream(true, {});
+        const saxStream = sax.createStream(true, {
+          xmlns: true,
+          position: false
+        });
 
         const entries = [];
         let entry;
         let consume = ignore;
 
         saxStream.on('opentag', node => {
-          switch (node.name) {
-            case 'S:log-item':
+          switch (node.local) {
+            case 'log-item':
               entry = {};
               consume = ignore;
               break;
-            case 'D:version-name':
+            case 'version-name':
               consume = text => {
                 entry.version = parseInt(text, 10);
                 consume = ignore;
               };
               break;
-            case 'S:date':
+            case 'date':
               consume = text => {
                 entry.date = new Date(text);
                 consume = ignore;
               };
               break;
-            case 'D:comment':
+            case 'comment':
               consume = text => {
                 entry.message = entry.message ? entry.message + text : text;
               };
               break;
-            case 'D:creator-displayname':
+            case 'creator-displayname':
               consume = text => {
                 entry.creator = text;
                 consume = ignore;
@@ -239,7 +259,7 @@ const SVN = {
         return new Promise((fullfill, reject) => {
           saxStream.on('end', () => fullfill(entries));
           saxStream.on('error', reject);
-          rs.pipe(saxStream);
+          response.body.pipe(saxStream);
         });
       });
     }
