@@ -82,11 +82,8 @@ const SVN = {
     get davHeader() {
       return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
     },
-    propfind(url, properties, depth) {
-      if (depth === undefined) {
-        depth = 1;
-      }
-
+    list(url, properties) {
+      const depth = 1;
       const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
       if (properties === undefined) {
@@ -130,6 +127,18 @@ const SVN = {
                 break;
               case 'collection':
                 entry.collection = true;
+                break;
+              case 'version-name':
+                consume = text => {
+                  entry.version = parseInt(text, 10);
+                  consume = ignore;
+                };
+                break;
+              case 'creator-displayname':
+                consume = text => {
+                  entry.creator = text;
+                  consume = ignore;
+                };
                 break;
               case 'creationdate':
                 consume = text => {
@@ -187,96 +196,111 @@ const SVN = {
 
       });
     },
-    report(url, start, end) {
-      if (end - start > 1000) {
-        start = end - 1000;
-      }
+    history(url, options) {
+      const p = options.version === undefined ?
+        this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
 
-      const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
-      xmls.push(`<S:start-revision>${start}</S:start-revision>`);
-      xmls.push(`<S:end-revision>${end}</S:end-revision>`);
-      ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
+      return p.then(start => {
+        const direction = options.direction || 'forward';
+        const chunkSize = options.chunkSize || 1000;
 
-      xmls.push('<S:path/>');
-      xmls.push('</S:log-report>');
-
-      return fetch(url, {
-        method: 'REPORT',
-        body: xmls.join('\n'),
-        headers: {
-          'authorization': this.basicAuthorization,
-          'dav': this.davHeader,
-          'content-type': XML_CONTENT_TYPE
+        let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
+        if (end < 0) {
+          end = 0;
         }
-      }).then(response => {
-        /*
-        <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
-        <S:log-item>
-        <D:version-name>0</D:version-name>
-        <S:date>2011-09-18T13:20:54.561302Z</S:date>
-        </S:log-item>
-        <S:log-item>
-        */
-        const saxStream = sax.createStream(true, {
-          xmlns: true,
-          position: false
-        });
+        if (start > end) {
+          const t = start;
+          start = end;
+          end = t;
+        }
 
-        const entries = [];
-        let entry;
-        let consume = ignore;
+        const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
+        xmls.push(`<S:start-revision>${start}</S:start-revision>`);
+        xmls.push(`<S:end-revision>${end}</S:end-revision>`);
+        ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
 
-        saxStream.on('opentag', node => {
-          switch (node.local) {
-            case 'log-item':
-              entry = {};
-              consume = ignore;
-              break;
-            case 'version-name':
-              consume = text => {
-                entry.version = parseInt(text, 10);
-                consume = ignore;
-              };
-              break;
-            case 'date':
-              consume = text => {
-                entry.date = new Date(text);
-                consume = ignore;
-              };
-              break;
-            case 'comment':
-              consume = text => {
-                entry.message = entry.message ? entry.message + text : text;
-              };
-              break;
-            case 'creator-displayname':
-              consume = text => {
-                entry.creator = text;
-                consume = ignore;
-              };
-              break;
-            default:
-              consume = ignore;
+        xmls.push('<S:path/>');
+        xmls.push('</S:log-report>');
+
+        return fetch(url, {
+          method: 'REPORT',
+          body: xmls.join('\n'),
+          headers: {
+            'authorization': this.basicAuthorization,
+            'dav': this.davHeader,
+            'content-type': XML_CONTENT_TYPE
           }
-        });
+        }).then(response =>
+          new Promise((fullfill, reject) => {
+            /*
+            <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
+            <S:log-item>
+            <D:version-name>0</D:version-name>
+            <S:date>2011-09-18T13:20:54.561302Z</S:date>
+            </S:log-item>
+            <S:log-item>
+            */
+            const saxStream = sax.createStream(true, {
+              xmlns: true,
+              position: false
+            });
 
-        saxStream.on('closetag', name => {
-          switch (name) {
-            case 'S:log-item':
-              entries.push(entry);
-              break;
-          }
-        });
+            const entries = [];
+            let entry;
+            let consume = ignore;
 
-        saxStream.on('text', text => {
-          consume(text);
-        });
+            saxStream.on('opentag', node => {
+              switch (node.local) {
+                case 'log-item':
+                  entry = {};
+                  consume = ignore;
+                  break;
+                case 'version-name':
+                  consume = text => {
+                    entry.version = parseInt(text, 10);
+                    consume = ignore;
+                  };
+                  break;
+                case 'date':
+                  consume = text => {
+                    entry.date = new Date(text);
+                    consume = ignore;
+                  };
+                  break;
+                case 'comment':
+                  consume = text => {
+                    entry.message = entry.message ? entry.message + text : text;
+                  };
+                  break;
+                case 'creator-displayname':
+                  consume = text => {
+                    entry.creator = text;
+                    consume = ignore;
+                  };
+                  break;
+                default:
+                  consume = ignore;
+              }
+            });
 
-        return new Promise((fullfill, reject) => {
-          saxStream.on('end', () => fullfill(entries));
-          saxStream.on('error', reject);
-          response.body.pipe(saxStream);
-        });
+            saxStream.on('closetag', name => {
+              switch (name) {
+                case 'S:log-item':
+                  entries.push(entry);
+                  break;
+              }
+            });
+
+            saxStream.on('text', text => {
+              consume(text);
+            });
+            saxStream.on('end', () => {
+              fullfill(entries);
+            });
+            saxStream.on('error', reject);
+            response.body.pipe(saxStream);
+          })
+        );
       });
     }
 };
@@ -298,7 +322,6 @@ Content-Length: 131
 */
 
 export function init(url, options) {
-
   const attributes = {};
   const davFeatures = new Set();
   const allowedMethods = new Set();

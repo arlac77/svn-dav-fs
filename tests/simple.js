@@ -70,18 +70,21 @@ describe('initialize', () => {
   );
 
   if (process.env.SVN_USER) {
-    it('report', () =>
-      svn.then(svn => svn.report('https://subversion.assembla.com/svn/delivery_notes/', 0, 20).then(r => {
-        assert.equal(r[0].version, 0);
-        assert.afterDate(r[0].date, new Date(2011, 1, 1));
-        assert.beforeDate(r[0].date, new Date(2015, 1, 1));
-        assert.include(r[1].message, 'Automatically created readme.textile');
+    it('history', () =>
+      svn.then(svn => svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
+        version: 0,
+        chunkSize: 10
+      }).then(h => {
+        assert.equal(h[0].version, 0);
+        assert.afterDate(h[0].date, new Date(2011, 1, 1));
+        assert.beforeDate(h[0].date, new Date(2015, 1, 1));
+        assert.include(h[1].message, 'Automatically created readme.textile');
         //console.log(JSON.stringify(r));
-      }))
+      }).catch(console.log))
     );
 
-    it('propfind', () =>
-      svn.then(svn => svn.propfind('https://subversion.assembla.com/svn/delivery_notes/data').then(
+    it('list', () =>
+      svn.then(svn => svn.list('https://subversion.assembla.com/svn/delivery_notes/data').then(
         cursor => {
           let i = 0;
 
