@@ -196,6 +196,7 @@ const SVN = {
 
       });
     },
+
     history(url, options) {
       const p = options.version === undefined ?
         this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
@@ -213,99 +214,119 @@ const SVN = {
           start = end;
           end = t;
         }
+        return this._history(url, start, end).then(
+          entries => {
+            const self = this;
+            return Promise.resolve(function* () {
+              for (const i in entries) {
+                yield Promise.resolve(entries[i]);
+              }
+              let i = 0;
+              const p = self._history(url, end + 1, end + chunkSize);
 
-        const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
-        xmls.push(`<S:start-revision>${start}</S:start-revision>`);
-        xmls.push(`<S:end-revision>${end}</S:end-revision>`);
-        ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
+              for (let j = 0; j < 10; j++) {
+                yield p.then(entries => {
+                  return Promise.resolve(entries[i++]);
+                });
+              }
 
-        xmls.push('<S:path/>');
-        xmls.push('</S:log-report>');
-
-        return fetch(url, {
-          method: 'REPORT',
-          body: xmls.join('\n'),
-          headers: {
-            'authorization': this.basicAuthorization,
-            'dav': this.davHeader,
-            'content-type': XML_CONTENT_TYPE
+              /*
+                            yield p.then(entries => {
+                              return Promise.resolve(entries[i++]);
+                            });
+              */
+            });
           }
-        }).then(response =>
-          new Promise((fullfill, reject) => {
-            /*
-            <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
-            <S:log-item>
-            <D:version-name>0</D:version-name>
-            <S:date>2011-09-18T13:20:54.561302Z</S:date>
-            </S:log-item>
-            <S:log-item>
-            */
-            const saxStream = sax.createStream(true, {
-              xmlns: true,
-              position: false
-            });
-
-            const entries = [];
-            let entry;
-            let consume = ignore;
-
-            saxStream.on('opentag', node => {
-              switch (node.local) {
-                case 'log-item':
-                  entry = {};
-                  consume = ignore;
-                  break;
-                case 'version-name':
-                  consume = text => {
-                    entry.version = parseInt(text, 10);
-                    consume = ignore;
-                  };
-                  break;
-                case 'date':
-                  consume = text => {
-                    entry.date = new Date(text);
-                    consume = ignore;
-                  };
-                  break;
-                case 'comment':
-                  consume = text => {
-                    entry.message = entry.message ? entry.message + text : text;
-                  };
-                  break;
-                case 'creator-displayname':
-                  consume = text => {
-                    entry.creator = text;
-                    consume = ignore;
-                  };
-                  break;
-                default:
-                  consume = ignore;
-              }
-            });
-
-            saxStream.on('closetag', name => {
-              switch (name) {
-                case 'S:log-item':
-                  entries.push(entry);
-                  break;
-              }
-            });
-
-            saxStream.on('text', text => {
-              consume(text);
-            });
-            saxStream.on('end', () => {
-              fullfill(function* () {
-                for (const i in entries) {
-                  yield Promise.resolve(entries[i]);
-                }
-              });
-            });
-            saxStream.on('error', reject);
-            response.body.pipe(saxStream);
-          })
         );
       });
+    },
+
+    _history(url, start, end) {
+      const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
+      xmls.push(`<S:start-revision>${start}</S:start-revision>`);
+      xmls.push(`<S:end-revision>${end}</S:end-revision>`);
+      ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
+
+      xmls.push('<S:path/>');
+      xmls.push('</S:log-report>');
+
+      return fetch(url, {
+        method: 'REPORT',
+        body: xmls.join('\n'),
+        headers: {
+          'authorization': this.basicAuthorization,
+          'dav': this.davHeader,
+          'content-type': XML_CONTENT_TYPE
+        }
+      }).then(response =>
+        new Promise((fullfill, reject) => {
+          /*
+          <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
+          <S:log-item>
+          <D:version-name>0</D:version-name>
+          <S:date>2011-09-18T13:20:54.561302Z</S:date>
+          </S:log-item>
+          <S:log-item>
+          */
+          const saxStream = sax.createStream(true, {
+            xmlns: true,
+            position: false
+          });
+
+          const entries = [];
+          let entry;
+          let consume = ignore;
+
+          saxStream.on('opentag', node => {
+            switch (node.local) {
+              case 'log-item':
+                entry = {};
+                consume = ignore;
+                break;
+              case 'version-name':
+                consume = text => {
+                  entry.version = parseInt(text, 10);
+                  consume = ignore;
+                };
+                break;
+              case 'date':
+                consume = text => {
+                  entry.date = new Date(text);
+                  consume = ignore;
+                };
+                break;
+              case 'comment':
+                consume = text => {
+                  entry.message = entry.message ? entry.message + text : text;
+                };
+                break;
+              case 'creator-displayname':
+                consume = text => {
+                  entry.creator = text;
+                  consume = ignore;
+                };
+                break;
+              default:
+                consume = ignore;
+            }
+          });
+
+          saxStream.on('closetag', name => {
+            switch (name) {
+              case 'S:log-item':
+                entries.push(entry);
+                break;
+            }
+          });
+
+          saxStream.on('text', text => {
+            consume(text);
+          });
+          saxStream.on('end', () => fullfill(entries));
+          saxStream.on('error', reject);
+          response.body.pipe(saxStream);
+        })
+      );
     }
 };
 

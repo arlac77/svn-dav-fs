@@ -79,7 +79,7 @@ describe('initialize', () => {
 
         for (const e of cursor()) {
           e.then(entry => {
-            //console.log(entry);
+            console.log(entry);
             if (i === 0) {
               assert.equal(entry.version, 0);
               assert.afterDate(entry.date, new Date(2011, 1, 1));
