@@ -35,6 +35,7 @@
     "btoa": "^1.1.2",
     "https-proxy-agent": "^1.0.0",
     "node-fetch": "^1.3.3",
-    "sax": "^1.1.5"
+    "sax": "^1.1.5",
+    "uri-resolver": "git+https://github.com/arlac77/uri-resolver.git"
   }
 }

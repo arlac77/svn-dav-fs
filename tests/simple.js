@@ -7,7 +7,7 @@ const chai = require('chai'),
   expect = chai.expect,
   assert = chai.assert,
   should = chai.should(),
-  init = require('../src/svn').init;
+  SVNHTTPSScheme = require('../src/svn').SVNHTTPSScheme;
 
 chai.use(require('chai-datetime'));
 
@@ -26,16 +26,18 @@ if (process.env.SVN_PASSWORD) {
 
 describe('initialize', () => {
 
-  const svn = init('https://subversion.assembla.com/svn/delivery_notes', {
+  const svn = new SVNHTTPSScheme('https://subversion.assembla.com/svn/delivery_notes', {
     proxy: process.env.HTTP_PROXY,
     credentials: credentials
   });
 
-  it('has toString', () => svn.then(svn => assert.equal(`${svn}`, "svn")));
+  it('has type', () => assert.equal(svn.type, "svn+https"));
+
+  const init = svn.initialize();
 
   if (process.env.SVN_USER) {
     it('has davFeatures', () =>
-      svn.then(svn => {
+      init.then(svn => {
         assert.equal(svn.davFeatures.has('1'), true);
         assert.equal(svn.davFeatures.has('2'), true);
         assert.equal(svn.davFeatures.has('baseline'), true);
@@ -49,7 +51,7 @@ describe('initialize', () => {
     );
 
     it('has allowedMethods', () =>
-      svn.then(svn => {
+      init.then(svn => {
         assert.equal(svn.allowedMethods.has('GET'), true);
         assert.equal(svn.allowedMethods.has('OPTIONS'), true);
       })
@@ -57,7 +59,7 @@ describe('initialize', () => {
   }
 
   it('has basicAuthorization', () =>
-    svn.then(svn => {
+    init.then(svn => {
       if (process.env.SVN_USER) {
         assert.equal(svn.basicAuthorization.substring(0, 6), "Basic ");
       } else {
@@ -68,7 +70,7 @@ describe('initialize', () => {
 
   if (process.env.SVN_USER) {
     it('history', () =>
-      svn.then(svn => svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
+      init.then(svn => svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
         version: 0,
         chunkSize: 10
       }).then(cursor => {
@@ -90,7 +92,7 @@ describe('initialize', () => {
     );
 
     it('list', () =>
-      svn.then(svn => svn.list('https://subversion.assembla.com/svn/delivery_notes/data').then(
+      init.then(svn => svn.list('https://subversion.assembla.com/svn/delivery_notes/data').then(
         cursor => {
           let i = 0;
 

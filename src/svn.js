@@ -5,13 +5,12 @@
 const btoa = require('btoa'),
   sax = require('sax'),
   HttpsProxyAgent = require('https-proxy-agent'),
-  fetch = require('node-fetch');
+  fetch = require('node-fetch'),
+  ur = require('uri-resolver');
+
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
-
-//const NS_S = 'svn:';
-//const NS_D = 'DAV:';
 
 const NS_SVN_DAV = "http://subversion.tigris.org/xmlns/dav/";
 const NS_SVN_DAV_DEPTH = NS_SVN_DAV + "svn/depth";
@@ -64,267 +63,357 @@ const SVNHeaders = [
 
 function ignore() {}
 
-const SVN = {
-  toString() {
-      return "svn";
-    },
-    get basicAuthorization() {
-      return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
-    },
-    get vccDefault() {
-      return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
-    },
-    get davHeader() {
-      return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
-    },
-    list(url, properties) {
-      const depth = 1;
-      const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
+class SVNHTTPSScheme extends ur.URIScheme {
+  constructor(url, options) {
+    super(url, options);
 
-      if (properties === undefined) {
-        xmls.push('<D:allprop/>');
-      } else {
-        for (const p in properties) {
-          xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
+    let agent;
+
+    if (options.proxy) {
+      agent = new HttpsProxyAgent(options.proxy);
+    }
+
+    Object.defineProperties(this, {
+      url: {
+        get() {
+          return url;
+        }
+      },
+      agent: {
+        get() {
+          return agent;
+        }
+      },
+      credentials: {
+        get() {
+          return options.credentials;
         }
       }
+    });
+  }
 
-      xmls.push('</D:propfind>');
+  initialize() {
+    const attributes = {};
+    const davFeatures = new Set();
+    const allowedMethods = new Set();
 
-      return fetch(url, {
-        agent: this.agent,
-        method: 'PROPFIND',
-        body: xmls.join('\n'),
-        headers: {
-          'authorization': this.basicAuthorization,
-          'dav': this.davHeader,
-          'depth': depth,
-          'content-type': XML_CONTENT_TYPE
+    Object.defineProperties(this, {
+      attributes: {
+        get() {
+          return attributes;
         }
-      }).then(response => {
-        return new Promise((fullfill, reject) => {
-          const entries = [];
-          let entry;
-          let consume = ignore;
-          let rootPathPrefixLength;
+      },
+      davFeatures: {
+        get() {
+          return davFeatures;
+        }
+      },
+      allowedMethods: {
+        get() {
+          return allowedMethods;
+        }
+      }
+    });
 
-          const saxStream = sax.createStream(true, {
-            xmlns: true,
-            position: false
-          });
+    return fetch(this.url, {
+      agent: this.agent,
+      method: 'OPTIONS',
+      body: [XML_HEADER, '<D:options xmlns:D="DAV:">',
+        '<D:activity-collection-set></D:activity-collection-set>',
+        '</D:options>'
+      ].join(''),
+      headers: {
+        'authorization': this.basicAuthorization,
+        'dav': this.davHeader,
+        'content-type': XML_CONTENT_TYPE
+      }
+    }).then(response => {
+      const headers = response.headers._headers ? response.headers._headers : response.headers.map;
 
-          saxStream.on('opentag', node => {
-            switch (node.local) {
-              case 'response':
-                break;
-              case 'prop':
-                entry = {};
+      if (headers) {
+        SVNHeaders.forEach(h => {
+          if (headers[h]) {
+            attributes[h] = headers[h];
+            console.log(`${h}: ${headers[h]}`);
+          }
+        });
+
+        headerIntoSet(headers.dav, davFeatures);
+        headerIntoSet(headers.allow, allowedMethods);
+
+        attributes['svn-youngest-rev'] = parseInt(headers['svn-youngest-rev'], 10);
+      }
+      return this;
+    });
+  }
+
+  static get name() {
+    return "svn+https";
+  }
+
+  get type() {
+    return SVNHTTPSScheme.name;
+  }
+
+  get basicAuthorization() {
+    return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
+  }
+  get vccDefault() {
+    return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
+  }
+  get davHeader() {
+    return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
+  }
+  list(url, properties) {
+    const depth = 1;
+    const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
+
+    if (properties === undefined) {
+      xmls.push('<D:allprop/>');
+    } else {
+      for (const p in properties) {
+        xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
+      }
+    }
+
+    xmls.push('</D:propfind>');
+
+    return fetch(url, {
+      agent: this.agent,
+      method: 'PROPFIND',
+      body: xmls.join('\n'),
+      headers: {
+        'authorization': this.basicAuthorization,
+        'dav': this.davHeader,
+        'depth': depth,
+        'content-type': XML_CONTENT_TYPE
+      }
+    }).then(response => {
+      return new Promise((fullfill, reject) => {
+        const entries = [];
+        let entry;
+        let consume = ignore;
+        let rootPathPrefixLength;
+
+        const saxStream = sax.createStream(true, {
+          xmlns: true,
+          position: false
+        });
+
+        saxStream.on('opentag', node => {
+          switch (node.local) {
+            case 'response':
+              break;
+            case 'prop':
+              entry = {};
+              consume = ignore;
+              break;
+            case 'collection':
+              entry.collection = true;
+              break;
+            case 'version-name':
+              consume = text => {
+                entry.version = parseInt(text, 10);
                 consume = ignore;
-                break;
-              case 'collection':
-                entry.collection = true;
-                break;
-              case 'version-name':
-                consume = text => {
-                  entry.version = parseInt(text, 10);
-                  consume = ignore;
-                };
-                break;
-              case 'creator-displayname':
-                consume = text => {
-                  entry.creator = text;
-                  consume = ignore;
-                };
-                break;
-              case 'creationdate':
-                consume = text => {
-                  entry.creationDate = new Date(text);
-                  consume = ignore;
-                };
-                break;
-              case 'baseline-relative-path':
-                consume = text => {
-                  if (rootPathPrefixLength) {
-                    entry.name = text.substring(rootPathPrefixLength);
-                  } else {
-                    rootPathPrefixLength = text.length + 1;
-                    entry = undefined;
-                  }
-                  consume = ignore;
-                };
-                break;
-                /*  case 'resourcetype':
-                    consume = text => { 
-                      console.log(`resourcetype: ${text}`);
-                      //consume = ignore;
-                    };
-                    break;
-                              default:
-                                console.log(`${node.name} ${node.local} ${node.uri}`);
-                                */
-            }
-          });
-
-          saxStream.on('closetag', name => {
-            switch (name) {
-              case 'D:prop':
-                if (entry !== undefined) {
-                  entries.push(entry);
+              };
+              break;
+            case 'creator-displayname':
+              consume = text => {
+                entry.creator = text;
+                consume = ignore;
+              };
+              break;
+            case 'creationdate':
+              consume = text => {
+                entry.creationDate = new Date(text);
+                consume = ignore;
+              };
+              break;
+            case 'baseline-relative-path':
+              consume = text => {
+                if (rootPathPrefixLength) {
+                  entry.name = text.substring(rootPathPrefixLength);
+                } else {
+                  rootPathPrefixLength = text.length + 1;
+                  entry = undefined;
                 }
-                break;
-            }
-          });
+                consume = ignore;
+              };
+              break;
+              /*  case 'resourcetype':
+                  consume = text => { 
+                    console.log(`resourcetype: ${text}`);
+                    //consume = ignore;
+                  };
+                  break;
+                            default:
+                              console.log(`${node.name} ${node.local} ${node.uri}`);
+                              */
+          }
+        });
 
-          saxStream.on('text', text => {
-            consume(text);
-          });
+        saxStream.on('closetag', name => {
+          switch (name) {
+            case 'D:prop':
+              if (entry !== undefined) {
+                entries.push(entry);
+              }
+              break;
+          }
+        });
 
-          saxStream.on('end', () => fullfill(function* () {
+        saxStream.on('text', text => {
+          consume(text);
+        });
+
+        saxStream.on('end', () => fullfill(function* () {
+          for (const i in entries) {
+            yield Promise.resolve(entries[i]);
+          }
+        }));
+        saxStream.on('error', reject);
+        //response.body.pipe(process.stdout);
+
+        response.body.pipe(saxStream);
+      });
+    });
+  }
+
+  history(url, options) {
+    const p = options.version === undefined ?
+      this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
+
+    return p.then(start => {
+      const direction = options.direction || options.version === undefined ? 'backward' : 'forward';
+      const chunkSize = options.chunkSize || 1000;
+
+      let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
+      if (end < 0) {
+        end = 0;
+      }
+      if (start > end) {
+        const t = start;
+        start = end;
+        end = t;
+      }
+      return this._history(url, start, end).then(
+        entries => {
+          const self = this;
+          return Promise.resolve(function* () {
             for (const i in entries) {
               yield Promise.resolve(entries[i]);
             }
-          }));
-          saxStream.on('error', reject);
-          //response.body.pipe(process.stdout);
+            let i = 0;
+            const p = self._history(url, end + 1, end + chunkSize);
 
-          response.body.pipe(saxStream);
-        });
-      });
-    },
-
-    history(url, options) {
-      const p = options.version === undefined ?
-        this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
-
-      return p.then(start => {
-        const direction = options.direction || options.version === undefined ? 'backward' : 'forward';
-        const chunkSize = options.chunkSize || 1000;
-
-        let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
-        if (end < 0) {
-          end = 0;
-        }
-        if (start > end) {
-          const t = start;
-          start = end;
-          end = t;
-        }
-        return this._history(url, start, end).then(
-          entries => {
-            const self = this;
-            return Promise.resolve(function* () {
-              for (const i in entries) {
-                yield Promise.resolve(entries[i]);
-              }
-              let i = 0;
-              const p = self._history(url, end + 1, end + chunkSize);
-
-              for (let j = 0; j < 10; j++) {
-                yield p.then(entries => {
-                  return Promise.resolve(entries[i++]);
-                });
-              }
-
-              /*
-                            yield p.then(entries => {
-                              return Promise.resolve(entries[i++]);
-                            });
-              */
-            });
-          }
-        );
-      });
-    },
-
-    _history(url, start, end) {
-      const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
-      xmls.push(`<S:start-revision>${start}</S:start-revision>`);
-      xmls.push(`<S:end-revision>${end}</S:end-revision>`);
-      ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
-
-      xmls.push('<S:path/>');
-      xmls.push('</S:log-report>');
-
-      return fetch(url, {
-        agent: this.agent,
-        method: 'REPORT',
-        body: xmls.join('\n'),
-        headers: {
-          'authorization': this.basicAuthorization,
-          'dav': this.davHeader,
-          'content-type': XML_CONTENT_TYPE
-        }
-      }).then(response =>
-        new Promise((fullfill, reject) => {
-          /*
-          <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
-          <S:log-item>
-          <D:version-name>0</D:version-name>
-          <S:date>2011-09-18T13:20:54.561302Z</S:date>
-          </S:log-item>
-          <S:log-item>
-          */
-          const saxStream = sax.createStream(true, {
-            xmlns: true,
-            position: false
-          });
-
-          const entries = [];
-          let entry;
-          let consume = ignore;
-
-          saxStream.on('opentag', node => {
-            switch (node.local) {
-              case 'log-item':
-                entry = {};
-                consume = ignore;
-                break;
-              case 'version-name':
-                consume = text => {
-                  entry.version = parseInt(text, 10);
-                  consume = ignore;
-                };
-                break;
-              case 'date':
-                consume = text => {
-                  entry.date = new Date(text);
-                  consume = ignore;
-                };
-                break;
-              case 'comment':
-                consume = text => {
-                  entry.message = entry.message ? entry.message + text : text;
-                };
-                break;
-              case 'creator-displayname':
-                consume = text => {
-                  entry.creator = text;
-                  consume = ignore;
-                };
-                break;
-              default:
-                consume = ignore;
+            for (let j = 0; j < 10; j++) {
+              yield p.then(entries => {
+                return Promise.resolve(entries[i++]);
+              });
             }
-          });
 
-          saxStream.on('closetag', name => {
-            switch (name) {
-              case 'S:log-item':
-                entries.push(entry);
-                break;
-            }
+            /*
+                          yield p.then(entries => {
+                            return Promise.resolve(entries[i++]);
+                          });
+            */
           });
-
-          saxStream.on('text', text => {
-            consume(text);
-          });
-          saxStream.on('end', () => fullfill(entries));
-          saxStream.on('error', reject);
-          response.body.pipe(saxStream);
-        })
+        }
       );
-    }
-};
+    });
+  }
+
+  _history(url, start, end) {
+    const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
+    xmls.push(`<S:start-revision>${start}</S:start-revision>`);
+    xmls.push(`<S:end-revision>${end}</S:end-revision>`);
+    ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
+
+    xmls.push('<S:path/>');
+    xmls.push('</S:log-report>');
+
+    return fetch(url, {
+      agent: this.agent,
+      method: 'REPORT',
+      body: xmls.join('\n'),
+      headers: {
+        'authorization': this.basicAuthorization,
+        'dav': this.davHeader,
+        'content-type': XML_CONTENT_TYPE
+      }
+    }).then(response =>
+      new Promise((fullfill, reject) => {
+        /*
+        <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
+        <S:log-item>
+        <D:version-name>0</D:version-name>
+        <S:date>2011-09-18T13:20:54.561302Z</S:date>
+        </S:log-item>
+        <S:log-item>
+        */
+        const saxStream = sax.createStream(true, {
+          xmlns: true,
+          position: false
+        });
+
+        const entries = [];
+        let entry;
+        let consume = ignore;
+
+        saxStream.on('opentag', node => {
+          switch (node.local) {
+            case 'log-item':
+              entry = {};
+              consume = ignore;
+              break;
+            case 'version-name':
+              consume = text => {
+                entry.version = parseInt(text, 10);
+                consume = ignore;
+              };
+              break;
+            case 'date':
+              consume = text => {
+                entry.date = new Date(text);
+                consume = ignore;
+              };
+              break;
+            case 'comment':
+              consume = text => {
+                entry.message = entry.message ? entry.message + text : text;
+              };
+              break;
+            case 'creator-displayname':
+              consume = text => {
+                entry.creator = text;
+                consume = ignore;
+              };
+              break;
+            default:
+              consume = ignore;
+          }
+        });
+
+        saxStream.on('closetag', name => {
+          switch (name) {
+            case 'S:log-item':
+              entries.push(entry);
+              break;
+          }
+        });
+
+        saxStream.on('text', text => {
+          consume(text);
+        });
+        saxStream.on('end', () => fullfill(entries));
+        saxStream.on('error', reject);
+        response.body.pipe(saxStream);
+      })
+    );
+  }
+}
+
+exports.SVNHTTPSScheme = SVNHTTPSScheme;
 
 /*
 OPTIONS /svn/delivery_notes HTTP/1.1
@@ -342,43 +431,6 @@ Content-Length: 131
 <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
 */
 function init(url, options) {
-  const attributes = {};
-  const davFeatures = new Set();
-  const allowedMethods = new Set();
-
-  let agent;
-
-  if (options.proxy) {
-    agent = new HttpsProxyAgent(options.proxy);
-  }
-
-  const svn = Object.create(SVN, {
-    agent: {
-      get() {
-        return agent;
-      }
-    },
-    credentials: {
-      get() {
-        return options.credentials;
-      }
-    },
-    attributes: {
-      get() {
-        return attributes;
-      }
-    },
-    davFeatures: {
-      get() {
-        return davFeatures;
-      }
-    },
-    allowedMethods: {
-      get() {
-        return allowedMethods;
-      }
-    }
-  });
 
   /*
   OPTIONS /svn/delivery_notes/data HTTP/1.1
@@ -396,41 +448,6 @@ function init(url, options) {
   <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
   */
 
-  return fetch(url, {
-    agent: svn.agent,
-    method: 'OPTIONS',
-    body: [XML_HEADER, '<D:options xmlns:D="DAV:">', '<D:activity-collection-set></D:activity-collection-set>',
-      '</D:options>'
-    ].join(''),
-    headers: {
-      'authorization': svn.basicAuthorization,
-      'dav': svn.davHeader,
-      //'user-agent': 'SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8',
-      //'connection': "keep-alive",
-      'content-type': XML_CONTENT_TYPE
-    }
-  }).then(response => {
-    const headers = response.headers._headers ? response.headers._headers : response.headers.map;
-
-    //const headers = response.headers._headers;
-    //console.log(`Headers ${JSON.stringify(response)}`);
-    //console.log(`RAW headers: ${JSON.stringify(response.headers.map)}`);
-
-    if (headers) {
-      SVNHeaders.forEach(h => {
-        if (headers[h]) {
-          attributes[h] = headers[h];
-          console.log(`${h}: ${headers[h]}`);
-        }
-      });
-
-      headerIntoSet(headers.dav, davFeatures);
-      headerIntoSet(headers.allow, allowedMethods);
-
-      attributes['svn-youngest-rev'] = parseInt(headers['svn-youngest-rev'], 10);
-    }
-    return svn;
-  });
 }
 
 function headerIntoSet(header, target) {
@@ -438,5 +455,3 @@ function headerIntoSet(header, target) {
     header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
   }
 }
-
-exports.init = init;
