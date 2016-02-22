@@ -6,14 +6,10 @@
 const chai = require('chai'),
   expect = chai.expect,
   assert = chai.assert,
-  should = chai.should();
+  should = chai.should(),
+  init = require('../src/svn').init;
 
 chai.use(require('chai-datetime'));
-
-import {
-  init
-}
-from '../src/svn';
 
 var credentials = {
   password: 'xxx',

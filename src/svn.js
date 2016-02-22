@@ -341,8 +341,7 @@ Content-Length: 131
 
 <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
 */
-
-export function init(url, options) {
+function init(url, options) {
   const attributes = {};
   const davFeatures = new Set();
   const allowedMethods = new Set();
@@ -439,3 +438,5 @@ function headerIntoSet(header, target) {
     header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
   }
 }
+
+exports.init = init;
