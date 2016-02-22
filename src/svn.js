@@ -2,17 +2,10 @@
 
 "use strict";
 
-// nodejs
-//if (IS_NODE) {
 const btoa = require('btoa'),
   sax = require('sax'),
-  HttpsProxyAgent = require('https-proxy-agent');
-
-import fetch from 'isomorphic-fetch';
-//} else {
-// browser
-//  import fetch from 'fetch';
-//}
+  HttpsProxyAgent = require('https-proxy-agent'),
+  fetch = require('node-fetch');
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
