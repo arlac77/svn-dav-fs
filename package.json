@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "btoa": "^1.1.2",
+    "https-proxy-agent": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
     "sax": "^1.1.5"
   }

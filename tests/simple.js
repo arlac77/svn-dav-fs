@@ -31,6 +31,7 @@ if (process.env.SVN_PASSWORD) {
 describe('initialize', () => {
 
   const svn = init('https://subversion.assembla.com/svn/delivery_notes', {
+    proxy: process.env.HTTP_PROXY,
     credentials: credentials
   });
 

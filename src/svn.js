@@ -5,7 +5,9 @@
 // nodejs
 //if (IS_NODE) {
 const btoa = require('btoa'),
-  sax = require('sax');
+  sax = require('sax'),
+  HttpsProxyAgent = require('https-proxy-agent');
+
 import fetch from 'isomorphic-fetch';
 //} else {
 // browser
@@ -97,6 +99,7 @@ const SVN = {
       xmls.push('</D:propfind>');
 
       return fetch(url, {
+        agent: this.agent,
         method: 'PROPFIND',
         body: xmls.join('\n'),
         headers: {
@@ -193,7 +196,6 @@ const SVN = {
 
           response.body.pipe(saxStream);
         });
-
       });
     },
 
@@ -251,6 +253,7 @@ const SVN = {
       xmls.push('</S:log-report>');
 
       return fetch(url, {
+        agent: this.agent,
         method: 'REPORT',
         body: xmls.join('\n'),
         headers: {
@@ -351,7 +354,18 @@ export function init(url, options) {
   const davFeatures = new Set();
   const allowedMethods = new Set();
 
+  let agent;
+
+  if (options.proxy) {
+    agent = new HttpsProxyAgent(options.proxy);
+  }
+
   const svn = Object.create(SVN, {
+    agent: {
+      get() {
+        return agent;
+      }
+    },
     credentials: {
       get() {
         return options.credentials;
@@ -391,6 +405,7 @@ export function init(url, options) {
   */
 
   return fetch(url, {
+    agent: svn.agent,
     method: 'OPTIONS',
     body: [XML_HEADER, '<D:options xmlns:D="DAV:">', '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
