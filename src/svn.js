@@ -2,12 +2,8 @@
 
 "use strict";
 
-const btoa = require('btoa'),
-  sax = require('sax'),
-  HttpsProxyAgent = require('https-proxy-agent'),
-  fetch = require('node-fetch'),
+const sax = require('sax'),
   ur = require('uri-resolver');
-
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
@@ -63,35 +59,8 @@ const SVNHeaders = [
 
 function ignore() {}
 
-class SVNHTTPSScheme extends ur.URIScheme {
-  constructor(url, options) {
-    super(url, options);
 
-    let agent;
-
-    if (options.proxy) {
-      agent = new HttpsProxyAgent(options.proxy);
-    }
-
-    Object.defineProperties(this, {
-      url: {
-        get() {
-          return url;
-        }
-      },
-      agent: {
-        get() {
-          return agent;
-        }
-      },
-      credentials: {
-        get() {
-          return options.credentials;
-        }
-      }
-    });
-  }
-
+class SVNHTTPSScheme extends ur.HTTPScheme {
   initialize() {
     const attributes = {};
     const davFeatures = new Set();
@@ -115,15 +84,13 @@ class SVNHTTPSScheme extends ur.URIScheme {
       }
     });
 
-    return fetch(this.url, {
-      agent: this.agent,
+    return this.fetch(this.url, {
       method: 'OPTIONS',
       body: [XML_HEADER, '<D:options xmlns:D="DAV:">',
         '<D:activity-collection-set></D:activity-collection-set>',
         '</D:options>'
       ].join(''),
       headers: {
-        'authorization': this.basicAuthorization,
         'dav': this.davHeader,
         'content-type': XML_CONTENT_TYPE
       }
@@ -155,25 +122,11 @@ class SVNHTTPSScheme extends ur.URIScheme {
     return SVNHTTPSScheme.name;
   }
 
-  get basicAuthorization() {
-    return 'Basic ' + btoa(this.credentials.user + ':' + this.credentials.password);
-  }
   get vccDefault() {
     return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
   }
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
-  }
-
-  fetch(url, options) {
-    return fetch(url, {
-      agent: this.agent,
-      headers: {
-        'authorization': this.basicAuthorization,
-        'dav': this.davHeader,
-        'content-type': XML_CONTENT_TYPE
-      }
-    });
   }
 
   list(url, properties) {
@@ -190,12 +143,10 @@ class SVNHTTPSScheme extends ur.URIScheme {
 
     xmls.push('</D:propfind>');
 
-    return fetch(url, {
-      agent: this.agent,
+    return this.fetch(url, {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
-        'authorization': this.basicAuthorization,
         'dav': this.davHeader,
         'depth': depth,
         'content-type': XML_CONTENT_TYPE
@@ -345,12 +296,10 @@ class SVNHTTPSScheme extends ur.URIScheme {
     xmls.push('<S:path/>');
     xmls.push('</S:log-report>');
 
-    return fetch(url, {
-      agent: this.agent,
+    return this.fetch(url, {
       method: 'REPORT',
       body: xmls.join('\n'),
       headers: {
-        'authorization': this.basicAuthorization,
         'dav': this.davHeader,
         'content-type': XML_CONTENT_TYPE
       }
