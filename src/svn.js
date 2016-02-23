@@ -164,6 +164,18 @@ class SVNHTTPSScheme extends ur.URIScheme {
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
+
+  fetch(url, options) {
+    return fetch(url, {
+      agent: this.agent,
+      headers: {
+        'authorization': this.basicAuthorization,
+        'dav': this.davHeader,
+        'content-type': XML_CONTENT_TYPE
+      }
+    });
+  }
+
   list(url, properties) {
     const depth = 1;
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
@@ -197,7 +209,8 @@ class SVNHTTPSScheme extends ur.URIScheme {
 
         const saxStream = sax.createStream(true, {
           xmlns: true,
-          position: false
+          position: false,
+          trim: true
         });
 
         saxStream.on('opentag', node => {
@@ -353,7 +366,8 @@ class SVNHTTPSScheme extends ur.URIScheme {
         */
         const saxStream = sax.createStream(true, {
           xmlns: true,
-          position: false
+          position: false,
+          trim: true
         });
 
         const entries = [];
