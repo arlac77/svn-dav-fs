@@ -32,7 +32,7 @@
     "semantic-release": "^6.2.0"
   },
   "dependencies": {
-    "sax": "^1.1.5",
+    "sax": "^1.1.6",
     "uri-resolver": "git+https://github.com/arlac77/uri-resolver.git"
   }
 }
