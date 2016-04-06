@@ -27,12 +27,15 @@
     "chai": "3.5.0",
     "chai-datetime": "^1.4.1",
     "coveralls": "^2.11.9",
-    "istanbul": "^1.0.0-alpha.2",
+    "istanbul": "^0.4.3",
     "mocha": "2.4.5",
     "semantic-release": "^6.2.1"
   },
   "dependencies": {
     "sax": "^1.2.1",
-    "uri-resolver": "git+https://github.com/arlac77/uri-resolver.git"
+    "uri-resolver": "1.0.0"
+  },
+  "engines": {
+    "node": ">=5"
   }
 }

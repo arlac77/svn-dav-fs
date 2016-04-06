@@ -20,5 +20,5 @@ script:
   - npm run-script cover
 after_script:
   - codecov
-xafter_success:
+after_success:
   - npm run semantic-release
