@@ -12,4 +12,6 @@ tests
 .npmignore
 .vscode
 .travis.yml
+doc
+SUMMARY.md
 demo
