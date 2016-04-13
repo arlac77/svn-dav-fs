@@ -115,7 +115,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
   }
 
   static get name() {
-    return "svn+https";
+    return 'svn+https';
   }
 
   get type() {
