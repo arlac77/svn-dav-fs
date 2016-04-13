@@ -1,7 +1,7 @@
 /* global describe, it, xit */
 /* jslint node: true, esnext: true */
 
-"use strict";
+'use strict';
 
 const chai = require('chai'),
   expect = chai.expect,
@@ -31,7 +31,7 @@ describe('initialize', () => {
     credentials: credentials
   });
 
-  it('has type', () => assert.equal(svn.type, "svn+https"));
+  it('has type', () => assert.equal(svn.type, 'svn+https'));
 
   const init = svn.initialize();
 
@@ -61,9 +61,9 @@ describe('initialize', () => {
   it('has basicAuthorization', () =>
     init.then(svn => {
       if (process.env.SVN_USER) {
-        assert.equal(svn.basicAuthorization.substring(0, 6), "Basic ");
+        assert.equal(svn.basicAuthorization.substring(0, 6), 'Basic ');
       } else {
-        assert.equal(svn.basicAuthorization, "Basic eXl5Onh4eA==");
+        assert.equal(svn.basicAuthorization, 'Basic eXl5Onh4eA==');
       }
     })
   );

@@ -1,6 +1,6 @@
 /* jslint node: true, esnext: true */
 
-"use strict";
+'use strict';
 
 const sax = require('sax'),
   ur = require('uri-resolver');
@@ -8,14 +8,14 @@ const sax = require('sax'),
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
 
-const NS_SVN_DAV = "http://subversion.tigris.org/xmlns/dav/";
-const NS_SVN_DAV_DEPTH = NS_SVN_DAV + "svn/depth";
-const NS_SVN_DAV_MERGINFO = NS_SVN_DAV + "svn/mergeinfo";
-const NS_SVN_DAV_LOG_REVPROPS = NS_SVN_DAV + "svn/log-revprops";
+const NS_SVN_DAV = 'http://subversion.tigris.org/xmlns/dav/';
+const NS_SVN_DAV_DEPTH = NS_SVN_DAV + 'svn/depth';
+const NS_SVN_DAV_MERGINFO = NS_SVN_DAV + 'svn/mergeinfo';
+const NS_SVN_DAV_LOG_REVPROPS = NS_SVN_DAV + 'svn/log-revprops';
 
 /*
-const NS_SVN_DAV_ATOMIC_REVPROPS = NS_SVN_DAV + "svn/atomic-revprops";
-const NS_SVN_DAV_PARTIAL_REPLAY = NS_SVN_DAV + "svn/partial-replay";
+const NS_SVN_DAV_ATOMIC_REVPROPS = NS_SVN_DAV + 'svn/atomic-revprops';
+const NS_SVN_DAV_PARTIAL_REPLAY = NS_SVN_DAV + 'svn/partial-replay';
 
 const DAVFeatures = {
   '1': {},
@@ -137,7 +137,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
       xmls.push('<D:allprop/>');
     } else {
       for (const p in properties) {
-        xmls.push(`<D:prop><${p} xmlns=\"${properties[p]}\"/></D:prop>`);
+        xmls.push(`<D:prop><${p} xmlns="${properties[p]}"/></D:prop>`);
       }
     }
 
