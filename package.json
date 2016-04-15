@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "sax": "^1.2.1",
-    "uri-resolver": "1.2.3"
+    "uri-resolver": "1.2.4"
   },
   "engines": {
     "node": ">=5"

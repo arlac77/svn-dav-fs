@@ -84,7 +84,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
       }
     });
 
-    return this.fetch(this.url, {
+    return this._fetch(this.url, {
       method: 'OPTIONS',
       body: [XML_HEADER, '<D:options xmlns:D="DAV:">',
         '<D:activity-collection-set></D:activity-collection-set>',
@@ -143,7 +143,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
 
     xmls.push('</D:propfind>');
 
-    return this.fetch(url, {
+    return this._fetch(url, {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
@@ -296,7 +296,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
     xmls.push('<S:path/>');
     xmls.push('</S:log-report>');
 
-    return this.fetch(url, {
+    return this._fetch(url, {
       method: 'REPORT',
       body: xmls.join('\n'),
       headers: {
