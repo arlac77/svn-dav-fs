@@ -29,7 +29,7 @@
     "coveralls": "^2.11.9",
     "istanbul": "^0.4.3",
     "mocha": "2.5.3",
-    "semantic-release": "^6.2.1"
+    "semantic-release": "6.3.0"
   },
   "dependencies": {
     "sax": "^1.2.1",
