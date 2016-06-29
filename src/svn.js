@@ -91,7 +91,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
         '</D:options>'
       ].join(''),
       headers: {
-        'dav': this.davHeader,
+        dav: this.davHeader,
         'content-type': XML_CONTENT_TYPE
       }
     }).then(response => {
@@ -147,8 +147,8 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
-        'dav': this.davHeader,
-        'depth': depth,
+        dav: this.davHeader,
+        depth: depth,
         'content-type': XML_CONTENT_TYPE
       }
     }).then(response => {
@@ -226,9 +226,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
           }
         });
 
-        saxStream.on('text', text => {
-          consume(text);
-        });
+        saxStream.on('text', text => consume(text));
 
         saxStream.on('end', () => fullfill(function* () {
           for (const i in entries) {
@@ -243,7 +241,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
     });
   }
 
-  history(url, options) {
+  history(url, options = {}) {
     const p = options.version === undefined ?
       this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
 
