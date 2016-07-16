@@ -234,8 +234,6 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
           }
         }));
         saxStream.on('error', reject);
-        //response.body.pipe(process.stdout);
-
         response.body.pipe(saxStream);
       });
     });
@@ -243,7 +241,7 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
 
   history(url, options = {}) {
     const p = options.version === undefined ?
-      this.list(url).then(entry => Promise.resolve(entry.version)) : Promise.resolve(options.version);
+      this.list(url).then(entries => Promise.resolve(entries[0].version)) : Promise.resolve(options.version);
 
     return p.then(start => {
       const direction = options.direction || options.version === undefined ? 'backward' : 'forward';
