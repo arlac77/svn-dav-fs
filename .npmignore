@@ -2,6 +2,7 @@ coverage
 node_modules
 build
 tests
+doc
 *.log
 *.tmp
 .DS_Store
@@ -9,9 +10,8 @@ tests
 .tmp
 .gitignore
 .npmrc
+.travis.yml
 .npmignore
 .vscode
-.travis.yml
-doc
+.markdown-doctest-setup.js
 SUMMARY.md
-demo
