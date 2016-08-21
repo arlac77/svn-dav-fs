@@ -27,7 +27,7 @@
     "chai": "3.5.0",
     "chai-datetime": "^1.4.1",
     "coveralls": "^2.11.12",
-    "istanbul": "^0.4.4",
+    "istanbul": "^0.4.5",
     "mocha": "3.0.2",
     "semantic-release": "6.3.0"
   },
