@@ -2,8 +2,12 @@
 
 'use strict';
 
-const sax = require('sax'),
-  ur = require('uri-resolver');
+const sax = require('sax');
+
+import {
+  HTTPScheme
+}
+from 'uri-resolver';
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
@@ -59,8 +63,7 @@ const SVNHeaders = [
 
 function ignore() {}
 
-
-class SVNHTTPSScheme extends ur.HTTPScheme {
+class SVNHTTPSScheme extends HTTPScheme {
   initialize() {
     const attributes = {};
     const davFeatures = new Set();
@@ -372,8 +375,6 @@ class SVNHTTPSScheme extends ur.HTTPScheme {
   }
 }
 
-exports.SVNHTTPSScheme = SVNHTTPSScheme;
-
 /*
 OPTIONS /svn/delivery_notes HTTP/1.1
 Host: subversion.assembla.com
@@ -414,3 +415,7 @@ function headerIntoSet(header, target) {
     header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
   }
 }
+
+export {
+  SVNHTTPSScheme
+};

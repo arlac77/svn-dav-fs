@@ -7,7 +7,7 @@ const chai = require('chai'),
   expect = chai.expect,
   assert = chai.assert,
   should = chai.should(),
-  SVNHTTPSScheme = require('../src/svn').SVNHTTPSScheme;
+  SVNHTTPSScheme = require('../dist/svn').SVNHTTPSScheme;
 
 chai.use(require('chai-datetime'));
 
