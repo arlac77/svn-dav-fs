@@ -6,10 +6,11 @@
   "jsnext:main": "src/svn.js",
   "module": "src/svn.js",
   "scripts": {
-    "cover": "npm run build &&  node --harmony ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests",
-    "test": "npm run build && mocha --recursive tests/*",
+    "cover": "npm run build && ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests",
+    "test": "npm run build && mocha tests/*_test.js && markdown-doctest",
     "build": "./node_modules/rollup/bin/rollup --format cjs --output dist/svn.js -- src/svn.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "docs": "jsdoc2md -l off -t README.hbs -f src/svn.js > README.md"
   },
   "repository": {
     "type": "git",
@@ -26,13 +27,16 @@
   },
   "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
   "devDependencies": {
-    "chai": "3.5.0",
+    "chai": "^3.5.0",
     "chai-datetime": "^1.4.1",
     "coveralls": "^2.11.14",
     "istanbul": "^0.4.5",
-    "mocha": "3.1.2",
+    "mocha": "^3.1.2",
     "rollup": "^0.36.3",
-    "semantic-release": "6.3.0"
+    "semantic-release": "^6.3.1",
+    "cz-conventional-changelog": "^1.2.0",
+    "jsdoc-to-markdown": "^2.0.1",
+    "markdown-doctest": "^0.9.0"
   },
   "dependencies": {
     "sax": "^1.2.1",
@@ -40,5 +44,16 @@
   },
   "engines": {
     "node": ">=6.9.1"
+  },
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

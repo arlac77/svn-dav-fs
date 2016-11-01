@@ -1,5 +1,11 @@
+coverage
 node_modules
 build
 dist
-coverage
-lib
+out
+*.log
+*.dump
+.DS_Store
+.nyc_output
+.test
+.tmp
