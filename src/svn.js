@@ -117,12 +117,13 @@ class SVNHTTPSScheme extends HTTPScheme {
     });
   }
 
-  static get name() {
+  // TODO why is this not taken from the base class ?
+  get type() {
     return 'svn+https';
   }
 
-  get type() {
-    return SVNHTTPSScheme.name;
+  static get name() {
+    return 'svn+https';
   }
 
   get vccDefault() {
