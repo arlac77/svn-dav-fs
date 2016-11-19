@@ -3,6 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/arlac77/svn-dav-fs.png)](http://travis-ci.org/arlac77/svn-dav-fs)
 [![bithound](https://www.bithound.io/github/arlac77/svn-dav-fs/badges/score.svg)](https://www.bithound.io/github/arlac77/svn-dav-fs)
 [![codecov.io](http://codecov.io/github/arlac77/svn-dav-fs/coverage.svg?branch=master)](http://codecov.io/github/arlac77/svn-dav-fs?branch=master)
+[![Coverage Status](https://coveralls.io/repos/arlac77/svn-dav-fs/badge.svg)](https://coveralls.io/r/arlac77/svn-dav-fs)
 [![Code Climate](https://codeclimate.com/github/arlac77/svn-dav-fs/badges/gpa.svg)](https://codeclimate.com/github/arlac77/svn-dav-fs)
 [![Known Vulnerabilities](https://snyk.io/test/github/arlac77/svn-dav-fs/badge.svg)](https://snyk.io/test/github/arlac77/svn-dav-fs)
 [![GitHub Issues](https://img.shields.io/github/issues/arlac77/svn-dav-fs.svg?style=flat-square)](https://github.com/arlac77/svn-dav-fs/issues)

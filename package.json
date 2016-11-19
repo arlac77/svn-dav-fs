@@ -8,7 +8,7 @@
   "scripts": {
     "cover": "npm run build && ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests/*_test.js",
     "test": "npm run build && mocha tests/*_test.js && markdown-doctest",
-    "build": "./node_modules/rollup/bin/rollup --format=cjs --output=dist/svn.js -- src/svn.js",
+    "build": "./node_modules/rollup/bin/rollup --output=dist/svn.js -c -- src/svn.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "docs": "jsdoc2md -l off -t doc/README.hbs -f src/svn.js > README.md"
   },
@@ -35,7 +35,9 @@
     "semantic-release": "^6.3.2",
     "cz-conventional-changelog": "^1.2.0",
     "jsdoc-to-markdown": "^2.0.1",
-    "markdown-doctest": "^0.9.0"
+    "markdown-doctest": "^0.9.0",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-node-resolve": "^2.0.0"
   },
   "dependencies": {
     "sax": "^1.2.1",
@@ -44,10 +46,12 @@
   "engines": {
     "node": ">=6.9.1"
   },
-  "contributors": [{
-    "name": "Markus Felten",
-    "email": "markus.felten@gmx.de"
-  }],
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
