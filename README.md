@@ -7,6 +7,7 @@
 [![Code Climate](https://codeclimate.com/github/arlac77/svn-dav-fs/badges/gpa.svg)](https://codeclimate.com/github/arlac77/svn-dav-fs)
 [![Known Vulnerabilities](https://snyk.io/test/github/arlac77/svn-dav-fs/badge.svg)](https://snyk.io/test/github/arlac77/svn-dav-fs)
 [![GitHub Issues](https://img.shields.io/github/issues/arlac77/svn-dav-fs.svg?style=flat-square)](https://github.com/arlac77/svn-dav-fs/issues)
+[![Stories in Ready](https://badge.waffle.io/arlac77/svn-dav-fs.svg?label=ready&title=Ready)](http://waffle.io/arlac77/svn-dav-fs)
 [![Dependency Status](https://david-dm.org/arlac77/svn-dav-fs.svg)](https://david-dm.org/arlac77/svn-dav-fs)
 [![devDependency Status](https://david-dm.org/arlac77/svn-dav-fs/dev-status.svg)](https://david-dm.org/arlac77/svn-dav-fs#info=devDependencies)
 [![docs](http://inch-ci.org/github/arlac77/svn-dav-fs.svg?branch=master)](http://inch-ci.org/github/arlac77/svn-dav-fs)
