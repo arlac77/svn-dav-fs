@@ -34,7 +34,7 @@
     "cz-conventional-changelog": "^1.2.0",
     "jsdoc-to-markdown": "^2.0.1",
     "markdown-doctest": "^0.9.1",
-    "rollup": "^0.37.0"
+    "rollup": "^0.37.2"
   },
   "dependencies": {
     "sax": "^1.2.1",
