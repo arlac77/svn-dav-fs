@@ -63,6 +63,9 @@ const SVNHeaders = [
 
 function ignore() {}
 
+/**
+ * URL sheme 'svn+https' svn over https
+ */
 class SVNHTTPSScheme extends HTTPScheme {
   initialize() {
     const attributes = {};
@@ -129,6 +132,7 @@ class SVNHTTPSScheme extends HTTPScheme {
   get vccDefault() {
     return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
   }
+
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
