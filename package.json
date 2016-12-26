@@ -1,7 +1,7 @@
 {
   "name": "svn-dav-fs",
   "version": "0.0.0-semantic-release",
-  "description": "plain js svn dav",
+  "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
   "main": "dist/svn.js",
   "module": "src/svn.js",
   "scripts": {
@@ -43,12 +43,10 @@
   "engines": {
     "node": ">=6.9.2"
   },
-  "contributors": [
-    {
-      "name": "Markus Felten",
-      "email": "markus.felten@gmx.de"
-    }
-  ],
+  "contributors": [{
+    "name": "Markus Felten",
+    "email": "markus.felten@gmx.de"
+  }],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
