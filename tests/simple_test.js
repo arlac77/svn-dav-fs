@@ -69,6 +69,11 @@ describe('initialize', () => {
   );
 
   if (process.env.SVN_USER) {
+    it.only('put', () =>
+      init.then(svn => svn.put('https://subversion.assembla.com/svn/delivery_notes/'))
+    );
+
+
     it('history', () =>
       init.then(svn => svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
         version: 0,

@@ -11,6 +11,8 @@ from 'uri-resolver';
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
+const SVN_SKEL_CONTENT_TYPE = 'application/vnd.svn-skel';
+const SVN_SVNDIFF_CONTENT_TYPE = 'application/vnd.svn-svndiff';
 
 const NS_SVN_DAV = 'http://subversion.tigris.org/xmlns/dav/';
 const NS_SVN_DAV_DEPTH = NS_SVN_DAV + 'svn/depth';
@@ -135,6 +137,101 @@ class SVNHTTPSScheme extends HTTPScheme {
 
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
+  }
+
+  put(url, stream, options) {
+    return this._fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+      method: 'POST',
+      headers: {
+        dav: this.davHeader,
+        'content-type': SVN_SKEL_CONTENT_TYPE
+      }
+    }).then(response => {
+      const headers = response.headers._headers ? response.headers._headers : response.headers.map;
+      console.log(response);
+      const txn = headers['SVN-Txn-Name'];
+      console.log(`txn: ${txn}`);
+    });
+
+    /*
+    POST /svn/delivery_notes/!svn/me HTTP/1.1
+    Content-Type	application/vnd.svn-skel
+    DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+    DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+    DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+
+    Response:
+    SVN-Txn-Name: 1483-1a1
+    */
+
+
+    /*
+    PUT /svn/delivery_notes/!svn/txr/1483-1a1/data/config.json HTTP/1.1
+    Content-Type: application/vnd.svn-svndiff
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+    X-SVN-Version-Name: 1483
+    X-SVN-Base-Fulltext-MD5: 7f407419826ad120a3c9374947770470
+    X-SVN-Result-Fulltext-MD5: 03d6350bb46a63e86f1c5db703af403c
+    */
+
+    /*
+    MERGE /svn/delivery_notes/data HTTP/1.1
+    Content-Type: text/xml
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+    DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+    X-SVN-Options: release-locks
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <D:merge xmlns:D="DAV:">
+      <D:source>
+        <D:href>/svn/delivery_notes/!svn/txn/1483-1a1</D:href>
+      </D:source>
+      <D:no-auto-merge/>
+      <D:no-checkout/>
+      <D:prop>
+        <D:checked-in/>
+        <D:version-name/>
+        <D:resourcetype/>
+        <D:creationdate/>
+        <D:creator-displayname/>
+      </D:prop>
+    </D:merge>
+
+
+    Reponse:
+    HTTP/1.1 200 OK
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<D:merge-response xmlns:D="DAV:">
+<D:updated-set>
+<D:response>
+<D:href>/svn/delivery_notes/!svn/vcc/default</D:href>
+<D:propstat><D:prop>
+<D:resourcetype><D:baseline/></D:resourcetype>
+
+<D:version-name>1484</D:version-name>
+<D:creationdate>2016-12-28T20:24:49.296311Z</D:creationdate>
+<D:creator-displayname>arlac77</D:creator-displayname>
+</D:prop>
+<D:status>HTTP/1.1 200 OK</D:status>
+</D:propstat>
+</D:response>
+<D:response>
+<D:href>/svn/delivery_notes/data/config.json</D:href>
+<D:propstat><D:prop>
+<D:resourcetype/>
+<D:checked-in><D:href>/svn/delivery_notes/!svn/ver/1484/data/config.json</D:href></D:checked-in>
+</D:prop>
+<D:status>HTTP/1.1 200 OK</D:status>
+</D:propstat>
+</D:response>
+</D:updated-set>
+</D:merge-response>
+    */
   }
 
   list(url, properties) {
@@ -382,12 +479,7 @@ class SVNHTTPSScheme extends HTTPScheme {
 
 /*
 OPTIONS /svn/delivery_notes HTTP/1.1
-Host: subversion.assembla.com
-Authorization: Basic YXJsYWM3NzpzdGFydDEyMw==
-User-Agent: SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8
 Content-Type: text/xml
-Connection: keep-alive
-Accept-Encoding: gzip
 DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
 DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
 DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
@@ -396,22 +488,6 @@ Content-Length: 131
 <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
 */
 function init(url, options) {
-
-  /*
-  OPTIONS /svn/delivery_notes/data HTTP/1.1
-  Host: subversion.assembla.com
-  Authorization: Basic XXX
-  User-Agent: SVN/1.9.2 (x86_64-apple-darwin15.0.0) serf/1.3.8
-  Content-Type: text/xml
-  Connection: keep-alive
-  Accept-Encoding: gzip
-  DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
-  DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
-  DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
-  Content-Length: 131
-
-  <?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
-  */
 
 }
 
