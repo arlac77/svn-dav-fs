@@ -70,40 +70,54 @@ function ignore() {}
  */
 class SVNHTTPSScheme extends HTTPScheme {
   initialize() {
-    const attributes = {};
-    const davFeatures = new Set();
-    const allowedMethods = new Set();
+    return this.activityCollectionSet(this.url).then(acs => {
+      const {
+        attributes, davFeatures, allowedMethods
+      } = acs;
 
-    Object.defineProperties(this, {
-      attributes: {
-        get() {
-          return attributes;
+      Object.defineProperties(this, {
+        attributes: {
+          get() {
+            return attributes;
+          }
+        },
+        davFeatures: {
+          get() {
+            return davFeatures;
+          }
+        },
+        allowedMethods: {
+          get() {
+            return allowedMethods;
+          }
         }
-      },
-      davFeatures: {
-        get() {
-          return davFeatures;
-        }
-      },
-      allowedMethods: {
-        get() {
-          return allowedMethods;
-        }
-      }
+      });
+
+      return this;
     });
+  }
 
+  options(url, body) {
     return this._fetch(this.url, {
       method: 'OPTIONS',
-      body: [XML_HEADER, '<D:options xmlns:D="DAV:">',
-        '<D:activity-collection-set></D:activity-collection-set>',
-        '</D:options>'
-      ].join(''),
+      body: [XML_HEADER, ...body].join(''),
       headers: {
         dav: this.davHeader,
         'content-type': XML_CONTENT_TYPE
       }
-    }).then(response => {
+    });
+  }
+
+  activityCollectionSet(url) {
+    return this.options(this.url, ['<D:options xmlns:D="DAV:">',
+      '<D:activity-collection-set></D:activity-collection-set>',
+      '</D:options>'
+    ]).then(response => {
       const headers = response.headers._headers ? response.headers._headers : response.headers.map;
+
+      const attributes = {};
+      const davFeatures = new Set();
+      const allowedMethods = new Set();
 
       if (headers) {
         SVNHeaders.forEach(h => {
@@ -117,8 +131,11 @@ class SVNHTTPSScheme extends HTTPScheme {
         headerIntoSet(headers.allow, allowedMethods);
 
         attributes['svn-youngest-rev'] = parseInt(headers['svn-youngest-rev'], 10);
+
+        return {
+          attributes, davFeatures, allowedMethods
+        };
       }
-      return this;
     });
   }
 
@@ -140,8 +157,15 @@ class SVNHTTPSScheme extends HTTPScheme {
   }
 
   put(url, stream, options) {
+    this.activityCollectionSet(url).then(acs => {
+
+    }).then(() =>
+      this.options(url, ['<D:options xmlns:D="DAV:"/>'])
+    );
+
     return this._fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
       method: 'POST',
+      body: '(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))',
       headers: {
         dav: this.davHeader,
         'content-type': SVN_SKEL_CONTENT_TYPE
@@ -159,6 +183,8 @@ class SVNHTTPSScheme extends HTTPScheme {
     DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
     DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
     DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+
+    (create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
 
     Response:
     SVN-Txn-Name: 1483-1a1
@@ -489,6 +515,16 @@ Content-Length: 131
 */
 function init(url, options) {
 
+}
+
+/*
+(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
+*/
+function encodeProperties(props) {
+  return '(' + Object.keys(props).map(k => {
+    const v = props[k];
+    return `${k} ${v.length} ${v}`;
+  }).join(' ') + ')';
 }
 
 function headerIntoSet(header, target) {
