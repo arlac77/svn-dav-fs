@@ -70,7 +70,9 @@ describe('initialize', () => {
 
   if (process.env.SVN_USER) {
     it.only('put', () =>
-      init.then(svn => svn.put('https://subversion.assembla.com/svn/delivery_notes/'))
+      init.then(svn => svn.put('https://subversion.assembla.com/svn/delivery_notes/', undefined, {
+        message: 'this is the message'
+      }))
     );
 
 

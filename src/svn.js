@@ -9,6 +9,12 @@ import {
 }
 from 'uri-resolver';
 
+import {
+  headerIntoSet,
+  encodeProperties
+}
+from './util';
+
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
 const SVN_SKEL_CONTENT_TYPE = 'application/vnd.svn-skel';
@@ -157,15 +163,20 @@ class SVNHTTPSScheme extends HTTPScheme {
   }
 
   put(url, stream, options) {
-    this.activityCollectionSet(url).then(acs => {
-
+    /*this.activityCollectionSet(url).then(acs => {
     }).then(() =>
       this.options(url, ['<D:options xmlns:D="DAV:"/>'])
-    );
+    );*/
 
     return this._fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
       method: 'POST',
-      body: '(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))',
+      body: encodeProperties({
+        'create-txn-with-props': {
+          'svn:txn-user-agent': 'SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8',
+          'svn:log': options.message,
+          'svn:txn-client-compat-version': '1.9.4'
+        }
+      }),
       headers: {
         dav: this.davHeader,
         'content-type': SVN_SKEL_CONTENT_TYPE
@@ -517,22 +528,8 @@ function init(url, options) {
 
 }
 
-/*
-(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
-*/
-function encodeProperties(props) {
-  return '(' + Object.keys(props).map(k => {
-    const v = props[k];
-    return `${k} ${v.length} ${v}`;
-  }).join(' ') + ')';
-}
-
-function headerIntoSet(header, target) {
-  if (header) {
-    header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
-  }
-}
-
 export {
-  SVNHTTPSScheme
+  SVNHTTPSScheme,
+  headerIntoSet,
+  encodeProperties
 };
