@@ -7,7 +7,7 @@ const sax = require('sax');
 import {
   HTTPScheme
 }
-from 'uri-resolver';
+from 'url-resolver-fs';
 
 import {
   headerIntoSet,
@@ -155,7 +155,7 @@ class SVNHTTPSScheme extends HTTPScheme {
   }
 
   /**
-   * Delivers svn user agent 
+   * Delivers svn user agent
    * @return {String} user agent identifier
    */
   get userAgent() {
@@ -169,7 +169,7 @@ class SVNHTTPSScheme extends HTTPScheme {
   get clientVersion() {
     return '1.9.4';
   }
- 
+
   get vccDefault() {
     return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
   }
@@ -200,6 +200,9 @@ class SVNHTTPSScheme extends HTTPScheme {
     }).then(response => {
       const headers = response.headers._headers ? response.headers._headers : response.headers.map;
       console.log(response);
+      console.log(`response.headers: ${typeof response.headers}`);
+      console.log(`response.headers.Headers: ${typeof response.headers.Headers}`);
+
       const txn = headers['SVN-Txn-Name'];
       console.log(`txn: ${txn}`);
     });

@@ -4,5 +4,5 @@
 export default {
   format: 'cjs',
   plugins: [],
-  external: ['uri-resolver']
+  external: ['url-resolver-fs']
 };
