@@ -154,6 +154,22 @@ class SVNHTTPSScheme extends HTTPScheme {
     return 'svn+https';
   }
 
+  /**
+   * Delivers svn user agent 
+   * @return {String} user agent identifier
+   */
+  get userAgent() {
+    return 'SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8';
+  }
+
+  /**
+   * Delivers svn clinet version
+   * @return {String} version
+   */
+  get clientVersion() {
+    return '1.9.4';
+  }
+ 
   get vccDefault() {
     return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
   }
@@ -172,9 +188,9 @@ class SVNHTTPSScheme extends HTTPScheme {
       method: 'POST',
       body: encodeProperties({
         'create-txn-with-props': {
-          'svn:txn-user-agent': 'SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8',
+          'svn:txn-user-agent': this.userAgent,
           'svn:log': options.message,
-          'svn:txn-client-compat-version': '1.9.4'
+          'svn:txn-client-compat-version': this.clientVersion
         }
       }),
       headers: {
@@ -236,7 +252,6 @@ class SVNHTTPSScheme extends HTTPScheme {
         <D:creator-displayname/>
       </D:prop>
     </D:merge>
-
 
     Reponse:
     HTTP/1.1 200 OK
