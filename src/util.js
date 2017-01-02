@@ -22,7 +22,7 @@ function encodeProperties(object) {
 
 function headerIntoSet(header, target) {
   if (header) {
-    header.forEach(h => h.split(/\s*,\s*/).forEach(e => target.add(e)));
+    header.split(/\s*,\s*/).forEach(e => target.add(e));
   }
 }
 

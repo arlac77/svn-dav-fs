@@ -20,6 +20,19 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 # API Reference
 
+  <a name="encodeProperties"></a>
+
+## encodeProperties(object) ⇒ <code>String</code>
+Encodes objects into strings as used by svn
+(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
+
+**Kind**: global function  
+**Returns**: <code>String</code> - encoded object value  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| object | <code>Object</code> | to be encoded |
+
 * * *
 
 install

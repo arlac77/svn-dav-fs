@@ -119,29 +119,26 @@ class SVNHTTPSScheme extends HTTPScheme {
       '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
     ]).then(response => {
-      const headers = response.headers._headers ? response.headers._headers : response.headers.map;
-
       const attributes = {};
       const davFeatures = new Set();
       const allowedMethods = new Set();
 
-      if (headers) {
-        SVNHeaders.forEach(h => {
-          if (headers[h]) {
-            attributes[h] = headers[h];
-            console.log(`${h}: ${headers[h]}`);
-          }
-        });
+      SVNHeaders.forEach(h => {
+        const v = response.headers.get(h);
+        if (v) {
+          attributes[h] = v;
+          console.log(`${h}: ${v}`);
+        }
+      });
 
-        headerIntoSet(headers.dav, davFeatures);
-        headerIntoSet(headers.allow, allowedMethods);
+      headerIntoSet(response.headers.get('dav'), davFeatures);
+      headerIntoSet(response.headers.get('allow'), allowedMethods);
 
-        attributes['svn-youngest-rev'] = parseInt(headers['svn-youngest-rev'], 10);
+      attributes['svn-youngest-rev'] = parseInt(response.headers.get('svn-youngest-rev'), 10);
 
-        return {
-          attributes, davFeatures, allowedMethods
-        };
-      }
+      return {
+        attributes, davFeatures, allowedMethods
+      };
     });
   }
 
@@ -198,13 +195,24 @@ class SVNHTTPSScheme extends HTTPScheme {
         'content-type': SVN_SKEL_CONTENT_TYPE
       }
     }).then(response => {
-      const headers = response.headers._headers ? response.headers._headers : response.headers.map;
-      console.log(response);
-      console.log(`response.headers: ${typeof response.headers}`);
-      console.log(`response.headers.Headers: ${typeof response.headers.Headers}`);
+      //console.log(response);
 
-      const txn = headers['SVN-Txn-Name'];
-      console.log(`txn: ${txn}`);
+      const txn = response.headers.get('SVN-Txn-Name');
+      const [versionName] = txn.split(/\-/);
+      console.log(`txn: ${txn} ${versionName}`);
+
+      return this._fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
+        method: 'PUT',
+        headers: {
+          dav: this.davHeader,
+          'content-type': SVN_SVNDIFF_CONTENT_TYPE,
+          'X-SVN-Version-Name': versionName,
+          'X-SVN-Base-Fulltext-MD5': '7f407419826ad120a3c9374947770470',
+          'X-SVN-Result-Fulltext-MD5': '03d6350bb46a63e86f1c5db703af403c'
+        }
+      }).then(response => {
+        console.log(response);
+      });
     });
 
     /*
@@ -219,7 +227,6 @@ class SVNHTTPSScheme extends HTTPScheme {
     Response:
     SVN-Txn-Name: 1483-1a1
     */
-
 
     /*
     PUT /svn/delivery_notes/!svn/txr/1483-1a1/data/config.json HTTP/1.1
