@@ -19,6 +19,7 @@ svn-dav-fs
 handler for 'svn+https' url scheme (plain js svn dav fs)
 
 # API Reference
+- svn-dav-fs
 
   <a name="encodeProperties"></a>
 
@@ -33,6 +34,13 @@ Encodes objects into strings as used by svn
 | --- | --- | --- |
 | object | <code>Object</code> | to be encoded |
 
+  <a name="module_svn-dav-fs..SVNHTTPSScheme+put"></a>
+
+## svnhttpsScheme.put()
+http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
+http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
+
+**Kind**: instance method of <code>[SVNHTTPSScheme](#module_svn-dav-fs..SVNHTTPSScheme)</code>  
 * * *
 
 install

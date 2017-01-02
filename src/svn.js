@@ -15,6 +15,10 @@ import {
 }
 from './util';
 
+/**
+ * @module svn-dav-fs
+ */
+
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
 const SVN_SKEL_CONTENT_TYPE = 'application/vnd.svn-skel';
@@ -160,7 +164,7 @@ class SVNHTTPSScheme extends HTTPScheme {
   }
 
   /**
-   * Delivers svn clinet version
+   * Delivers svn client version
    * @return {String} version
    */
   get clientVersion() {
@@ -175,6 +179,10 @@ class SVNHTTPSScheme extends HTTPScheme {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
 
+  /**
+   * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
+   * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
+   */
   put(url, stream, options) {
     /*this.activityCollectionSet(url).then(acs => {
     }).then(() =>
@@ -195,14 +203,13 @@ class SVNHTTPSScheme extends HTTPScheme {
         'content-type': SVN_SKEL_CONTENT_TYPE
       }
     }).then(response => {
-      //console.log(response);
-
       const txn = response.headers.get('SVN-Txn-Name');
       const [versionName] = txn.split(/\-/);
-      console.log(`txn: ${txn} ${versionName}`);
+      //console.log(`txn: ${txn} ${versionName}`);
 
       return this._fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
         method: 'PUT',
+        body: "{ffffff}",
         headers: {
           dav: this.davHeader,
           'content-type': SVN_SVNDIFF_CONTENT_TYPE,
@@ -212,7 +219,7 @@ class SVNHTTPSScheme extends HTTPScheme {
         }
       }).then(response => {
         console.log(response);
-      });
+      }).catch(e => console.error(e));
     });
 
     /*
