@@ -79,36 +79,15 @@ function ignore() {}
  * URL sheme 'svn+https' svn over https
  */
 class SVNHTTPSScheme extends HTTPScheme {
-  initialize() {
-    return this.activityCollectionSet(this.url).then(acs => {
-      const {
-        attributes, davFeatures, allowedMethods
-      } = acs;
 
-      Object.defineProperties(this, {
-        attributes: {
-          get() {
-            return attributes;
-          }
-        },
-        davFeatures: {
-          get() {
-            return davFeatures;
-          }
-        },
-        allowedMethods: {
-          get() {
-            return allowedMethods;
-          }
-        }
-      });
-
-      return this;
-    });
-  }
-
+  /**
+   * Exec options request
+   * @param {String} url
+   * @param {String} body
+   * @return {Promise}
+   */
   options(url, body) {
-    return this._fetch(this.url, {
+    return this.fetch(url, {
       method: 'OPTIONS',
       body: [XML_HEADER, ...body].join(''),
       headers: {
@@ -118,8 +97,13 @@ class SVNHTTPSScheme extends HTTPScheme {
     });
   }
 
+  /**
+   * query the activity collection set.
+   * @param {String} url
+   * @return {Promise}
+   */
   activityCollectionSet(url) {
-    return this.options(this.url, ['<D:options xmlns:D="DAV:">',
+    return this.options(url, ['<D:options xmlns:D="DAV:">',
       '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
     ]).then(response => {
@@ -171,10 +155,6 @@ class SVNHTTPSScheme extends HTTPScheme {
     return '1.9.4';
   }
 
-  get vccDefault() {
-    return [this.attributes['SVN-Repository-Root'], '!svn/vcc/default'].join('/');
-  }
-
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
@@ -189,7 +169,7 @@ class SVNHTTPSScheme extends HTTPScheme {
       this.options(url, ['<D:options xmlns:D="DAV:"/>'])
     );*/
 
-    return this._fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+    return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
       method: 'POST',
       body: encodeProperties({
         'create-txn-with-props': {
@@ -204,10 +184,13 @@ class SVNHTTPSScheme extends HTTPScheme {
       }
     }).then(response => {
       const txn = response.headers.get('SVN-Txn-Name');
-      const [versionName] = txn.split(/\-/);
-      //console.log(`txn: ${txn} ${versionName}`);
 
-      return this._fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
+      if (!txn) {
+        return Promise.reject(new Error('Can`t create transaction'));
+      }
+      const [versionName] = txn.split(/\-/);
+
+      return this.fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
         method: 'PUT',
         body: "{ffffff}",
         headers: {
@@ -317,7 +300,7 @@ Content-Type: text/xml
 
     xmls.push('</D:propfind>');
 
-    return this._fetch(url, {
+    return this.fetch(url, {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
@@ -458,15 +441,16 @@ Content-Type: text/xml
   }
 
   _history(url, start, end) {
-    const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">'];
-    xmls.push(`<S:start-revision>${start}</S:start-revision>`);
-    xmls.push(`<S:end-revision>${end}</S:end-revision>`);
+    const xmls = [XML_HEADER, '<S:log-report xmlns:S="svn:">',
+      `<S:start-revision>${start}</S:start-revision>`,
+      `<S:end-revision>${end}</S:end-revision>`
+    ];
     ['svn:author', 'svn:date', 'svn:log'].forEach(item => xmls.push(`<S:revprop>${item}</S:revprop>`));
 
     xmls.push('<S:path/>');
     xmls.push('</S:log-report>');
 
-    return this._fetch(url, {
+    return this.fetch(url, {
       method: 'REPORT',
       body: xmls.join('\n'),
       headers: {
@@ -544,20 +528,6 @@ Content-Type: text/xml
       })
     );
   }
-}
-
-/*
-OPTIONS /svn/delivery_notes HTTP/1.1
-Content-Type: text/xml
-DAV: http://subversion.tigris.org/xmlns/dav/svn/depth
-DAV: http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
-DAV: http://subversion.tigris.org/xmlns/dav/svn/log-revprops
-Content-Length: 131
-
-<?xml version="1.0" encoding="utf-8"?><D:options xmlns:D="DAV:"><D:activity-collection-set></D:activity-collection-set></D:options>
-*/
-function init(url, options) {
-
 }
 
 export {

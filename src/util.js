@@ -26,7 +26,6 @@ function headerIntoSet(header, target) {
   }
 }
 
-
 export {
   headerIntoSet,
   encodeProperties
