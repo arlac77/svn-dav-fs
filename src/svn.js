@@ -99,7 +99,7 @@ class SVNHTTPSScheme extends HTTPScheme {
 
   /**
    * query the activity collection set.
-   * @param {String} url
+   * @param {string} url
    * @return {Promise}
    */
   activityCollectionSet(url) {
@@ -141,7 +141,7 @@ class SVNHTTPSScheme extends HTTPScheme {
 
   /**
    * Delivers svn user agent
-   * @return {String} user agent identifier
+   * @return {string} user agent identifier
    */
   get userAgent() {
     return 'SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8';
@@ -149,7 +149,7 @@ class SVNHTTPSScheme extends HTTPScheme {
 
   /**
    * Delivers svn client version
-   * @return {String} version
+   * @return {string} version
    */
   get clientVersion() {
     return '1.9.4';
