@@ -78,7 +78,7 @@ function ignore() {}
 /**
  * URL sheme 'svn+https' svn over https
  */
-class SVNHTTPSScheme extends HTTPScheme {
+export class SVNHTTPSScheme extends HTTPScheme {
 
   /**
    * Exec options request
@@ -531,7 +531,6 @@ Content-Type: text/xml
 }
 
 export {
-  SVNHTTPSScheme,
   headerIntoSet,
   encodeProperties
 };

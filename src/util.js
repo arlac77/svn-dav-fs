@@ -12,7 +12,7 @@
  * @param {object} object to be encoded
  * @return {string} encoded object value
  */
-function encodeProperties(object) {
+export function encodeProperties(object) {
   return '(' + Object.keys(object).map(k => {
     const v = object[k];
 
@@ -24,13 +24,9 @@ function encodeProperties(object) {
   }).join(' ') + ')';
 }
 
-function headerIntoSet(header, target) {
+export function headerIntoSet(header, target) {
   if (header) {
     header.split(/\s*,\s*/).forEach(e => target.add(e));
   }
 }
 
-export {
-  headerIntoSet,
-  encodeProperties
-};
