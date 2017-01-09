@@ -23,24 +23,51 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
   <a name="encodeProperties"></a>
 
-## encodeProperties(object) ⇒ <code>String</code>
+## encodeProperties(object) ⇒ <code>string</code>
 Encodes objects into strings as used by svn
-(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
 
 **Kind**: global function  
-**Returns**: <code>String</code> - encoded object value  
+**Returns**: <code>string</code> - encoded object value  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| object | <code>Object</code> | to be encoded |
+| object | <code>object</code> | to be encoded |
+
+**Example**  
+(create-txn-with-props
+   (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8
+    svn:log 19 this is the message
+    svn:txn-client-compat-version 5 1.9.4))
+  <a name="module_svn-dav-fs..SVNHTTPSScheme+options"></a>
+
+## module:svn-dav-fs~SVNHTTPSScheme.options(url, body) ⇒ <code>Promise</code>
+Exec options request
+
+**Kind**: instance method of <code>module:svn-dav-fs~SVNHTTPSScheme</code>  
+
+| Param | Type |
+| --- | --- |
+| url | <code>String</code> | 
+| body | <code>String</code> | 
+
+  <a name="module_svn-dav-fs..SVNHTTPSScheme+activityCollectionSet"></a>
+
+## module:svn-dav-fs~SVNHTTPSScheme.activityCollectionSet(url) ⇒ <code>Promise</code>
+query the activity collection set.
+
+**Kind**: instance method of <code>module:svn-dav-fs~SVNHTTPSScheme</code>  
+
+| Param | Type |
+| --- | --- |
+| url | <code>string</code> | 
 
   <a name="module_svn-dav-fs..SVNHTTPSScheme+put"></a>
 
-## svnhttpsScheme.put()
+## module:svn-dav-fs~SVNHTTPSScheme.put()
 http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
 http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
 
-**Kind**: instance method of <code>[SVNHTTPSScheme](#module_svn-dav-fs..SVNHTTPSScheme)</code>  
+**Kind**: instance method of <code>module:svn-dav-fs~SVNHTTPSScheme</code>  
 * * *
 
 install
