@@ -5,7 +5,7 @@
 const sax = require('sax');
 
 import {
-  HTTPScheme
+  HTTPSScheme
 }
 from 'url-resolver-fs';
 
@@ -78,7 +78,7 @@ function ignore() {}
 /**
  * URL sheme 'svn+https' svn over https
  */
-export class SVNHTTPSScheme extends HTTPScheme {
+export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
    * Exec options request
