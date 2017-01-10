@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 6.9.3
+  - 6.9.4
 sudo: false
 branches:
   only:
@@ -17,6 +17,7 @@ before_install:
 before_script:
   - npm prune
   - npm install -g codecov
+  - npm install coveralls
 script:
   - npm run cover
 after_script:

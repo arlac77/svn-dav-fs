@@ -5,13 +5,14 @@
   "main": "dist/svn.js",
   "module": "src/svn.js",
   "scripts": {
-    "cover": "npm run prepublish && istanbul cover node_modules/.bin/_mocha -- -u exports tests/*_test.js",
+    "cover": "nyc npm test",
     "test": "mocha tests/*_test.js",
     "docs": "jsdoc2md -l off -t doc/README.hbs -f src/*.js >README.md",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "prepublish": "rollup --output=dist/svn.js -c -- src/svn.js",
     "pretest": "npm run prepublish",
-    "posttest": "markdown-doctest"
+    "posttest": "markdown-doctest",
+    "precover": "npm run prepublish"
   },
   "repository": {
     "type": "git",
@@ -31,20 +32,20 @@
     "chai": "^3.5.0",
     "chai-datetime": "^1.4.1",
     "coveralls": "^2.11.15",
-    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "semantic-release": "^6.3.5",
     "cz-conventional-changelog": "^1.2.0",
     "jsdoc-to-markdown": "^2.0.1",
     "markdown-doctest": "^0.9.1",
-    "rollup": "^0.41.1"
+    "rollup": "^0.41.1",
+    "nyc": "^10.0.0"
   },
   "dependencies": {
     "sax": "^1.2.1",
     "url-resolver-fs": "^1.2.1"
   },
   "engines": {
-    "node": ">=6.9.3"
+    "node": ">=6.9.4"
   },
   "contributors": [
     {
@@ -56,5 +57,14 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "nyc": {
+    "include": [
+      "dist/**/*.js"
+    ],
+    "reporter": [
+      "lcov"
+    ],
+    "report-dir": "./coverage"
   }
 }
