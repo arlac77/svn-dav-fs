@@ -61,6 +61,12 @@ describe('svn', () => {
   */
 
   if (process.env.SVN_USER) {
+    describe('activityCollectionSet', () => {
+
+      xit('attributes', () => svn.activityCollectionSet('https://subversion.assembla.com/svn/delivery_notes/')
+        .then(({attributes}) => assert.deepEqual(attributes,{'SVN-Youngest-Rev' : 17 })));
+    });
+
     it('put', () =>
       svn.put('https://subversion.assembla.com/svn/delivery_notes/', undefined, {
         message: 'this is the message'

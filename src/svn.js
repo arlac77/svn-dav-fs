@@ -82,9 +82,9 @@ export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
    * Exec options request
-   * @param {String} url
-   * @param {String} body
-   * @return {Promise}
+   * @param {string} url
+   * @param {string[]} body xml lines
+   * @return {promise}
    */
   options(url, body) {
     return this.fetch(url, {
@@ -111,6 +111,8 @@ export class SVNHTTPSScheme extends HTTPSScheme {
       const davFeatures = new Set();
       const allowedMethods = new Set();
 
+      console.log(response.headers);
+
       SVNHeaders.forEach(h => {
         const v = response.headers.get(h);
         if (v) {
@@ -122,7 +124,7 @@ export class SVNHTTPSScheme extends HTTPSScheme {
       headerIntoSet(response.headers.get('dav'), davFeatures);
       headerIntoSet(response.headers.get('allow'), allowedMethods);
 
-      attributes['svn-youngest-rev'] = parseInt(response.headers.get('svn-youngest-rev'), 10);
+      attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
 
       return {
         attributes, davFeatures, allowedMethods
@@ -158,6 +160,47 @@ export class SVNHTTPSScheme extends HTTPSScheme {
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
+
+
+  /*
+  MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
+Host	subversion.assembla.com
+Authorization	Basic YXJsYWM3NzpzdGFydDEyMw==
+User-Agent	SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8
+Accept-Encoding	gzip
+DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+*/
+ mkcol(url,tx) {
+
+ }
+
+ startTransaction(url,message) {
+   return this.activityCollectionSet(url).then(({attributes, davFeatures, allowedMethods}) => {
+   return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+     method: 'POST',
+     body: encodeProperties({
+       'create-txn-with-props': {
+         'svn:txn-user-agent': this.userAgent,
+         'svn:log': message,
+         'svn:txn-client-compat-version': this.clientVersion
+       }
+     }),
+     headers: {
+       dav: this.davHeader,
+       'content-type': SVN_SKEL_CONTENT_TYPE
+     }
+   }).then(response => {
+     const txn = response.headers.get('SVN-Txn-Name');
+
+     if (!txn) {
+       return Promise.reject(new Error('Can`t create transaction'));
+     }
+     return txn;
+   });
+ });
+ }
 
   /**
    * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
