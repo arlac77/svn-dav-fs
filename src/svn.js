@@ -172,35 +172,37 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
 DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
 DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 */
- mkcol(url,tx) {
+  mkcol(url, tx) {
 
- }
+  }
 
- startTransaction(url,message) {
-   return this.activityCollectionSet(url).then(({attributes, davFeatures, allowedMethods}) => {
-   return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
-     method: 'POST',
-     body: encodeProperties({
-       'create-txn-with-props': {
-         'svn:txn-user-agent': this.userAgent,
-         'svn:log': message,
-         'svn:txn-client-compat-version': this.clientVersion
-       }
-     }),
-     headers: {
-       dav: this.davHeader,
-       'content-type': SVN_SKEL_CONTENT_TYPE
-     }
-   }).then(response => {
-     const txn = response.headers.get('SVN-Txn-Name');
+  startTransaction(url, message) {
+    return this.activityCollectionSet(url).then(({
+      attributes, davFeatures, allowedMethods
+    }) => {
+      return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+        method: 'POST',
+        body: encodeProperties({
+          'create-txn-with-props': {
+            'svn:txn-user-agent': this.userAgent,
+            'svn:log': message,
+            'svn:txn-client-compat-version': this.clientVersion
+          }
+        }),
+        headers: {
+          dav: this.davHeader,
+          'content-type': SVN_SKEL_CONTENT_TYPE
+        }
+      }).then(response => {
+        const txn = response.headers.get('SVN-Txn-Name');
 
-     if (!txn) {
-       return Promise.reject(new Error('Can`t create transaction'));
-     }
-     return txn;
-   });
- });
- }
+        if (!txn) {
+          return Promise.reject(new Error('Can`t create transaction'));
+        }
+        return txn;
+      });
+    });
+  }
 
   /**
    * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
@@ -351,8 +353,8 @@ Content-Type: text/xml
         depth: depth,
         'content-type': XML_CONTENT_TYPE
       }
-    }).then(response => {
-      return new Promise((fullfill, reject) => {
+    }).then(response =>
+      new Promise((fullfill, reject) => {
         const entries = [];
         let entry;
         let consume = ignore;
@@ -427,16 +429,12 @@ Content-Type: text/xml
         });
 
         saxStream.on('text', text => consume(text));
-
-        saxStream.on('end', () => fullfill(function* () {
-          for (const i in entries) {
-            yield Promise.resolve(entries[i]);
-          }
-        }));
+        saxStream.on('end', () => fullfill(entries));
         saxStream.on('error', reject);
-        response.body.pipe(saxStream);
-      });
-    });
+        response.body.pipe(
+          saxStream);
+      })
+    );
   }
 
   history(url, options = {}) {

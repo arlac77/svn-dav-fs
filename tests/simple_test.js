@@ -64,10 +64,14 @@ describe('svn', () => {
     describe('activityCollectionSet', () => {
 
       xit('attributes', () => svn.activityCollectionSet('https://subversion.assembla.com/svn/delivery_notes/')
-        .then(({attributes}) => assert.deepEqual(attributes,{'SVN-Youngest-Rev' : 17 })));
+        .then(({
+          attributes
+        }) => assert.deepEqual(attributes, {
+          'SVN-Youngest-Rev': 17
+        })));
     });
 
-    it('put', () =>
+    xit('put', () =>
       svn.put('https://subversion.assembla.com/svn/delivery_notes/', undefined, {
         message: 'this is the message'
       })
@@ -96,31 +100,13 @@ describe('svn', () => {
 
     it('list', () =>
       svn.list('https://subversion.assembla.com/svn/delivery_notes/data').then(
-        cursor => {
-          let i = 0;
-
-          const entries = [{
-            name: 'releases.json'
-          }, {
-            name: 'servers'
-          }, {
-            name: 'comp1'
-          }, {
-            name: 'config.json'
-          }, {
-            name: 'releases'
-          }, {
-            name: 'environments.json'
-          }];
-          for (const e of cursor()) {
-            e.then(entry => {
-              if (entries[i]) {
-                assert.equal(entry.name, entries[i].name);
-              }
-              console.log(`${i} ${JSON.stringify(entry)}`);
-              i++;
-            });
-          }
+        entries => {
+          assert.include(entries.map(e => e.name), 'releases.json');
+          assert.include(entries.map(e => e.name), 'comp1');
+          assert.include(entries.map(e => e.name), 'releases');
+          assert.include(entries.map(e => e.name), 'servers');
+          assert.include(entries.map(e => e.name), 'config.json');
+          assert.include(entries.map(e => e.name), 'environments.json');
         }));
   }
 });
