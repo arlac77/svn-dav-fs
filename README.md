@@ -40,15 +40,15 @@ Encodes objects into strings as used by svn
     svn:txn-client-compat-version 5 1.9.4))
   <a name="module_svn-dav-fs..SVNHTTPSScheme+options"></a>
 
-## module:svn-dav-fs~SVNHTTPSScheme.options(url, body) ⇒ <code>Promise</code>
+## module:svn-dav-fs~SVNHTTPSScheme.options(url, body) ⇒ <code>promise</code>
 Exec options request
 
 **Kind**: instance method of <code>module:svn-dav-fs~SVNHTTPSScheme</code>  
 
-| Param | Type |
-| --- | --- |
-| url | <code>String</code> | 
-| body | <code>String</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> |  |
+| body | <code>Array.&lt;string&gt;</code> | xml lines |
 
   <a name="module_svn-dav-fs..SVNHTTPSScheme+activityCollectionSet"></a>
 
