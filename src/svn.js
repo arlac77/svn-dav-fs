@@ -331,6 +331,10 @@ Content-Type: text/xml
     */
   }
 
+  stat(url, options) {
+    return this.list(url, options);
+  }
+
   list(url, properties) {
     const depth = 1;
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
