@@ -77,6 +77,16 @@ describe('svn', () => {
       })
     );
 
+    it('stat', () =>
+      svn.stat('https://subversion.assembla.com/svn/delivery_notes/').then(stat => assert.deepEqual(stat, {
+        collection: true,
+        creationDate: new Date('2017-01-23T21:36:17.881Z'),
+        name: '',
+        creator: 'arlac77',
+        version: 1486
+      }))
+    );
+
     it('history', () =>
       svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
         version: 0,

@@ -2,7 +2,10 @@
 
 'use strict';
 
-const sax = require('sax');
+const sax = require('sax'),
+  {
+    URL
+  } = require('url');
 
 import {
   HTTPSScheme
@@ -111,13 +114,13 @@ export class SVNHTTPSScheme extends HTTPSScheme {
       const davFeatures = new Set();
       const allowedMethods = new Set();
 
-      console.log(response.headers);
+      //console.log(response.headers.get('SVN-Youngest-Rev'));
 
       SVNHeaders.forEach(h => {
         const v = response.headers.get(h);
         if (v) {
           attributes[h] = v;
-          console.log(`${h}: ${v}`);
+          //console.log(`${h}: ${v}`);
         }
       });
 
@@ -160,7 +163,6 @@ export class SVNHTTPSScheme extends HTTPSScheme {
   get davHeader() {
     return [NS_SVN_DAV_DEPTH, NS_SVN_DAV_MERGINFO, NS_SVN_DAV_LOG_REVPROPS].join(',');
   }
-
 
   /*
   MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
@@ -332,10 +334,16 @@ Content-Type: text/xml
   }
 
   stat(url, options) {
-    return this.list(url, options);
+    return this.activityCollectionSet(url).then(
+      (acs) => {
+        const u = new URL(url);
+        const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes['SVN-Youngest-Rev']}`;
+        return this.propfind(u2).then(e => e[0]);
+      }
+    );
   }
 
-  list(url, properties) {
+  propfind(url, properties) {
     const depth = 1;
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
 
@@ -439,6 +447,10 @@ Content-Type: text/xml
           saxStream);
       })
     );
+  }
+
+  list(url, properties) {
+    return this.propfind(url, properties);
   }
 
   history(url, options = {}) {
