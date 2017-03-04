@@ -78,13 +78,14 @@ describe('svn', () => {
     );
 
     it('stat', () =>
-      svn.stat('https://subversion.assembla.com/svn/delivery_notes/').then(stat => assert.deepEqual(stat, {
-        collection: true,
-        creationDate: new Date('2017-01-23T21:36:17.881Z'),
-        name: '',
-        creator: 'arlac77',
-        version: 1486
-      }))
+      svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json').then(stat => assert.deepEqual(
+        stat, {
+          creationDate: new Date('2016-01-30T13:36:16.649803Z'),
+          //name: 'environments.json',
+          length: 114,
+          creator: 'arlac77',
+          version: 1481
+        }))
     );
 
     it('history', () =>
@@ -96,7 +97,7 @@ describe('svn', () => {
 
         for (const e of cursor()) {
           e.then(entry => {
-            console.log(entry);
+            //console.log(entry);
             if (i === 0) {
               assert.equal(entry.version, 0);
               assert.afterDate(entry.date, new Date(2011, 1, 1));

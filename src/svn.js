@@ -337,22 +337,44 @@ Content-Type: text/xml
     return this.activityCollectionSet(url).then(
       (acs) => {
         const u = new URL(url);
-        const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes['SVN-Youngest-Rev']}`;
-        return this.propfind(u2).then(e => e[0]);
+        const path = url.substring(u.origin.length + acs.attributes['SVN-Repository-Root'].length);
+        const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes['SVN-Youngest-Rev']}${path}`;
+
+        return this.propfind(u2, {
+          'resourcetype': 'DAV:',
+          'getcontentlength': 'DAV:',
+          'deadprop-count': 'http://subversion.tigris.org/xmlns/dav/',
+          'version-name': 'DAV:',
+          'creationdate': 'DAV:',
+          'creator-displayname': 'DAV:',
+        }, 0).then(e => e[0]);
+
+        /*
+        <propfind xmlns="DAV:">
+	<prop>
+		<resourcetype xmlns="DAV:" />
+		<getcontentlength xmlns="DAV:" />
+		<deadprop-count xmlns="http://subversion.tigris.org/xmlns/dav/" />
+		<version-name xmlns="DAV:" />
+		<creationdate xmlns="DAV:" />
+		<creator-displayname xmlns="DAV:" />
+	</prop>
+</propfind>
+*/
       }
     );
   }
 
-  propfind(url, properties) {
-    const depth = 1;
+  propfind(url, properties, depth = 1) {
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
-
     if (properties === undefined) {
       xmls.push('<D:allprop/>');
     } else {
+      xmls.push('<D:prop>');
       for (const p in properties) {
-        xmls.push(`<D:prop><${p} xmlns="${properties[p]}"/></D:prop>`);
+        xmls.push(`<${p} xmlns="${properties[p]}"/>`);
       }
+      xmls.push('</D:prop>');
     }
 
     xmls.push('</D:propfind>');
@@ -378,6 +400,17 @@ Content-Type: text/xml
           trim: true
         });
 
+        /*
+                <D:prop>
+                <lp1:resourcetype/>
+                <lp1:getcontentlength>114</lp1:getcontentlength>
+                <lp2:deadprop-count>0</lp2:deadprop-count>
+                <lp1:version-name>1481</lp1:version-name>
+                <lp1:creationdate>2016-01-30T13:36:16.649803Z</lp1:creationdate>
+                <lp1:creator-displayname>arlac77</lp1:creator-displayname>
+                </D:prop>
+                */
+
         saxStream.on('opentag', node => {
           switch (node.local) {
             case 'response':
@@ -392,6 +425,12 @@ Content-Type: text/xml
             case 'version-name':
               consume = text => {
                 entry.version = parseInt(text, 10);
+                consume = ignore;
+              };
+              break;
+            case 'getcontentlength':
+              consume = text => {
+                entry.length = parseInt(text, 10);
                 consume = ignore;
               };
               break;
