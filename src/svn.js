@@ -348,19 +348,6 @@ Content-Type: text/xml
           'creationdate': 'DAV:',
           'creator-displayname': 'DAV:',
         }, 0).then(e => e[0]);
-
-        /*
-        <propfind xmlns="DAV:">
-	<prop>
-		<resourcetype xmlns="DAV:" />
-		<getcontentlength xmlns="DAV:" />
-		<deadprop-count xmlns="http://subversion.tigris.org/xmlns/dav/" />
-		<version-name xmlns="DAV:" />
-		<creationdate xmlns="DAV:" />
-		<creator-displayname xmlns="DAV:" />
-	</prop>
-</propfind>
-*/
       }
     );
   }
@@ -400,17 +387,6 @@ Content-Type: text/xml
           trim: true
         });
 
-        /*
-                <D:prop>
-                <lp1:resourcetype/>
-                <lp1:getcontentlength>114</lp1:getcontentlength>
-                <lp2:deadprop-count>0</lp2:deadprop-count>
-                <lp1:version-name>1481</lp1:version-name>
-                <lp1:creationdate>2016-01-30T13:36:16.649803Z</lp1:creationdate>
-                <lp1:creator-displayname>arlac77</lp1:creator-displayname>
-                </D:prop>
-                */
-
         saxStream.on('opentag', node => {
           switch (node.local) {
             case 'response':
@@ -430,7 +406,7 @@ Content-Type: text/xml
               break;
             case 'getcontentlength':
               consume = text => {
-                entry.length = parseInt(text, 10);
+                entry.size = parseInt(text, 10);
                 consume = ignore;
               };
               break;

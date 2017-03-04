@@ -81,8 +81,7 @@ describe('svn', () => {
       svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json').then(stat => assert.deepEqual(
         stat, {
           creationDate: new Date('2016-01-30T13:36:16.649803Z'),
-          //name: 'environments.json',
-          length: 114,
+          size: 114,
           creator: 'arlac77',
           version: 1481
         }))
