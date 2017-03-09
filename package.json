@@ -36,7 +36,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "jsdoc-to-markdown": "^3.0.0",
     "markdown-doctest": "^0.9.1",
-    "rollup": "^0.41.4",
+    "rollup": "^0.41.5",
     "nyc": "^10.1.2"
   },
   "dependencies": {
