@@ -3,6 +3,5 @@
 
 export default {
   format: 'cjs',
-  plugins: [],
-  external: ['url-resolver-fs']
+  plugins: []
 };
