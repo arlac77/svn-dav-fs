@@ -77,15 +77,16 @@ describe('svn', () => {
       })
     );
 
-    it('stat', () =>
-      svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json').then(stat => assert.deepEqual(
+    it('stat', async() => {
+      const stat = await svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json');
+      assert.deepEqual(
         stat, {
           creationDate: new Date('2016-01-30T13:36:16.649803Z'),
           size: 114,
           creator: 'arlac77',
           version: 1481
-        }))
-    );
+        });
+    });
 
     it('history', () =>
       svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
@@ -108,15 +109,14 @@ describe('svn', () => {
         }
       }).catch(console.log));
 
-    it('list', () =>
-      svn.list('https://subversion.assembla.com/svn/delivery_notes/data').then(
-        entries => {
-          assert.include(entries.map(e => e.name), 'releases.json');
-          assert.include(entries.map(e => e.name), 'comp1');
-          assert.include(entries.map(e => e.name), 'releases');
-          assert.include(entries.map(e => e.name), 'servers');
-          assert.include(entries.map(e => e.name), 'config.json');
-          assert.include(entries.map(e => e.name), 'environments.json');
-        }));
+    it('list', async() => {
+      const entries = await svn.list('https://subversion.assembla.com/svn/delivery_notes/data');
+      assert.include(entries.map(e => e.name), 'releases.json');
+      assert.include(entries.map(e => e.name), 'comp1');
+      assert.include(entries.map(e => e.name), 'releases');
+      assert.include(entries.map(e => e.name), 'servers');
+      assert.include(entries.map(e => e.name), 'config.json');
+      assert.include(entries.map(e => e.name), 'environments.json');
+    });
   }
 });
