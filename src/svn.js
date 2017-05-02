@@ -84,7 +84,7 @@ function ignore() {}
 export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
-   * Exec options request
+   * Execute options request
    * @param {string} url
    * @param {string[]} body xml lines
    * @return {promise}
@@ -105,34 +105,31 @@ export class SVNHTTPSScheme extends HTTPSScheme {
    * @param {string} url
    * @return {Promise}
    */
-  activityCollectionSet(url) {
-    return this.options(url, ['<D:options xmlns:D="DAV:">',
+  async activityCollectionSet(url) {
+    const options = await this.options(url, ['<D:options xmlns:D="DAV:">',
       '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
-    ]).then(response => {
-      const attributes = {};
-      const davFeatures = new Set();
-      const allowedMethods = new Set();
+    ]);
 
-      //console.log(response.headers.get('SVN-Youngest-Rev'));
+    const attributes = {};
+    const davFeatures = new Set();
+    const allowedMethods = new Set();
 
-      SVNHeaders.forEach(h => {
-        const v = response.headers.get(h);
-        if (v) {
-          attributes[h] = v;
-          //console.log(`${h}: ${v}`);
-        }
-      });
-
-      headerIntoSet(response.headers.get('dav'), davFeatures);
-      headerIntoSet(response.headers.get('allow'), allowedMethods);
-
-      attributes['SVN-Youngest-Rev'] = parseInt(response.headers.get('SVN-Youngest-Rev'), 10);
-
-      return {
-        attributes, davFeatures, allowedMethods
-      };
+    SVNHeaders.forEach(h => {
+      const v = options.headers.get(h);
+      if (v) {
+        attributes[h] = v;
+      }
     });
+
+    headerIntoSet(options.headers.get('dav'), davFeatures);
+    headerIntoSet(options.headers.get('allow'), allowedMethods);
+
+    attributes['SVN-Youngest-Rev'] = parseInt(options.headers.get('SVN-Youngest-Rev'), 10);
+
+    return {
+      attributes, davFeatures, allowedMethods
+    };
   }
 
   // TODO why is this not taken from the base class ?
@@ -178,32 +175,33 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
   }
 
-  startTransaction(url, message) {
-    return this.activityCollectionSet(url).then(({
+  async startTransaction(url, message) {
+    const {
       attributes, davFeatures, allowedMethods
-    }) => {
-      return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
-        method: 'POST',
-        body: encodeProperties({
-          'create-txn-with-props': {
-            'svn:txn-user-agent': this.userAgent,
-            'svn:log': message,
-            'svn:txn-client-compat-version': this.clientVersion
-          }
-        }),
-        headers: {
-          dav: this.davHeader,
-          'content-type': SVN_SKEL_CONTENT_TYPE
-        }
-      }).then(response => {
-        const txn = response.headers.get('SVN-Txn-Name');
+    } = await this.activityCollectionSet(url);
 
-        if (!txn) {
-          return Promise.reject(new Error('Can`t create transaction'));
+    const response = await this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+      method: 'POST',
+      body: encodeProperties({
+        'create-txn-with-props': {
+          'svn:txn-user-agent': this.userAgent,
+          'svn:log': message,
+          'svn:txn-client-compat-version': this.clientVersion
         }
-        return txn;
-      });
+      }),
+      headers: {
+        dav: this.davHeader,
+        'content-type': SVN_SKEL_CONTENT_TYPE
+      }
     });
+
+    const txn = response.headers.get('SVN-Txn-Name');
+
+    if (!txn) {
+      return Promise.reject(new Error('Can`t create transaction'));
+    }
+
+    return txn;
   }
 
   /**
