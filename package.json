@@ -39,11 +39,11 @@
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "babel-plugin-transform-async-generator-functions": "^6.24.1",
-    "nyc": "^10.2.0"
+    "nyc": "^10.3.0"
   },
   "dependencies": {
     "sax": "^1.2.2",
-    "url-resolver-fs": "^2.2.2"
+    "url-resolver-fs": "^3.0.0"
   },
   "engines": {
     "node": ">=7.9.0"

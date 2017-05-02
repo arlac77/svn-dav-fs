@@ -171,7 +171,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
 DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
 DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 */
-  mkcol(url, tx) {
+  async mkcol(url, tx) {
 
   }
 
@@ -208,13 +208,13 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
    * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
    * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
    */
-  put(url, stream, options) {
+  async put(url, stream, options) {
     /*this.activityCollectionSet(url).then(acs => {
     }).then(() =>
       this.options(url, ['<D:options xmlns:D="DAV:"/>'])
     );*/
 
-    return this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
+    const response = await this.fetch('https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me', {
       method: 'POST',
       body: encodeProperties({
         'create-txn-with-props': {
@@ -227,28 +227,28 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
         dav: this.davHeader,
         'content-type': SVN_SKEL_CONTENT_TYPE
       }
-    }).then(response => {
-      const txn = response.headers.get('SVN-Txn-Name');
-
-      if (!txn) {
-        return Promise.reject(new Error('Can`t create transaction'));
-      }
-      const [versionName] = txn.split(/\-/);
-
-      return this.fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
-        method: 'PUT',
-        body: "{ffffff}",
-        headers: {
-          dav: this.davHeader,
-          'content-type': SVN_SVNDIFF_CONTENT_TYPE,
-          'X-SVN-Version-Name': versionName,
-          'X-SVN-Base-Fulltext-MD5': '7f407419826ad120a3c9374947770470',
-          'X-SVN-Result-Fulltext-MD5': '03d6350bb46a63e86f1c5db703af403c'
-        }
-      }).then(response => {
-        console.log(response);
-      }).catch(e => console.error(e));
     });
+
+    const txn = response.headers.get('SVN-Txn-Name');
+
+    if (!txn) {
+      return Promise.reject(new Error('Can`t create transaction'));
+    }
+    const [versionName] = txn.split(/\-/);
+
+    return this.fetch(`https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`, {
+      method: 'PUT',
+      body: "{ffffff}",
+      headers: {
+        dav: this.davHeader,
+        'content-type': SVN_SVNDIFF_CONTENT_TYPE,
+        'X-SVN-Version-Name': versionName,
+        'X-SVN-Base-Fulltext-MD5': '7f407419826ad120a3c9374947770470',
+        'X-SVN-Result-Fulltext-MD5': '03d6350bb46a63e86f1c5db703af403c'
+      }
+    }).then(response => {
+      console.log(response);
+    }).catch(e => console.error(e));
 
     /*
     POST /svn/delivery_notes/!svn/me HTTP/1.1
@@ -331,26 +331,26 @@ Content-Type: text/xml
     */
   }
 
-  stat(url, options) {
-    return this.activityCollectionSet(url).then(
-      (acs) => {
-        const u = new URL(url);
-        const path = url.substring(u.origin.length + acs.attributes['SVN-Repository-Root'].length);
-        const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes['SVN-Youngest-Rev']}${path}`;
+  async stat(url, options) {
+    const acs = await this.activityCollectionSet(url);
 
-        return this.propfind(u2, {
-          'resourcetype': 'DAV:',
-          'getcontentlength': 'DAV:',
-          'deadprop-count': 'http://subversion.tigris.org/xmlns/dav/',
-          'version-name': 'DAV:',
-          'creationdate': 'DAV:',
-          'creator-displayname': 'DAV:',
-        }, 0).then(e => e[0]);
-      }
-    );
+    const u = new URL(url);
+    const path = url.substring(u.origin.length + acs.attributes['SVN-Repository-Root'].length);
+    const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes['SVN-Youngest-Rev']}${path}`;
+
+    const properties = await this.propfind(u2, {
+      'resourcetype': 'DAV:',
+      'getcontentlength': 'DAV:',
+      'deadprop-count': 'http://subversion.tigris.org/xmlns/dav/',
+      'version-name': 'DAV:',
+      'creationdate': 'DAV:',
+      'creator-displayname': 'DAV:',
+    }, 0);
+
+    return properties[0];
   }
 
-  propfind(url, properties, depth = 1) {
+  async propfind(url, properties, depth = 1) {
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
     if (properties === undefined) {
       xmls.push('<D:allprop/>');
@@ -364,7 +364,7 @@ Content-Type: text/xml
 
     xmls.push('</D:propfind>');
 
-    return this.fetch(url, {
+    const response = await this.fetch(url, {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
@@ -372,94 +372,94 @@ Content-Type: text/xml
         depth: depth,
         'content-type': XML_CONTENT_TYPE
       }
-    }).then(response =>
-      new Promise((fullfill, reject) => {
-        const entries = [];
-        let entry;
-        let consume = ignore;
-        let rootPathPrefixLength;
+    });
 
-        const saxStream = sax.createStream(true, {
-          xmlns: true,
-          position: false,
-          trim: true
-        });
+    return new Promise((fullfill, reject) => {
+      const entries = [];
+      let entry;
+      let consume = ignore;
+      let rootPathPrefixLength;
 
-        saxStream.on('opentag', node => {
-          switch (node.local) {
-            case 'response':
-              break;
-            case 'prop':
-              entry = {};
+      const saxStream = sax.createStream(true, {
+        xmlns: true,
+        position: false,
+        trim: true
+      });
+
+      saxStream.on('opentag', node => {
+        switch (node.local) {
+          case 'response':
+            break;
+          case 'prop':
+            entry = {};
+            consume = ignore;
+            break;
+          case 'collection':
+            entry.collection = true;
+            break;
+          case 'version-name':
+            consume = text => {
+              entry.version = parseInt(text, 10);
               consume = ignore;
-              break;
-            case 'collection':
-              entry.collection = true;
-              break;
-            case 'version-name':
-              consume = text => {
-                entry.version = parseInt(text, 10);
-                consume = ignore;
-              };
-              break;
-            case 'getcontentlength':
-              consume = text => {
-                entry.size = parseInt(text, 10);
-                consume = ignore;
-              };
-              break;
-            case 'creator-displayname':
-              consume = text => {
-                entry.creator = text;
-                consume = ignore;
-              };
-              break;
-            case 'creationdate':
-              consume = text => {
-                entry.creationDate = new Date(text);
-                consume = ignore;
-              };
-              break;
-            case 'baseline-relative-path':
-              consume = text => {
-                if (rootPathPrefixLength) {
-                  entry.name = text.substring(rootPathPrefixLength);
-                } else {
-                  rootPathPrefixLength = text.length + 1;
-                  entry = undefined;
-                }
-                consume = ignore;
-              };
-              break;
-              /*  case 'resourcetype':
-                  consume = text => { 
-                    console.log(`resourcetype: ${text}`);
-                    //consume = ignore;
-                  };
-                  break;
-                            default:
-                              console.log(`${node.name} ${node.local} ${node.uri}`);
-                              */
-          }
-        });
-
-        saxStream.on('closetag', name => {
-          switch (name) {
-            case 'D:prop':
-              if (entry !== undefined) {
-                entries.push(entry);
+            };
+            break;
+          case 'getcontentlength':
+            consume = text => {
+              entry.size = parseInt(text, 10);
+              consume = ignore;
+            };
+            break;
+          case 'creator-displayname':
+            consume = text => {
+              entry.creator = text;
+              consume = ignore;
+            };
+            break;
+          case 'creationdate':
+            consume = text => {
+              entry.creationDate = new Date(text);
+              consume = ignore;
+            };
+            break;
+          case 'baseline-relative-path':
+            consume = text => {
+              if (rootPathPrefixLength) {
+                entry.name = text.substring(rootPathPrefixLength);
+              } else {
+                rootPathPrefixLength = text.length + 1;
+                entry = undefined;
               }
-              break;
-          }
-        });
+              consume = ignore;
+            };
+            break;
+            /*  case 'resourcetype':
+                consume = text => { 
+                  console.log(`resourcetype: ${text}`);
+                  //consume = ignore;
+                };
+                break;
+                          default:
+                            console.log(`${node.name} ${node.local} ${node.uri}`);
+                            */
+        }
+      });
 
-        saxStream.on('text', text => consume(text));
-        saxStream.on('end', () => fullfill(entries));
-        saxStream.on('error', reject);
-        response.body.pipe(
-          saxStream);
-      })
-    );
+      saxStream.on('closetag', name => {
+        switch (name) {
+          case 'D:prop':
+            if (entry !== undefined) {
+              entries.push(entry);
+            }
+            break;
+        }
+      });
+
+      saxStream.on('text', text => consume(text));
+      saxStream.on('end', () => fullfill(entries));
+      saxStream.on('error', reject);
+      response.body.pipe(
+        saxStream);
+    });
   }
 
   list(url, properties) {
