@@ -37,6 +37,8 @@
     "jsdoc-to-markdown": "^3.0.0",
     "markdown-doctest": "^0.9.1",
     "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^2.7.1",
+    "babel-plugin-transform-async-generator-functions": "^6.24.1",
     "nyc": "^10.2.0"
   },
   "dependencies": {
@@ -46,12 +48,10 @@
   "engines": {
     "node": ">=7.9.0"
   },
-  "contributors": [
-    {
-      "name": "Markus Felten",
-      "email": "markus.felten@gmx.de"
-    }
-  ],
+  "contributors": [{
+    "name": "Markus Felten",
+    "email": "markus.felten@gmx.de"
+  }],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
