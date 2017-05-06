@@ -1,15 +1,13 @@
-/* global describe, it, xit */
 /* jslint node: true, esnext: true */
 
 'use strict';
 
-const chai = require('chai'),
-  expect = chai.expect,
-  assert = chai.assert,
-  should = chai.should(),
-  SVNHTTPSScheme = require('../dist/svn').SVNHTTPSScheme;
+import test from 'ava';
 
-chai.use(require('chai-datetime'));
+import {
+  SVNHTTPSScheme
+}
+from '../src/svn';
 
 const credentials = {
   password: 'xxx',
@@ -24,42 +22,75 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
-describe('svn', () => {
+test('has type', t => {
+  const svn = new SVNHTTPSScheme();
+  t.is(svn.type, 'svn+https');
+});
 
+test('can stat', async t => {
   const svn = new SVNHTTPSScheme({
     proxy: process.env.HTTP_PROXY,
     credentials: credentials
   });
 
-  it('has type', () => assert.equal(svn.type, 'svn+https'));
+  const stat = await svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json');
 
-  /*
-    const init = svn.initialize();
+  t.deepEqual(
+    stat, {
+      creationDate: new Date('2016-01-30T13:36:16.649803Z'),
+      size: 114,
+      creator: 'arlac77',
+      version: 1481
+    });
+});
 
-    if (process.env.SVN_USER) {
-      it('has davFeatures', () =>
-        init.then(svn => {
-          assert.equal(svn.davFeatures.has('1'), true);
-          assert.equal(svn.davFeatures.has('2'), true);
-          assert.equal(svn.davFeatures.has('baseline'), true);
-          assert.equal(svn.davFeatures.has('version-control'), true);
-          assert.equal(svn.davFeatures.has('checkout'), true);
-          assert.equal(svn.davFeatures.has('working-resource'), true);
-          assert.equal(svn.davFeatures.has('merge'), true);
-          assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
-          assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
-        })
-      );
+test('can list', async t => {
+  const svn = new SVNHTTPSScheme({
+    proxy: process.env.HTTP_PROXY,
+    credentials: credentials
+  });
 
-      it('has allowedMethods', () =>
-        init.then(svn => {
-          assert.equal(svn.allowedMethods.has('GET'), true);
-          assert.equal(svn.allowedMethods.has('OPTIONS'), true);
-        })
-      );
-    }
-  */
+  const entries = await svn.list('https://subversion.assembla.com/svn/delivery_notes/data');
+  const all = new Set();
 
+  entries.forEach(entry => all.add(entry.name));
+
+  t.true(all.has('releases.json'));
+  t.true(all.has('comp1'));
+  t.true(all.has('releases'));
+  t.true(all.has('servers'));
+  t.true(all.has('config.json'));
+  t.true(all.has('environments.json'));
+});
+
+/*
+  const init = svn.initialize();
+
+  if (process.env.SVN_USER) {
+    it('has davFeatures', () =>
+      init.then(svn => {
+        assert.equal(svn.davFeatures.has('1'), true);
+        assert.equal(svn.davFeatures.has('2'), true);
+        assert.equal(svn.davFeatures.has('baseline'), true);
+        assert.equal(svn.davFeatures.has('version-control'), true);
+        assert.equal(svn.davFeatures.has('checkout'), true);
+        assert.equal(svn.davFeatures.has('working-resource'), true);
+        assert.equal(svn.davFeatures.has('merge'), true);
+        assert.equal(svn.davFeatures.has('version-controlled-collection'), true);
+        assert.equal(svn.davFeatures.has('http://subversion.tigris.org/xmlns/dav/svn/mergeinfo'), true);
+      })
+    );
+
+    it('has allowedMethods', () =>
+      init.then(svn => {
+        assert.equal(svn.allowedMethods.has('GET'), true);
+        assert.equal(svn.allowedMethods.has('OPTIONS'), true);
+      })
+    );
+  }
+*/
+
+/*
   if (process.env.SVN_USER) {
     describe('activityCollectionSet', () => {
 
@@ -76,17 +107,6 @@ describe('svn', () => {
         message: 'this is the message'
       })
     );
-
-    it('stat', async() => {
-      const stat = await svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json');
-      assert.deepEqual(
-        stat, {
-          creationDate: new Date('2016-01-30T13:36:16.649803Z'),
-          size: 114,
-          creator: 'arlac77',
-          version: 1481
-        });
-    });
 
     it('history', () =>
       svn.history('https://subversion.assembla.com/svn/delivery_notes/', {
@@ -108,15 +128,6 @@ describe('svn', () => {
           });
         }
       }).catch(console.log));
-
-    it('list', async() => {
-      const entries = await svn.list('https://subversion.assembla.com/svn/delivery_notes/data');
-      assert.include(entries.map(e => e.name), 'releases.json');
-      assert.include(entries.map(e => e.name), 'comp1');
-      assert.include(entries.map(e => e.name), 'releases');
-      assert.include(entries.map(e => e.name), 'servers');
-      assert.include(entries.map(e => e.name), 'config.json');
-      assert.include(entries.map(e => e.name), 'environments.json');
-    });
   }
-});
+
+*/
