@@ -5,14 +5,14 @@ import multiEntry from 'rollup-plugin-multi-entry';
 
 export default {
   entry: 'tests/**/*_test.js',
-  external: ['ava'],
+  external: ['ava', 'url-resolver-fs'],
   plugins: [
     babel({
       babelrc: false,
       plugins: [
         'transform-async-generator-functions'
       ],
-      presets: ['es2015-rollup'],
+      //presets: ['es2015-rollup'],
       exclude: 'node_modules/**'
     }),
     multiEntry()
