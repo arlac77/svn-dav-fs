@@ -462,8 +462,15 @@ Content-Type: text/xml
     });
   }
 
-  list(url, properties) {
-    return this.propfind(url, properties);
+  async list(url, options) {
+    return this.propfind(url, options);
+  }
+
+  async * _list(url, options) {
+    const list = await this.propfind(url, options);
+    for (const entry of list) {
+      yield entry;
+    }
   }
 
   history(url, options = {}) {
