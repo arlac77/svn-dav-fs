@@ -8,10 +8,7 @@ export default {
   plugins: [
     babel({
       babelrc: false,
-      presets: [],
-      plugins: [
-        "transform-async-generator-functions"
-      ],
+      presets: ['stage-3', 'es2017'],
       exclude: 'node_modules/**'
     })
   ],

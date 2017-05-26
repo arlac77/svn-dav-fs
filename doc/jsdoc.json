@@ -4,8 +4,7 @@
   ],
   "babel": {
     "presets": [
-      "es2015",
-      "stage-3"
+      "es2017", "stage-3"
     ]
   }
 }
