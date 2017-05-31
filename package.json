@@ -48,12 +48,14 @@
     "url-resolver-fs": "^4.0.1"
   },
   "engines": {
-    "node": ">=7.10.0"
+    "node": ">=8.0.0"
   },
-  "contributors": [{
-    "name": "Markus Felten",
-    "email": "markus.felten@gmx.de"
-  }],
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
