@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "sax": "^1.2.2",
-    "url-resolver-fs": "^4.0.1"
+    "url-resolver-fs": "^4.0.2"
   },
   "engines": {
     "node": ">=8.0.0"
