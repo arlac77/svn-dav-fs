@@ -1,7 +1,3 @@
-/* jslint node: true, esnext: true */
-
-'use strict';
-
 /**
  * Encodes objects into strings as used by svn
  * @example
@@ -29,4 +25,3 @@ export function headerIntoSet(header, target) {
     header.split(/\s*,\s*/).forEach(e => target.add(e));
   }
 }
-

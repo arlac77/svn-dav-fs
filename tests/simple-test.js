@@ -1,7 +1,3 @@
-/* jslint node: true, esnext: true */
-
-'use strict';
-
 import test from 'ava';
 
 import {
@@ -30,7 +26,7 @@ test('has type', t => {
 test('can stat', async t => {
   const svn = new SVNHTTPSScheme({
     proxy: process.env.HTTP_PROXY,
-    credentials: credentials
+    credentials
   });
 
   const stat = await svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json');
@@ -47,7 +43,7 @@ test('can stat', async t => {
 test('can list', async t => {
   const svn = new SVNHTTPSScheme({
     proxy: process.env.HTTP_PROXY,
-    credentials: credentials
+    credentials
   });
 
   const entries = await svn.list('https://subversion.assembla.com/svn/delivery_notes/data');
@@ -129,5 +125,4 @@ test('can list', async t => {
         }
       }).catch(console.log));
   }
-
 */

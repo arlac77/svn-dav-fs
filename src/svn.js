@@ -1,12 +1,3 @@
-/* jslint node: true, esnext: true */
-
-'use strict';
-
-const sax = require('sax'),
-  {
-    URL
-  } = require('url');
-
 import {
   HTTPSScheme
 }
@@ -17,6 +8,12 @@ import {
   encodeProperties
 }
 from './util';
+
+const sax = require('sax'),
+  {
+    URL
+  } = require('url');
+
 
 /**
  * @module svn-dav-fs
