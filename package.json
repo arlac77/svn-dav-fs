@@ -10,9 +10,9 @@
     "docs": "jsdoc2md --configure doc/jsdoc.json -l off -t doc/README.hbs -f src/*.js >README.md",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "prepublish": "rollup --output=dist/svn.js -c -- src/svn.js",
-    "pretest": "rollup -c rollup.config.test.js",
+    "pretest": "rollup -c tests/rollup.config.js",
     "posttest": "npm run prepublish && markdown-doctest",
-    "precover": "rollup -c rollup.config.test.js"
+    "precover": "rollup -c tests/rollup.config.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
     "ava": "^0.19.1",
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-preset-stage-3": "^6.24.1",
-    "cz-conventional-changelog": "^2.0.0",
     "jsdoc-babel": "^0.3.0",
     "jsdoc-to-markdown": "^3.0.0",
     "markdown-doctest": "^0.9.1",
@@ -48,7 +47,7 @@
     "url-resolver-fs": "^4.0.2"
   },
   "engines": {
-    "node": ">=8.1.0"
+    "node": ">=8.1.1"
   },
   "contributors": [
     {
@@ -56,11 +55,6 @@
       "email": "markus.felten@gmx.de"
     }
   ],
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "nyc": {
     "include": [
       "dist/**/*.js"
