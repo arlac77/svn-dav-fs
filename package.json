@@ -48,10 +48,12 @@
   "engines": {
     "node": ">=8.1.1"
   },
-  "contributors": [{
-    "name": "Markus Felten",
-    "email": "markus.felten@gmx.de"
-  }],
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
   "nyc": {
     "include": [
       "build/test-bundle.js",
