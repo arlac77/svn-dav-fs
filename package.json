@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
   "devDependencies": {
-    "ava": "^0.19.1",
+    "ava": "^0.20.0",
     "babel-preset-stage-3": "^6.24.1",
     "jsdoc-babel": "^0.3.0",
     "jsdoc-to-markdown": "^3.0.0",
