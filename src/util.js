@@ -9,15 +9,21 @@
  * @return {string} encoded object value
  */
 export function encodeProperties(object) {
-  return '(' + Object.keys(object).map(k => {
-    const v = object[k];
+  return (
+    '(' +
+    Object.keys(object)
+      .map(k => {
+        const v = object[k];
 
-    if (typeof v === 'string' || v instanceof String) {
-      return `${k} ${v.length} ${v}`;
-    }
+        if (typeof v === 'string' || v instanceof String) {
+          return `${k} ${v.length} ${v}`;
+        }
 
-    return `${k} ${encodeProperties(v)}`;
-  }).join(' ') + ')';
+        return `${k} ${encodeProperties(v)}`;
+      })
+      .join(' ') +
+    ')'
+  );
 }
 
 export function headerIntoSet(header, target) {

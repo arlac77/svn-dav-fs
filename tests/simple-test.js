@@ -1,9 +1,6 @@
 import test from 'ava';
 
-import {
-  SVNHTTPSScheme
-}
-from '../src/svn';
+import { SVNHTTPSScheme } from '../src/svn';
 
 const credentials = {
   password: 'xxx',
@@ -29,15 +26,16 @@ test('can stat', async t => {
     credentials
   });
 
-  const stat = await svn.stat('https://subversion.assembla.com/svn/delivery_notes/data/environments.json');
+  const stat = await svn.stat(
+    'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
+  );
 
-  t.deepEqual(
-    stat, {
-      creationDate: new Date('2016-01-30T13:36:16.649803Z'),
-      size: 114,
-      creator: 'arlac77',
-      version: 1481
-    });
+  t.deepEqual(stat, {
+    creationDate: new Date('2016-01-30T13:36:16.649803Z'),
+    size: 114,
+    creator: 'arlac77',
+    version: 1481
+  });
 });
 
 test('can list', async t => {
@@ -46,7 +44,9 @@ test('can list', async t => {
     credentials
   });
 
-  const entries = await svn.list('https://subversion.assembla.com/svn/delivery_notes/data');
+  const entries = await svn.list(
+    'https://subversion.assembla.com/svn/delivery_notes/data'
+  );
   const all = new Set();
 
   entries.forEach(entry => all.add(entry.name));
