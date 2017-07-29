@@ -71,12 +71,13 @@ function ignore() {}
 export class SVNHTTPSScheme extends HTTPSScheme {
   /**
    * Execute options request
+   * @param context {Context} execution context
    * @param url {URL}
    * @param body {string[]}  xml lines
    * @return {Promise}
    */
-  options(url, body) {
-    return this.fetch(url, {
+  options(context, url, body) {
+    return this.fetch(context, url, {
       method: 'OPTIONS',
       body: [XML_HEADER, ...body].join(''),
       headers: {
@@ -88,11 +89,12 @@ export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
    * query the activity collection set.
+   * @param context {Context} execution context
    * @param url {URL}
    * @return {Promise}
    */
-  async activityCollectionSet(url) {
-    const options = await this.options(url, [
+  async activityCollectionSet(context, url) {
+    const options = await this.options(context, url, [
       '<D:options xmlns:D="DAV:">',
       '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'
@@ -169,14 +171,15 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 */
   async mkcol(url, tx) {}
 
-  async startTransaction(url, message) {
+  async startTransaction(context, url, message) {
     const {
       attributes,
       davFeatures,
       allowedMethods
-    } = await this.activityCollectionSet(url);
+    } = await this.activityCollectionSet(context, url);
 
     const response = await this.fetch(
+      context,
       'https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me',
       {
         method: 'POST',
@@ -207,13 +210,14 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
    * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
    * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
    */
-  async put(url, stream, options) {
+  async put(context, url, stream, options) {
     /*this.activityCollectionSet(url).then(acs => {
     }).then(() =>
       this.options(url, ['<D:options xmlns:D="DAV:"/>'])
     );*/
 
     const response = await this.fetch(
+      context,
       'https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me',
       {
         method: 'POST',
@@ -239,6 +243,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     const [versionName] = txn.split(/\-/);
 
     return this.fetch(
+      context,
       `https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`,
       {
         method: 'PUT',
@@ -338,8 +343,8 @@ Content-Type: text/xml
     */
   }
 
-  async stat(url, options) {
-    const acs = await this.activityCollectionSet(url);
+  async stat(context, url, options) {
+    const acs = await this.activityCollectionSet(context, url);
     const path = url.href.substring(
       url.origin.length + acs.attributes['SVN-Repository-Root'].length
     );
@@ -350,6 +355,7 @@ Content-Type: text/xml
     );
 
     const properties = await this.propfind(
+      context,
       u2,
       {
         resourcetype: 'DAV:',
@@ -365,7 +371,7 @@ Content-Type: text/xml
     return properties[0];
   }
 
-  async propfind(url, properties, depth = 1) {
+  async propfind(context, url, properties, depth = 1) {
     const xmls = [XML_HEADER, '<D:propfind xmlns:D="DAV:">'];
     if (properties === undefined) {
       xmls.push('<D:allprop/>');
@@ -379,7 +385,7 @@ Content-Type: text/xml
 
     xmls.push('</D:propfind>');
 
-    const response = await this.fetch(url, {
+    const response = await this.fetch(context, url, {
       method: 'PROPFIND',
       body: xmls.join('\n'),
       headers: {
@@ -476,21 +482,23 @@ Content-Type: text/xml
     });
   }
 
-  async list(url, options) {
-    return this.propfind(url, options);
+  async list(context, url, options) {
+    return this.propfind(context, url, options);
   }
 
-  async *_list(url, options) {
-    const list = await this.propfind(url, options);
+  async *_list(context, url, options) {
+    const list = await this.propfind(context, url, options);
     for (const entry of list) {
       yield entry;
     }
   }
 
-  history(url, options = {}) {
+  history(context, url, options = {}) {
     const p =
       options.version === undefined
-        ? this.list(url).then(entries => Promise.resolve(entries[0].version))
+        ? this.list(context, url).then(entries =>
+            Promise.resolve(entries[0].version)
+          )
         : Promise.resolve(options.version);
 
     return p.then(start => {
@@ -509,7 +517,7 @@ Content-Type: text/xml
         start = end;
         end = t;
       }
-      return this._history(url, start, end).then(entries => {
+      return this._history(context, url, start, end).then(entries => {
         const self = this;
         return Promise.resolve(function*() {
           for (const i in entries) {
@@ -534,7 +542,7 @@ Content-Type: text/xml
     });
   }
 
-  _history(url, start, end) {
+  _history(context, url, start, end) {
     const xmls = [
       XML_HEADER,
       '<S:log-report xmlns:S="svn:">',
@@ -548,7 +556,7 @@ Content-Type: text/xml
     xmls.push('<S:path/>');
     xmls.push('</S:log-report>');
 
-    return this.fetch(url, {
+    return this.fetch(context, url, {
       method: 'REPORT',
       body: xmls.join('\n'),
       headers: {
