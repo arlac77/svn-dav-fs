@@ -71,9 +71,9 @@ function ignore() {}
 export class SVNHTTPSScheme extends HTTPSScheme {
   /**
    * Execute options request
-   * @param {string} url
-   * @param {string[]} body xml lines
-   * @return {promise}
+   * @param url {URL}
+   * @param body {string[]}  xml lines
+   * @return {Promise}
    */
   options(url, body) {
     return this.fetch(url, {
@@ -88,7 +88,7 @@ export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
    * query the activity collection set.
-   * @param {string} url
+   * @param url {URL}
    * @return {Promise}
    */
   async activityCollectionSet(url) {
@@ -340,13 +340,14 @@ Content-Type: text/xml
 
   async stat(url, options) {
     const acs = await this.activityCollectionSet(url);
-
-    const u = new URL(url);
-    const path = url.substring(
-      u.origin.length + acs.attributes['SVN-Repository-Root'].length
+    const path = url.href.substring(
+      url.origin.length + acs.attributes['SVN-Repository-Root'].length
     );
-    const u2 = `${u.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs
-      .attributes['SVN-Youngest-Rev']}${path}`;
+    const u2 = new URL(
+      `${url.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes[
+        'SVN-Youngest-Rev'
+      ]}${path}`
+    );
 
     const properties = await this.propfind(
       u2,

@@ -1,6 +1,7 @@
 import test from 'ava';
-
 import { SVNHTTPSScheme } from '../src/svn';
+
+const { URL } = require('url');
 
 const credentials = {
   password: 'xxx',
@@ -27,7 +28,9 @@ test('can stat', async t => {
   });
 
   const stat = await svn.stat(
-    'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
+    new URL(
+      'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
+    )
   );
 
   t.deepEqual(stat, {
@@ -45,7 +48,7 @@ test('can list', async t => {
   });
 
   const entries = await svn.list(
-    'https://subversion.assembla.com/svn/delivery_notes/data'
+    new URL('https://subversion.assembla.com/svn/delivery_notes/data')
   );
   const all = new Set();
 
