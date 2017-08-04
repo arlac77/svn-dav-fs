@@ -161,15 +161,18 @@ export class SVNHTTPSScheme extends HTTPSScheme {
 
   /*
   MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
-Host	subversion.assembla.com
-Authorization	Basic YXJsYWM3NzpzdGFydDEyMw==
-User-Agent	SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8
-Accept-Encoding	gzip
 DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
 DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
 DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 */
-  async mkcol(url, tx) {}
+  async mkcol(context, url, tx) {
+    return this.fetch(context, url, {
+      method: 'MKCOL',
+      headers: {
+        dav: this.davHeader
+      }
+    });
+  }
 
   async startTransaction(context, url, message) {
     const {
@@ -199,7 +202,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const txn = response.headers.get('SVN-Txn-Name');
 
-    if (!txn) {
+    if (txn === undefined) {
       return Promise.reject(new Error('Can`t create transaction'));
     }
 
@@ -237,9 +240,10 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const txn = response.headers.get('SVN-Txn-Name');
 
-    if (!txn) {
+    if (txn === undefined) {
       return Promise.reject(new Error('Can`t create transaction'));
     }
+
     const [versionName] = txn.split(/\-/);
 
     return this.fetch(
