@@ -9,9 +9,12 @@ export default {
       exclude: 'node_modules/**'
     })
   ],
-  targets: [{
-    dest: pkg.main,
+
+  output: {
+    file: pkg.main,
     format: 'cjs'
-  }],
-  external: ['url-resolver-fs']
+  },
+
+  external: ['url-resolver-fs'],
+  input: pkg.module
 };
