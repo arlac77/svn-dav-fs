@@ -174,6 +174,10 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     });
   }
 
+  get repositoryBase() {
+    return 'https://subversion.assembla.com/svn/delivery_notes/';
+  }
+
   async startTransaction(context, url, message) {
     const {
       attributes,
@@ -183,7 +187,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const response = await this.fetch(
       context,
-      'https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me',
+      this.repositoryBase + '!svn/me',
       {
         method: 'POST',
         body: encodeProperties({
@@ -221,7 +225,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const response = await this.fetch(
       context,
-      'https://subversion.assembla.com/svn/delivery_notes/' + '!svn/me',
+      this.repositoryBase + '!svn/me',
       {
         method: 'POST',
         body: encodeProperties({
@@ -246,11 +250,9 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const [versionName] = txn.split(/\-/);
 
-    return this.fetch(
+    const r2 = await this.fetch(
       context,
-      `https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${
-        txn
-      }/data/config.json`,
+      `${this.repositoryBase}!svn/txr/${txn}/data/config.json`,
       {
         method: 'PUT',
         body: '{ffffff}',
@@ -262,11 +264,9 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
           'X-SVN-Result-Fulltext-MD5': '03d6350bb46a63e86f1c5db703af403c'
         }
       }
-    )
-      .then(response => {
-        console.log(response);
-      })
-      .catch(e => console.error(e));
+    );
+
+    console.log(r2);
 
     /*
     POST /svn/delivery_notes/!svn/me HTTP/1.1
