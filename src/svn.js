@@ -1,6 +1,7 @@
 import { HTTPSScheme } from 'url-resolver-fs';
 
 import { headerIntoSet, encodeProperties } from './util';
+export { headerIntoSet, encodeProperties };
 
 const sax = require('sax'),
   { URL } = require('url');
@@ -159,6 +160,10 @@ export class SVNHTTPSScheme extends HTTPSScheme {
     ].join(',');
   }
 
+  get repositoryBase() {
+    return 'https://subversion.assembla.com/svn/delivery_notes/';
+  }
+
   /*
   MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
 DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
@@ -172,10 +177,6 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
         dav: this.davHeader
       }
     });
-  }
-
-  get repositoryBase() {
-    return 'https://subversion.assembla.com/svn/delivery_notes/';
   }
 
   async startTransaction(context, url, message) {
@@ -207,7 +208,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     const txn = response.headers.get('SVN-Txn-Name');
 
     if (txn === undefined) {
-      return Promise.reject(new Error('Can`t create transaction'));
+      throw new Error('Can`t create transaction');
     }
 
     return txn;
@@ -245,7 +246,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     const txn = response.headers.get('SVN-Txn-Name');
 
     if (txn === undefined) {
-      return Promise.reject(new Error('Can`t create transaction'));
+      throw new Error('Can`t create transaction');
     }
 
     const [versionName] = txn.split(/\-/);
@@ -401,7 +402,7 @@ Content-Type: text/xml
       }
     });
 
-    return new Promise((fullfill, reject) => {
+    return new Promise((resolve, reject) => {
       const entries = [];
       let entry;
       let consume = ignore;
@@ -482,7 +483,7 @@ Content-Type: text/xml
       });
 
       saxStream.on('text', text => consume(text));
-      saxStream.on('end', () => fullfill(entries));
+      saxStream.on('end', () => resolve(entries));
       saxStream.on('error', reject);
       response.body.pipe(saxStream);
     });
@@ -501,56 +502,51 @@ Content-Type: text/xml
   }
 */
 
-  history(context, url, options = {}) {
-    const p =
-      options.version === undefined
-        ? this.list(context, url).then(entries =>
-            Promise.resolve(entries[0].version)
-          )
-        : Promise.resolve(options.version);
+  async history(context, url, options = {}) {
+    let start;
+    if (options.version === undefined) {
+      const entries = await this.list(context, url);
+      start = entries[0].version;
+    } else {
+      start = options.version;
+    }
 
-    return p.then(start => {
-      const direction =
-        options.direction || options.version === undefined
-          ? 'backward'
-          : 'forward';
-      const chunkSize = options.chunkSize || 1000;
+    const direction =
+      options.direction || options.version === undefined
+        ? 'backward'
+        : 'forward';
+    const chunkSize = options.chunkSize || 1000;
 
-      let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
-      if (end < 0) {
-        end = 0;
+    let end = direction === 'forward' ? start + chunkSize : start - chunkSize;
+    if (end < 0) {
+      end = 0;
+    }
+    if (start > end) {
+      const t = start;
+      start = end;
+      end = t;
+    }
+
+    const entries = await this._history(context, url, start, end);
+
+    const self = this;
+
+    return function*() {
+      for (const i in entries) {
+        yield Promise.resolve(entries[i]);
       }
-      if (start > end) {
-        const t = start;
-        start = end;
-        end = t;
-      }
-      return this._history(context, url, start, end).then(entries => {
-        const self = this;
-        return Promise.resolve(function*() {
-          for (const i in entries) {
-            yield Promise.resolve(entries[i]);
-          }
-          let i = 0;
-          const p = self._history(url, end + 1, end + chunkSize);
+      let i = 0;
+      const p = self._history(url, end + 1, end + chunkSize);
 
-          for (let j = 0; j < 10; j++) {
-            yield p.then(entries => {
-              return Promise.resolve(entries[i++]);
-            });
-          }
-
-          /*
-                          yield p.then(entries => {
-                            return Promise.resolve(entries[i++]);
-                          });
-            */
+      for (let j = 0; j < 10; j++) {
+        yield p.then(entries => {
+          return Promise.resolve(entries[i++]);
         });
-      });
-    });
+      }
+    };
   }
 
-  _history(context, url, start, end) {
+  async _history(context, url, start, end) {
     const xmls = [
       XML_HEADER,
       '<S:log-report xmlns:S="svn:">',
@@ -564,17 +560,17 @@ Content-Type: text/xml
     xmls.push('<S:path/>');
     xmls.push('</S:log-report>');
 
-    return this.fetch(context, url, {
+    const response = await this.fetch(context, url, {
       method: 'REPORT',
       body: xmls.join('\n'),
       headers: {
         dav: this.davHeader,
         'content-type': XML_CONTENT_TYPE
       }
-    }).then(
-      response =>
-        new Promise((fullfill, reject) => {
-          /*
+    });
+
+    return new Promise((resolve, reject) => {
+      /*
         <S:log-report xmlns:S="svn:" xmlns:D="DAV:">
         <S:log-item>
         <D:version-name>0</D:version-name>
@@ -582,67 +578,62 @@ Content-Type: text/xml
         </S:log-item>
         <S:log-item>
         */
-          const saxStream = sax.createStream(true, {
-            xmlns: true,
-            position: false,
-            trim: true
-          });
+      const saxStream = sax.createStream(true, {
+        xmlns: true,
+        position: false,
+        trim: true
+      });
 
-          const entries = [];
-          let entry;
-          let consume = ignore;
+      const entries = [];
+      let entry;
+      let consume = ignore;
 
-          saxStream.on('opentag', node => {
-            switch (node.local) {
-              case 'log-item':
-                entry = {};
-                consume = ignore;
-                break;
-              case 'version-name':
-                consume = text => {
-                  entry.version = parseInt(text, 10);
-                  consume = ignore;
-                };
-                break;
-              case 'date':
-                consume = text => {
-                  entry.date = new Date(text);
-                  consume = ignore;
-                };
-                break;
-              case 'comment':
-                consume = text => {
-                  entry.message = entry.message ? entry.message + text : text;
-                };
-                break;
-              case 'creator-displayname':
-                consume = text => {
-                  entry.creator = text;
-                  consume = ignore;
-                };
-                break;
-              default:
-                consume = ignore;
-            }
-          });
+      saxStream.on('opentag', node => {
+        switch (node.local) {
+          case 'log-item':
+            entry = {};
+            consume = ignore;
+            break;
+          case 'version-name':
+            consume = text => {
+              entry.version = parseInt(text, 10);
+              consume = ignore;
+            };
+            break;
+          case 'date':
+            consume = text => {
+              entry.date = new Date(text);
+              consume = ignore;
+            };
+            break;
+          case 'comment':
+            consume = text => {
+              entry.message = entry.message ? entry.message + text : text;
+            };
+            break;
+          case 'creator-displayname':
+            consume = text => {
+              entry.creator = text;
+              consume = ignore;
+            };
+            break;
+          default:
+            consume = ignore;
+        }
+      });
 
-          saxStream.on('closetag', name => {
-            switch (name) {
-              case 'S:log-item':
-                entries.push(entry);
-                break;
-            }
-          });
+      saxStream.on('closetag', name => {
+        switch (name) {
+          case 'S:log-item':
+            entries.push(entry);
+            break;
+        }
+      });
 
-          saxStream.on('text', text => {
-            consume(text);
-          });
-          saxStream.on('end', () => fullfill(entries));
-          saxStream.on('error', reject);
-          response.body.pipe(saxStream);
-        })
-    );
+      saxStream.on('text', text => consume(text));
+      saxStream.on('end', () => resolve(entries));
+      saxStream.on('error', reject);
+      response.body.pipe(saxStream);
+    });
   }
 }
-
-export { headerIntoSet, encodeProperties };
