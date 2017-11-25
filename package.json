@@ -30,6 +30,7 @@
   "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
   "devDependencies": {
     "ava": "^0.23.0",
+    "babel-preset-env": "^1.6.1",
     "jsdoc-babel": "^0.3.0",
     "jsdoc-to-markdown": "^3.0.2",
     "markdown-doctest": "^0.9.1",
@@ -38,8 +39,7 @@
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-multi-entry": "^2.0.2",
     "semantic-release": "^10.0.1",
-    "xo": "^0.19.0",
-    "babel-preset-env": "^1.6.1"
+    "xo": "^0.19.0"
   },
   "dependencies": {
     "sax": "^1.2.4",

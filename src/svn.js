@@ -248,7 +248,9 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     return this.fetch(
       context,
-      `https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${txn}/data/config.json`,
+      `https://subversion.assembla.com/svn/delivery_notes/!svn/txr/${
+        txn
+      }/data/config.json`,
       {
         method: 'PUT',
         body: '{ffffff}',
@@ -353,9 +355,9 @@ Content-Type: text/xml
       url.origin.length + acs.attributes['SVN-Repository-Root'].length
     );
     const u2 = new URL(
-      `${url.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${acs.attributes[
-        'SVN-Youngest-Rev'
-      ]}${path}`
+      `${url.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${
+        acs.attributes['SVN-Youngest-Rev']
+      }${path}`
     );
 
     const properties = await this.propfind(
@@ -490,12 +492,14 @@ Content-Type: text/xml
     return this.propfind(context, url, options);
   }
 
+  /*
   async *_list(context, url, options) {
     const list = await this.propfind(context, url, options);
     for (const entry of list) {
       yield entry;
     }
   }
+*/
 
   history(context, url, options = {}) {
     const p =
