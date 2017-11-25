@@ -66,6 +66,18 @@ const SVNHeaders = [
 
 function ignore() {}
 
+class ActivityCollectionSet {
+  constructor(attributes, davFeatures, allowedMethods) {
+    Object.defineProperty(this, 'attributes', { value: attributes });
+    Object.defineProperty(this, 'davFeatures', { value: davFeatures });
+    Object.defineProperty(this, 'allowedMethods', { value: allowedMethods });
+  }
+
+  get repositoryRoot() {
+    return this.attributes.get('SVN-Repository-Root');
+  }
+}
+
 /**
  * URL sheme 'svn+https' svn over https
  */
@@ -101,30 +113,26 @@ export class SVNHTTPSScheme extends HTTPSScheme {
       '</D:options>'
     ]);
 
-    const attributes = {};
+    const attributes = new Map();
     const davFeatures = new Set();
     const allowedMethods = new Set();
 
     SVNHeaders.forEach(h => {
       const v = options.headers.get(h);
-      if (v) {
-        attributes[h] = v;
+      if (v !== undefined) {
+        attributes.set(h, v);
       }
     });
 
     headerIntoSet(options.headers.get('dav'), davFeatures);
     headerIntoSet(options.headers.get('allow'), allowedMethods);
 
-    attributes['SVN-Youngest-Rev'] = parseInt(
-      options.headers.get('SVN-Youngest-Rev'),
-      10
+    attributes.set(
+      'SVN-Youngest-Rev',
+      parseInt(options.headers.get('SVN-Youngest-Rev'), 10)
     );
 
-    return {
-      attributes,
-      davFeatures,
-      allowedMethods
-    };
+    return new ActivityCollectionSet(attributes, davFeatures, allowedMethods);
   }
 
   // TODO why is this not taken from the base class ?
@@ -160,10 +168,6 @@ export class SVNHTTPSScheme extends HTTPSScheme {
     ].join(',');
   }
 
-  get repositoryBase() {
-    return 'https://subversion.assembla.com/svn/delivery_notes/';
-  }
-
   /*
   MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
 DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
@@ -180,30 +184,22 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
   }
 
   async startTransaction(context, url, message) {
-    const {
-      attributes,
-      davFeatures,
-      allowedMethods
-    } = await this.activityCollectionSet(context, url);
+    const acs = await this.activityCollectionSet(context, url);
 
-    const response = await this.fetch(
-      context,
-      this.repositoryBase + '!svn/me',
-      {
-        method: 'POST',
-        body: encodeProperties({
-          'create-txn-with-props': {
-            'svn:txn-user-agent': this.userAgent,
-            'svn:log': message,
-            'svn:txn-client-compat-version': this.clientVersion
-          }
-        }),
-        headers: {
-          dav: this.davHeader,
-          'content-type': SVN_SKEL_CONTENT_TYPE
+    const response = await this.fetch(context, acs.repositoryBase + '!svn/me', {
+      method: 'POST',
+      body: encodeProperties({
+        'create-txn-with-props': {
+          'svn:txn-user-agent': this.userAgent,
+          'svn:log': message,
+          'svn:txn-client-compat-version': this.clientVersion
         }
+      }),
+      headers: {
+        dav: this.davHeader,
+        'content-type': SVN_SKEL_CONTENT_TYPE
       }
-    );
+    });
 
     const txn = response.headers.get('SVN-Txn-Name');
 
@@ -226,7 +222,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const response = await this.fetch(
       context,
-      this.repositoryBase + '!svn/me',
+      this.repositoryRoot + '!svn/me',
       {
         method: 'POST',
         body: encodeProperties({
@@ -253,7 +249,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
     const r2 = await this.fetch(
       context,
-      `${this.repositoryBase}!svn/txr/${txn}/data/config.json`,
+      `${this.repositoryRoot}!svn/txr/${txn}/data/config.json`,
       {
         method: 'PUT',
         body: '{ffffff}',
@@ -353,12 +349,12 @@ Content-Type: text/xml
   async stat(context, url, options) {
     const acs = await this.activityCollectionSet(context, url);
     const path = url.href.substring(
-      url.origin.length + acs.attributes['SVN-Repository-Root'].length
+      url.origin.length + acs.repositoryRoot.length
     );
     const u2 = new URL(
-      `${url.origin}${acs.attributes['SVN-Rev-Root-Stub']}/${
-        acs.attributes['SVN-Youngest-Rev']
-      }${path}`
+      `${url.origin}${acs.attributes.get(
+        'SVN-Rev-Root-Stub'
+      )}/${acs.attributes.get('SVN-Youngest-Rev')}${path}`
     );
 
     const properties = await this.propfind(
