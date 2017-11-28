@@ -67,7 +67,8 @@ const SVNHeaders = [
 function ignore() {}
 
 class ActivityCollectionSet {
-  constructor(attributes, davFeatures, allowedMethods) {
+  constructor(url, attributes, davFeatures, allowedMethods) {
+    Object.defineProperty(this, 'url', { value: url });
     Object.defineProperty(this, 'attributes', { value: attributes });
     Object.defineProperty(this, 'davFeatures', { value: davFeatures });
     Object.defineProperty(this, 'allowedMethods', { value: allowedMethods });
@@ -75,6 +76,10 @@ class ActivityCollectionSet {
 
   get repositoryRoot() {
     return this.attributes.get('SVN-Repository-Root');
+  }
+
+  get absoluteRepositoryRoot() {
+    return this.url.origin + this.attributes.get('SVN-Repository-Root');
   }
 }
 
@@ -132,7 +137,12 @@ export class SVNHTTPSScheme extends HTTPSScheme {
       parseInt(options.headers.get('SVN-Youngest-Rev'), 10)
     );
 
-    return new ActivityCollectionSet(attributes, davFeatures, allowedMethods);
+    return new ActivityCollectionSet(
+      url,
+      attributes,
+      davFeatures,
+      allowedMethods
+    );
   }
 
   // TODO why is this not taken from the base class ?
@@ -186,20 +196,28 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
   async startTransaction(context, url, message) {
     const acs = await this.activityCollectionSet(context, url);
 
-    const response = await this.fetch(context, acs.repositoryBase + '!svn/me', {
-      method: 'POST',
-      body: encodeProperties({
-        'create-txn-with-props': {
-          'svn:txn-user-agent': this.userAgent,
-          'svn:log': message,
-          'svn:txn-client-compat-version': this.clientVersion
+    console.log(acs.absoluteRepositoryRoot + '!svn/me');
+
+    const response = await this.fetch(
+      context,
+      acs.absoluteRepositoryRoot + '!svn/me',
+      {
+        method: 'POST',
+        body: encodeProperties({
+          'create-txn-with-props': {
+            'svn:txn-user-agent': this.userAgent,
+            'svn:log': message,
+            'svn:txn-client-compat-version': this.clientVersion
+          }
+        }),
+        headers: {
+          dav: this.davHeader,
+          'content-type': SVN_SKEL_CONTENT_TYPE
         }
-      }),
-      headers: {
-        dav: this.davHeader,
-        'content-type': SVN_SKEL_CONTENT_TYPE
       }
-    });
+    );
+
+    console.log(response);
 
     const txn = response.headers.get('SVN-Txn-Name');
 
