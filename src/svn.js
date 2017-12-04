@@ -196,11 +196,9 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
   async startTransaction(context, url, message) {
     const acs = await this.activityCollectionSet(context, url);
 
-    console.log(acs.absoluteRepositoryRoot + '!svn/me');
-
     const response = await this.fetch(
       context,
-      acs.absoluteRepositoryRoot + '!svn/me',
+      acs.absoluteRepositoryRoot + '/!svn/me',
       {
         method: 'POST',
         body: encodeProperties({
@@ -217,15 +215,13 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
       }
     );
 
-    console.log(response);
-
     const txn = response.headers.get('SVN-Txn-Name');
 
     if (txn === undefined) {
       throw new Error('Can`t create transaction');
     }
 
-    return txn;
+    return { acs, txn };
   }
 
   /**
@@ -233,41 +229,16 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
    * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
    */
   async put(context, url, stream, options) {
-    /*this.activityCollectionSet(url).then(acs => {
-    }).then(() =>
-      this.options(url, ['<D:options xmlns:D="DAV:"/>'])
-    );*/
-
-    const response = await this.fetch(
+    const { acs, txn } = await this.startTransaction(
       context,
-      this.repositoryRoot + '!svn/me',
-      {
-        method: 'POST',
-        body: encodeProperties({
-          'create-txn-with-props': {
-            'svn:txn-user-agent': this.userAgent,
-            'svn:log': options.message,
-            'svn:txn-client-compat-version': this.clientVersion
-          }
-        }),
-        headers: {
-          dav: this.davHeader,
-          'content-type': SVN_SKEL_CONTENT_TYPE
-        }
-      }
+      url,
+      options.message
     );
-
-    const txn = response.headers.get('SVN-Txn-Name');
-
-    if (txn === undefined) {
-      throw new Error('Can`t create transaction');
-    }
-
     const [versionName] = txn.split(/\-/);
 
     const r2 = await this.fetch(
       context,
-      `${this.repositoryRoot}!svn/txr/${txn}/data/config.json`,
+      acs.absoluteRepositoryRoot + `/!svn/txr/${txn}/data/config.json`,
       {
         method: 'PUT',
         body: '{ffffff}',

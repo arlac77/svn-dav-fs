@@ -16,14 +16,14 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
-test.skip('transaction', async t => {
+test('transaction', async t => {
   const context = undefined;
   const svn = new SVNHTTPSScheme({
     proxy: process.env.HTTP_PROXY,
     credentials
   });
 
-  const tx = await svn.startTransaction(
+  const { txn } = await svn.startTransaction(
     context,
     new URL(
       'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
@@ -31,7 +31,9 @@ test.skip('transaction', async t => {
     'a new transaction'
   );
 
-  t.is(tx, '4711');
+  console.log(txn);
+
+  t.is(txn.length > 4, true);
 });
 
 /*
