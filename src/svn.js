@@ -227,6 +227,7 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
   /**
    * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
    * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
+   * https://git.tmatesoft.com/repos/svnkit.git
    */
   async put(context, url, stream, options) {
     const { acs, txn } = await this.startTransaction(
