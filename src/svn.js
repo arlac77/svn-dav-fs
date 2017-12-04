@@ -236,18 +236,24 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     );
     const [versionName] = txn.split(/\-/);
 
+    const pathInsideRepository = '/data/releases.json';
+
     const r2 = await this.fetch(
       context,
-      acs.absoluteRepositoryRoot + `/!svn/txr/${txn}/data/config.json`,
+      acs.absoluteRepositoryRoot + `/!svn/txr/${txn}/${pathInsideRepository}`,
       {
         method: 'PUT',
-        body: '{ffffff}',
+
+        //"body": { "encoding": "base64", "encoded": "U1ZOAAAlGQMEFQCEXQp9Cg==" }
+        body: 'U1ZOAAAlGQMEFQCEXQp9Cg==',
         headers: {
           dav: this.davHeader,
           'content-type': SVN_SVNDIFF_CONTENT_TYPE,
           'X-SVN-Version-Name': versionName,
-          'X-SVN-Base-Fulltext-MD5': '7f407419826ad120a3c9374947770470',
-          'X-SVN-Result-Fulltext-MD5': '03d6350bb46a63e86f1c5db703af403c'
+
+          // MD5 (releases.json) = fc0c6bba9a0b8c2079be6a6c05b1b915
+          'X-SVN-Base-Fulltext-MD5': '528454b50ad14b271f18e4e763a4a951',
+          'X-SVN-Result-Fulltext-MD5': 'fc0c6bba9a0b8c2079be6a6c05b1b915'
         }
       }
     );
