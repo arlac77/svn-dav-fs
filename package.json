@@ -1,9 +1,21 @@
 {
   "name": "svn-dav-fs",
   "version": "0.0.0-semantic-release",
-  "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
   "main": "dist/svn.js",
   "module": "src/svn.js",
+  "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
+  "keywords": [
+    "DAV",
+    "SVN",
+    "url-resolver-fs"
+  ],
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
+  "license": "BSD-2-Clause",
   "scripts": {
     "cover": "nyc --temp-directory build/nyc ava",
     "test": "ava",
@@ -15,20 +27,10 @@
     "prepare": "rollup -c",
     "lint": "documentation lint src/svn.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arlac77/svn-dav-fs.git"
+  "dependencies": {
+    "sax": "^1.2.4",
+    "url-resolver-fs": "^5.2.3"
   },
-  "keywords": [
-    "DAV",
-    "SVN",
-    "url-resolver-fs"
-  ],
-  "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/arlac77/svn-dav-fs/issues"
-  },
-  "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
   "devDependencies": {
     "ava": "^0.24.0",
     "markdown-doctest": "^0.9.1",
@@ -39,34 +41,17 @@
     "xo": "^0.19.0",
     "documentation": "^5.3.5"
   },
-  "dependencies": {
-    "sax": "^1.2.4",
-    "url-resolver-fs": "^5.2.3"
-  },
   "engines": {
     "node": ">=8.9.3"
   },
-  "contributors": [
-    {
-      "name": "Markus Felten",
-      "email": "markus.felten@gmx.de"
-    }
-  ],
-  "nyc": {
-    "include": [
-      "build/*-test.js",
-      "src/**/*.js"
-    ],
-    "reporter": [
-      "lcov"
-    ],
-    "report-dir": "./build/coverage"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arlac77/svn-dav-fs.git"
   },
-  "template": {
-    "repository": {
-      "url": "https://github.com/arlac77/npm-package-template.git"
-    }
+  "bugs": {
+    "url": "https://github.com/arlac77/svn-dav-fs/issues"
   },
+  "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
   "ava": {
     "babel": {
       "presets": []
@@ -78,7 +63,22 @@
       "babel-register"
     ]
   },
+  "nyc": {
+    "include": [
+      "build/*-test.js",
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "lcov"
+    ],
+    "report-dir": "./build/coverage"
+  },
   "xo": {
     "space": true
+  },
+  "template": {
+    "repository": {
+      "url": "https://github.com/arlac77/npm-package-template.git"
+    }
   }
 }
