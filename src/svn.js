@@ -66,6 +66,17 @@ const SVNHeaders = [
 
 function ignore() {}
 
+/**
+ * @param {URL} url
+ * @param {Map<string,Object>} attributes
+ * @param {Set<string>} davFeatures
+ * @param {Set<string>} allowedMethods
+ *
+ * @property {URL} url
+ * @property {Map<string,Object>} attributes
+ * @property {Set<string>} davFeatures
+ * @property {Set<string>} allowedMethods
+ */
 class ActivityCollectionSet {
   constructor(url, attributes, davFeatures, allowedMethods) {
     Object.defineProperty(this, 'url', { value: url });
@@ -89,10 +100,10 @@ class ActivityCollectionSet {
 export class SVNHTTPSScheme extends HTTPSScheme {
   /**
    * Execute options request
-   * @param context {Context} execution context
-   * @param url {URL}
-   * @param body {string[]}  xml lines
-   * @return {Promise}
+   * @param {Context} context execution context
+   * @param {URL} url
+   * @param {string[]} body xml lines
+   * @return {Promise<Request>}
    */
   options(context, url, body) {
     return this.fetch(context, url, {
@@ -107,9 +118,9 @@ export class SVNHTTPSScheme extends HTTPSScheme {
 
   /**
    * query the activity collection set.
-   * @param context {Context} execution context
-   * @param url {URL}
-   * @return {Promise}
+   * @param {Context} context execution context
+   * @param {URL} url
+   * @return {Promise<ActivityCollectionSet>}
    */
   async activityCollectionSet(context, url) {
     const options = await this.options(context, url, [

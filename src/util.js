@@ -1,4 +1,5 @@
 /**
+ * <!-- skip-example -->
  * Encodes objects into strings as used by svn
  * @example
  * (create-txn-with-props

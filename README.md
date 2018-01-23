@@ -27,15 +27,32 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 ### Table of Contents
 
 -   [svn-dav-fs](#svn-dav-fs)
+-   [ActivityCollectionSet](#activitycollectionset)
 -   [SVNHTTPSScheme](#svnhttpsscheme)
     -   [options](#options)
-    -   [activityCollectionSet](#activitycollectionset)
+    -   [activityCollectionSet](#activitycollectionset-1)
     -   [userAgent](#useragent)
     -   [clientVersion](#clientversion)
     -   [put](#put)
 -   [encodeProperties](#encodeproperties)
 
 ## svn-dav-fs
+
+## ActivityCollectionSet
+
+**Parameters**
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+**Properties**
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 ## SVNHTTPSScheme
 
@@ -49,11 +66,11 @@ Execute options request
 
 **Parameters**
 
--   `context`  {Context} execution context
--   `url`  {URL}
--   `body`  {string\[]}  xml lines
+-   `context` **Context** execution context
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `body` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** xml lines
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Request](https://developer.mozilla.org/Add-ons/SDK/High-Level_APIs/request)>** 
 
 ### activityCollectionSet
 
@@ -61,10 +78,10 @@ query the activity collection set.
 
 **Parameters**
 
--   `context`  {Context} execution context
--   `url`  {URL}
+-   `context` **Context** execution context
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[ActivityCollectionSet](#activitycollectionset)>** 
 
 ### userAgent
 
@@ -92,6 +109,8 @@ Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   `options`  
 
 ## encodeProperties
+
+<!-- skip-example -->
 
 Encodes objects into strings as used by svn
 
