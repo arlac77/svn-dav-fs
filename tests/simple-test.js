@@ -21,6 +21,21 @@ test('has type', t => {
   t.is(svn.type, 'svn+https');
 });
 
+test('inside path', async t => {
+  const svn = new SVNHTTPSScheme({
+    proxy: process.env.HTTP_PROXY,
+    credentials
+  });
+
+  const url = new URL(
+    'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
+  );
+
+  const acs = await svn.activityCollectionSet(undefined, url);
+
+  t.is(acs.pathInsideRepository, '/data/environments.json');
+});
+
 test('can stat', async t => {
   const context = undefined;
   const svn = new SVNHTTPSScheme({

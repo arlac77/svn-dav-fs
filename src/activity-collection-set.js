@@ -11,10 +11,12 @@
  */
 export class ActivityCollectionSet {
   constructor(url, attributes, davFeatures, allowedMethods) {
-    Object.defineProperty(this, 'url', { value: url });
-    Object.defineProperty(this, 'attributes', { value: attributes });
-    Object.defineProperty(this, 'davFeatures', { value: davFeatures });
-    Object.defineProperty(this, 'allowedMethods', { value: allowedMethods });
+    Object.defineProperties(this, {
+      url: { value: url },
+      attributes: { value: attributes },
+      davFeatures: { value: davFeatures },
+      allowedMethods: { value: allowedMethods }
+    });
   }
 
   get repositoryRoot() {
@@ -22,6 +24,13 @@ export class ActivityCollectionSet {
   }
 
   get absoluteRepositoryRoot() {
-    return this.url.origin + this.attributes.get('SVN-Repository-Root');
+    return this.url.origin + this.repositoryRoot;
+  }
+
+  /**
+   * @return {string} path of the url inside of the repository
+   */
+  get pathInsideRepository() {
+    return this.url.pathname.substring(this.repositoryRoot.length);
   }
 }

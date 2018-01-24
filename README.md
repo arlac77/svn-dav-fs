@@ -35,6 +35,7 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
     -   [startTransaction](#starttransaction)
     -   [put](#put)
 -   [ActivityCollectionSet](#activitycollectionset-1)
+    -   [pathInsideRepository](#pathinsiderepository)
 -   [encodeProperties](#encodeproperties)
 
 ## svn-dav-fs
@@ -82,6 +83,8 @@ Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ### startTransaction
 
+<!-- skip-example -->
+
 Start a new transaction
 
 **Parameters**
@@ -89,6 +92,19 @@ Start a new transaction
 -   `context` **Context** 
 -   `url` **ULR** 
 -   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+**Examples**
+
+```javascript
+POST /svn/delivery_notes/!svn/me HTTP/1.1
+Content-Type	application/vnd.svn-skel
+DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+(create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
+Response:
+SVN-Txn-Name: 1483-1a1
+```
 
 Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** acs, txn
 
@@ -120,6 +136,10 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
 -   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 -   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+### pathInsideRepository
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** path of the url inside of the repository
 
 ## encodeProperties
 

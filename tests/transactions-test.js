@@ -16,7 +16,7 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
-test('transaction', async t => {
+test('start transaction', async t => {
   const context = undefined;
   const svn = new SVNHTTPSScheme({
     proxy: process.env.HTTP_PROXY,

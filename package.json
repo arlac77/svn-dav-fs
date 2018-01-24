@@ -29,6 +29,7 @@
     "travis-deploy-once": "travis-deploy-once"
   },
   "dependencies": {
+    "hasha": "^3.0.0",
     "sax": "^1.2.4",
     "url-resolver-fs": "^5.2.3"
   },

@@ -6,6 +6,7 @@ export { headerIntoSet, encodeProperties };
 
 const sax = require('sax'),
   { URL } = require('url');
+const hasha = require('hasha');
 
 /**
  * @module svn-dav-fs
@@ -71,6 +72,15 @@ function ignore() {}
  * URL scheme 'svn+https' svn over https
  */
 export class SVNHTTPSScheme extends HTTPSScheme {
+  // TODO why is this not taken from the base class ?
+  get type() {
+    return 'svn+https';
+  }
+
+  static get name() {
+    return 'svn+https';
+  }
+
   /**
    * Execute options request
    * @param {Context} context execution context
@@ -129,15 +139,6 @@ export class SVNHTTPSScheme extends HTTPSScheme {
     );
   }
 
-  // TODO why is this not taken from the base class ?
-  get type() {
-    return 'svn+https';
-  }
-
-  static get name() {
-    return 'svn+https';
-  }
-
   /**
    * Delivers svn user agent
    * @return {string} user agent identifier
@@ -178,11 +179,21 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
   }
 
   /**
+   * <!-- skip-example -->
    * Start a new transaction
    * @param {Context} context
    * @param {ULR} url
    * @param {string} message
    * @return {Object} acs, txn
+   * @example
+   * POST /svn/delivery_notes/!svn/me HTTP/1.1
+   * Content-Type	application/vnd.svn-skel
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+   * (create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
+   * Response:
+   * SVN-Txn-Name: 1483-1a1
    */
   async startTransaction(context, url, message) {
     const acs = await this.activityCollectionSet(context, url);
@@ -228,11 +239,14 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     );
     const [versionName] = txn.split(/\-/);
 
-    const pathInsideRepository = '/data/releases.json';
+    //const pathInsideRepository = '/data/releases.json';
+
+    const hashResult = await hasha.stream(stream, { algorithm: 'md5' });
 
     const r2 = await this.fetch(
       context,
-      acs.absoluteRepositoryRoot + `/!svn/txr/${txn}/${pathInsideRepository}`,
+      acs.absoluteRepositoryRoot +
+        `/!svn/txr/${txn}/${acs.pathInsideRepository}`,
       {
         method: 'PUT',
 
@@ -245,25 +259,12 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
           // MD5 (releases.json) = fc0c6bba9a0b8c2079be6a6c05b1b915
           'X-SVN-Base-Fulltext-MD5': '528454b50ad14b271f18e4e763a4a951',
-          'X-SVN-Result-Fulltext-MD5': 'fc0c6bba9a0b8c2079be6a6c05b1b915'
+          'X-SVN-Result-Fulltext-MD5': hashResult //'fc0c6bba9a0b8c2079be6a6c05b1b915'
         }
       }
     );
 
     console.log(r2);
-
-    /*
-    POST /svn/delivery_notes/!svn/me HTTP/1.1
-    Content-Type	application/vnd.svn-skel
-    DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
-    DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
-    DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
-
-    (create-txn-with-props (svn:txn-user-agent 48 SVN/1.9.4 (x86_64-apple-darwin15.0.0) serf/1.3.8 svn:log 19 this is the message svn:txn-client-compat-version 5 1.9.4))
-
-    Response:
-    SVN-Txn-Name: 1483-1a1
-    */
 
     /*
     PUT /svn/delivery_notes/!svn/txr/1483-1a1/data/config.json HTTP/1.1
