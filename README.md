@@ -27,38 +27,23 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 ### Table of Contents
 
 -   [svn-dav-fs](#svn-dav-fs)
--   [ActivityCollectionSet](#activitycollectionset)
 -   [SVNHTTPSScheme](#svnhttpsscheme)
     -   [options](#options)
-    -   [activityCollectionSet](#activitycollectionset-1)
+    -   [activityCollectionSet](#activitycollectionset)
     -   [userAgent](#useragent)
     -   [clientVersion](#clientversion)
+    -   [startTransaction](#starttransaction)
     -   [put](#put)
+-   [ActivityCollectionSet](#activitycollectionset-1)
 -   [encodeProperties](#encodeproperties)
 
 ## svn-dav-fs
-
-## ActivityCollectionSet
-
-**Parameters**
-
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
-
-**Properties**
-
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 ## SVNHTTPSScheme
 
 **Extends HTTPSScheme**
 
-URL sheme 'svn+https' svn over https
+URL scheme 'svn+https' svn over https
 
 ### options
 
@@ -74,7 +59,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### activityCollectionSet
 
-query the activity collection set.
+query for the activity collection set.
 
 **Parameters**
 
@@ -95,11 +80,23 @@ Delivers svn client version
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** version
 
+### startTransaction
+
+Start a new transaction
+
+**Parameters**
+
+-   `context` **Context** 
+-   `url` **ULR** 
+-   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** acs, txn
+
 ### put
 
-<http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff>
-<http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>
-<https://git.tmatesoft.com/repos/svnkit.git>
+-   **See: <http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff>**
+-   **See: <http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>**
+-   **See: <https://git.tmatesoft.com/repos/svnkit.git>**
 
 **Parameters**
 
@@ -107,6 +104,22 @@ Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   `url`  
 -   `stream`  
 -   `options`  
+
+## ActivityCollectionSet
+
+**Parameters**
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+**Properties**
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 ## encodeProperties
 

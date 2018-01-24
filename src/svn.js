@@ -1,5 +1,6 @@
 import { HTTPSScheme } from 'url-resolver-fs';
 
+import { ActivityCollectionSet } from './activity-collection-set';
 import { headerIntoSet, encodeProperties } from './util';
 export { headerIntoSet, encodeProperties };
 
@@ -67,35 +68,7 @@ const SVNHeaders = [
 function ignore() {}
 
 /**
- * @param {URL} url
- * @param {Map<string,Object>} attributes
- * @param {Set<string>} davFeatures
- * @param {Set<string>} allowedMethods
- *
- * @property {URL} url
- * @property {Map<string,Object>} attributes
- * @property {Set<string>} davFeatures
- * @property {Set<string>} allowedMethods
- */
-class ActivityCollectionSet {
-  constructor(url, attributes, davFeatures, allowedMethods) {
-    Object.defineProperty(this, 'url', { value: url });
-    Object.defineProperty(this, 'attributes', { value: attributes });
-    Object.defineProperty(this, 'davFeatures', { value: davFeatures });
-    Object.defineProperty(this, 'allowedMethods', { value: allowedMethods });
-  }
-
-  get repositoryRoot() {
-    return this.attributes.get('SVN-Repository-Root');
-  }
-
-  get absoluteRepositoryRoot() {
-    return this.url.origin + this.attributes.get('SVN-Repository-Root');
-  }
-}
-
-/**
- * URL sheme 'svn+https' svn over https
+ * URL scheme 'svn+https' svn over https
  */
 export class SVNHTTPSScheme extends HTTPSScheme {
   /**
@@ -117,7 +90,7 @@ export class SVNHTTPSScheme extends HTTPSScheme {
   }
 
   /**
-   * query the activity collection set.
+   * query for the activity collection set.
    * @param {Context} context execution context
    * @param {URL} url
    * @return {Promise<ActivityCollectionSet>}
@@ -204,6 +177,13 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     });
   }
 
+  /**
+   * Start a new transaction
+   * @param {Context} context
+   * @param {ULR} url
+   * @param {string} message
+   * @return {Object} acs, txn
+   */
   async startTransaction(context, url, message) {
     const acs = await this.activityCollectionSet(context, url);
 
@@ -229,16 +209,16 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
     const txn = response.headers.get('SVN-Txn-Name');
 
     if (txn === undefined) {
-      throw new Error('Can`t create transaction');
+      throw new Error(`Can't create transaction: ${url}`);
     }
 
     return { acs, txn };
   }
 
   /**
-   * http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
-   * http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
-   * https://git.tmatesoft.com/repos/svnkit.git
+   * @see http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
+   * @see http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
+   * @see https://git.tmatesoft.com/repos/svnkit.git
    */
   async put(context, url, stream, options) {
     const { acs, txn } = await this.startTransaction(

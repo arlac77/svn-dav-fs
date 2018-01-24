@@ -23,7 +23,7 @@ test('transaction', async t => {
     credentials
   });
 
-  const { txn } = await svn.startTransaction(
+  const { txn, acs } = await svn.startTransaction(
     context,
     new URL(
       'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
@@ -31,7 +31,7 @@ test('transaction', async t => {
     'a new transaction'
   );
 
-  console.log(txn);
+  //console.log(txn);
 
   t.is(txn.length > 4, true);
 });
