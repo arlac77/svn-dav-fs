@@ -1,13 +1,15 @@
 import pkg from './package.json';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 
 export default {
-  plugins: [],
+  plugins: [resolve(), commonjs()],
 
   output: {
     file: pkg.main,
     format: 'cjs'
   },
 
-  external: ['url-resolver-fs'],
+  external: ['url', 'url-resolver-fs'],
   input: pkg.module
 };

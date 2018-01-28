@@ -1,16 +1,12 @@
+import { URL } from 'url';
 import { HTTPSScheme } from 'url-resolver-fs';
 
 import { ActivityCollectionSet } from './activity-collection-set';
 import { headerIntoSet, encodeProperties } from './util';
 export { headerIntoSet, encodeProperties };
 
-const sax = require('sax'),
-  { URL } = require('url');
+const { createStream } = require('sax');
 const hasha = require('hasha');
-
-/**
- * @module svn-dav-fs
- */
 
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = 'text/xml';
@@ -392,7 +388,7 @@ Content-Type: text/xml
       let consume = ignore;
       let rootPathPrefixLength;
 
-      const saxStream = sax.createStream(true, {
+      const saxStream = createStream(true, {
         xmlns: true,
         position: false,
         trim: true
@@ -562,7 +558,7 @@ Content-Type: text/xml
         </S:log-item>
         <S:log-item>
         */
-      const saxStream = sax.createStream(true, {
+      const saxStream = createStream(true, {
         xmlns: true,
         position: false,
         trim: true
