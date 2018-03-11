@@ -151,6 +151,9 @@ export class SVNHTTPSScheme extends HTTPSScheme {
     return '1.9.4';
   }
 
+  /**
+   * @type {string}
+   */
   get davHeader() {
     return [
       NS_SVN_DAV_DEPTH,
@@ -159,12 +162,17 @@ export class SVNHTTPSScheme extends HTTPSScheme {
     ].join(',');
   }
 
-  /*
-  MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
-DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
-DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
-DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
-*/
+  /**
+   * <!-- skip-example -->
+   * @example
+   * MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+   * DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+   * @param {Context} context
+   * @param {URL} url
+   * @param {string} tx
+   */
   async mkcol(context, url, tx) {
     return this.fetch(context, url, {
       method: 'MKCOL',
@@ -226,6 +234,10 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
    * @see http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
    * @see http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
    * @see https://git.tmatesoft.com/repos/svnkit.git
+   * @param {Context} context
+   * @param {URL} url
+   * @param {ReadableStream} stream
+   * @param {Object} options
    */
   async put(context, url, stream, options) {
     const { acs, txn } = await this.startTransaction(

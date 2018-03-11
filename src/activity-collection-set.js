@@ -19,10 +19,16 @@ export class ActivityCollectionSet {
     });
   }
 
+  /**
+   * @type {string}
+   */
   get repositoryRoot() {
     return this.attributes.get('SVN-Repository-Root');
   }
 
+  /**
+   * @type {string}
+   */
   get absoluteRepositoryRoot() {
     return this.url.origin + this.repositoryRoot;
   }

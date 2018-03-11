@@ -26,19 +26,20 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 ### Table of Contents
 
--   [svn-dav-fs](#svn-dav-fs)
 -   [SVNHTTPSScheme](#svnhttpsscheme)
     -   [options](#options)
     -   [activityCollectionSet](#activitycollectionset)
     -   [userAgent](#useragent)
     -   [clientVersion](#clientversion)
+    -   [davHeader](#davheader)
+    -   [mkcol](#mkcol)
     -   [startTransaction](#starttransaction)
     -   [put](#put)
 -   [ActivityCollectionSet](#activitycollectionset-1)
+    -   [repositoryRoot](#repositoryroot)
+    -   [absoluteRepositoryRoot](#absoluterepositoryroot)
     -   [pathInsideRepository](#pathinsiderepository)
 -   [encodeProperties](#encodeproperties)
-
-## svn-dav-fs
 
 ## SVNHTTPSScheme
 
@@ -81,6 +82,29 @@ Delivers svn client version
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** version
 
+### davHeader
+
+Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+### mkcol
+
+<!-- skip-example -->
+
+**Parameters**
+
+-   `context` **Context** 
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `tx` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+**Examples**
+
+```javascript
+MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
+DAV	http://subversion.tigris.org/xmlns/dav/svn/depth
+DAV	http://subversion.tigris.org/xmlns/dav/svn/mergeinfo
+DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
+```
+
 ### startTransaction
 
 <!-- skip-example -->
@@ -116,10 +140,10 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 **Parameters**
 
--   `context`  
--   `url`  
--   `stream`  
--   `options`  
+-   `context` **Context** 
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `stream` **ReadableStream** 
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
 
 ## ActivityCollectionSet
 
@@ -136,6 +160,14 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
 -   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 -   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+### repositoryRoot
+
+Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+### absoluteRepositoryRoot
+
+Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 
 ### pathInsideRepository
 
