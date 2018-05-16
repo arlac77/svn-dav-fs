@@ -4,11 +4,7 @@
   "main": "dist/svn.js",
   "module": "src/svn.js",
   "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
-  "keywords": [
-    "DAV",
-    "SVN",
-    "url-resolver-fs"
-  ],
+  "keywords": ["DAV", "SVN", "url-resolver-fs"],
   "contributors": [
     {
       "name": "Markus Felten",
@@ -46,7 +42,7 @@
     "travis-deploy-once": "^5.0.0"
   },
   "engines": {
-    "node": ">=8.11"
+    "node": ">=10.1"
   },
   "repository": {
     "type": "git",
@@ -60,21 +56,12 @@
     "babel": {
       "presets": []
     },
-    "files": [
-      "build/*-test.js"
-    ],
-    "require": [
-      "babel-register"
-    ]
+    "files": ["build/*-test.js"],
+    "require": ["babel-register"]
   },
   "nyc": {
-    "include": [
-      "build/*-test.js",
-      "src/**/*.js"
-    ],
-    "reporter": [
-      "lcov"
-    ],
+    "include": ["build/*-test.js", "src/**/*.js"],
+    "reporter": ["lcov"],
     "report-dir": "./build/coverage"
   },
   "xo": {
