@@ -1,6 +1,9 @@
 {
   "name": "svn-dav-fs",
   "version": "0.0.0-semantic-release",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/svn.js",
   "module": "src/svn.js",
   "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
