@@ -27,18 +27,29 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 -   [SVNHTTPSScheme](#svnhttpsscheme)
     -   [options](#options)
+        -   [Parameters](#parameters)
     -   [activityCollectionSet](#activitycollectionset)
+        -   [Parameters](#parameters-1)
     -   [userAgent](#useragent)
     -   [clientVersion](#clientversion)
     -   [davHeader](#davheader)
     -   [mkcol](#mkcol)
+        -   [Parameters](#parameters-2)
+        -   [Examples](#examples)
     -   [startTransaction](#starttransaction)
+        -   [Parameters](#parameters-3)
+        -   [Examples](#examples-1)
     -   [put](#put)
+        -   [Parameters](#parameters-4)
 -   [ActivityCollectionSet](#activitycollectionset-1)
+    -   [Parameters](#parameters-5)
+    -   [Properties](#properties)
     -   [repositoryRoot](#repositoryroot)
     -   [absoluteRepositoryRoot](#absoluterepositoryroot)
     -   [pathInsideRepository](#pathinsiderepository)
 -   [encodeProperties](#encodeproperties)
+    -   [Parameters](#parameters-6)
+    -   [Examples](#examples-2)
 
 ## SVNHTTPSScheme
 
@@ -50,7 +61,7 @@ URL scheme 'svn+https' svn over https
 
 Execute options request
 
-**Parameters**
+#### Parameters
 
 -   `context` **Context** execution context
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
@@ -62,7 +73,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 query for the activity collection set.
 
-**Parameters**
+#### Parameters
 
 -   `context` **Context** execution context
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
@@ -89,13 +100,13 @@ Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 <!-- skip-example -->
 
-**Parameters**
+#### Parameters
 
 -   `context` **Context** 
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 -   `tx` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
-**Examples**
+#### Examples
 
 ```javascript
 MKCOL /svn/delivery_notes/!svn/txr/1485-1cs/data/comp2 HTTP/1.1
@@ -110,13 +121,13 @@ DAV	http://subversion.tigris.org/xmlns/dav/svn/log-revprops
 
 Start a new transaction
 
-**Parameters**
+#### Parameters
 
 -   `context` **Context** 
 -   `url` **ULR** 
 -   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
-**Examples**
+#### Examples
 
 ```javascript
 POST /svn/delivery_notes/!svn/me HTTP/1.1
@@ -137,7 +148,7 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   **See: <http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>**
 -   **See: <https://git.tmatesoft.com/repos/svnkit.git>**
 
-**Parameters**
+#### Parameters
 
 -   `context` **Context** 
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
@@ -146,14 +157,14 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ## ActivityCollectionSet
 
-**Parameters**
+### Parameters
 
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 -   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
 -   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 -   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
-**Properties**
+### Properties
 
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 -   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
@@ -178,11 +189,11 @@ Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 Encodes objects into strings as used by svn
 
-**Parameters**
+### Parameters
 
 -   `object` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** to be encoded
 
-**Examples**
+### Examples
 
 ```javascript
 (create-txn-with-props
