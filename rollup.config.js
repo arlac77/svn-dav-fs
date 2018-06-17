@@ -7,7 +7,8 @@ export default {
 
   output: {
     file: pkg.main,
-    format: 'cjs'
+    format: 'cjs',
+    interop: false
   },
 
   external: ['url', 'url-resolver-fs'],

@@ -1,7 +1,6 @@
 import test from 'ava';
+import { URL } from 'url';
 import { SVNHTTPSScheme } from '../src/svn';
-
-const { URL } = require('url');
 
 const credentials = {
   password: 'xxx',
