@@ -84,7 +84,7 @@ export class SVNHTTPSScheme extends HTTPSScheme {
    * @param {string[]} body xml lines
    * @return {Promise<Request>}
    */
-  options(context, url, body) {
+  optionsRequest(context, url, body) {
     return this.fetch(context, url, {
       method: 'OPTIONS',
       body: [XML_HEADER, ...body].join(''),
@@ -102,7 +102,7 @@ export class SVNHTTPSScheme extends HTTPSScheme {
    * @return {Promise<ActivityCollectionSet>}
    */
   async activityCollectionSet(context, url) {
-    const options = await this.options(context, url, [
+    const options = await this.optionsRequest(context, url, [
       '<D:options xmlns:D="DAV:">',
       '<D:activity-collection-set></D:activity-collection-set>',
       '</D:options>'

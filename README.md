@@ -26,7 +26,7 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 ### Table of Contents
 
 -   [SVNHTTPSScheme](#svnhttpsscheme)
-    -   [options](#options)
+    -   [optionsRequest](#optionsrequest)
         -   [Parameters](#parameters)
     -   [activityCollectionSet](#activitycollectionset)
         -   [Parameters](#parameters-1)
@@ -57,7 +57,7 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 URL scheme 'svn+https' svn over https
 
-### options
+### optionsRequest
 
 Execute options request
 
