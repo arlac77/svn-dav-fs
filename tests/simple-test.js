@@ -18,7 +18,7 @@ if (process.env.SVN_PASSWORD) {
 const OPTIONS = {
   proxy: process.env.HTTP_PROXY,
   provideCredentials: async realm => {
-    console.log(realm);
+    //console.log(realm);
     return credentials;
   }
 };

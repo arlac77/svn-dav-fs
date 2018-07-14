@@ -15,12 +15,17 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
+const OPTIONS = {
+  proxy: process.env.HTTP_PROXY,
+  provideCredentials: async realm => {
+    //console.log(realm);
+    return credentials;
+  }
+};
+
 test('start transaction', async t => {
   const context = undefined;
-  const svn = new SVNHTTPSScheme({
-    proxy: process.env.HTTP_PROXY,
-    credentials
-  });
+  const svn = new SVNHTTPSScheme(OPTIONS);
 
   const { txn, acs } = await svn.startTransaction(
     context,
