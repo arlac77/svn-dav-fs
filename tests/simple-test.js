@@ -15,16 +15,21 @@ if (process.env.SVN_PASSWORD) {
   credentials.password = process.env.SVN_PASSWORD;
 }
 
+const OPTIONS = {
+  proxy: process.env.HTTP_PROXY,
+  provideCredentials: async realm => {
+    console.log(realm);
+    return credentials;
+  }
+};
+
 test('has type', t => {
   const svn = new SVNHTTPSScheme();
   t.is(svn.type, 'svn+https');
 });
 
 test('inside path', async t => {
-  const svn = new SVNHTTPSScheme({
-    proxy: process.env.HTTP_PROXY,
-    credentials
-  });
+  const svn = new SVNHTTPSScheme(OPTIONS);
 
   const url = new URL(
     'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
@@ -37,10 +42,7 @@ test('inside path', async t => {
 
 test('can stat', async t => {
   const context = undefined;
-  const svn = new SVNHTTPSScheme({
-    proxy: process.env.HTTP_PROXY,
-    credentials
-  });
+  const svn = new SVNHTTPSScheme(OPTIONS);
 
   const stat = await svn.stat(
     context,
@@ -59,10 +61,7 @@ test('can stat', async t => {
 
 test('can list', async t => {
   const context = undefined;
-  const svn = new SVNHTTPSScheme({
-    proxy: process.env.HTTP_PROXY,
-    credentials
-  });
+  const svn = new SVNHTTPSScheme(OPTIONS);
 
   const entries = await svn.list(
     context,
