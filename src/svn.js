@@ -68,11 +68,6 @@ function ignore() {}
  * URL scheme 'svn+https' svn over https
  */
 export class SVNHTTPSScheme extends HTTPSScheme {
-  // TODO why is this not taken from the base class ?
-  get type() {
-    return 'svn+https';
-  }
-
   static get name() {
     return 'svn+https';
   }

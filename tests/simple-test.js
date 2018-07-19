@@ -23,9 +23,9 @@ const OPTIONS = {
   }
 };
 
-test('has type', t => {
+test('svn+https has name', t => {
   const svn = new SVNHTTPSScheme();
-  t.is(svn.type, 'svn+https');
+  t.is(svn.name, 'svn+https');
 });
 
 test('inside path', async t => {
