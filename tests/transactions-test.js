@@ -1,10 +1,9 @@
-import test from 'ava';
-import { SVNHTTPSScheme } from '../src/svn';
-import { URL } from 'url';
+import test from "ava";
+import { SVNHTTPSScheme } from "../src/svn";
 
 const credentials = {
-  password: 'xxx',
-  user: 'yyy'
+  password: "xxx",
+  user: "yyy"
 };
 
 if (process.env.SVN_USER) {
@@ -23,16 +22,16 @@ const OPTIONS = {
   }
 };
 
-test('start transaction', async t => {
+test("start transaction", async t => {
   const context = undefined;
   const svn = new SVNHTTPSScheme(OPTIONS);
 
   const { txn, acs } = await svn.startTransaction(
     context,
     new URL(
-      'https://subversion.assembla.com/svn/delivery_notes/data/environments.json'
+      "https://subversion.assembla.com/svn/delivery_notes/data/environments.json"
     ),
-    'a new transaction'
+    "a new transaction"
   );
 
   //console.log(txn);
