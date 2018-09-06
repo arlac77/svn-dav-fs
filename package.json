@@ -37,6 +37,8 @@
     "url-resolver-fs": "^7.3.1"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-async-generator-functions": "^7.0.0",
+    "rollup-plugin-babel": "^4.0.3",
     "ava": "^0.25.0",
     "documentation": "^8.1.2",
     "markdown-doctest": "^0.9.1",
