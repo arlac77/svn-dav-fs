@@ -67,6 +67,29 @@ function ignore() {}
  * URL scheme 'svn+https' svn over https
  */
 export class SVNHTTPSScheme extends HTTPSScheme {
+  /**
+   * Extract options suitable for the constructor
+   * form the given set of environment variables
+   * @param {Object} env
+   * @return {Object} undefined if no suitable environment variables have been found
+   */
+  static optionsFromEnvironment(env) {
+    if (env !== undefined) {
+      const credentials = {};
+      if (env.SVN_USER !== undefined) {
+        credentials.user = env.SVN_USER;
+      }
+
+      if (env.SVN_PASSWORD !== undefined) {
+        credentials.password = env.SVN_PASSWORD;
+      }
+
+      return { credentials };
+    }
+
+    return undefined;
+  }
+
   static get name() {
     return "svn+https";
   }
@@ -481,11 +504,11 @@ Content-Type: text/xml
     }
   }
 
-  async history(context, url, options = {}) {
+  async *history(context, url, options = {}) {
     let start;
     if (options.version === undefined) {
-      const entries = await this.list(context, url);
-      start = entries[0].version;
+      const entries = this.list(context, url);
+      start = (yield entries).version;
     } else {
       start = options.version;
     }
@@ -508,21 +531,9 @@ Content-Type: text/xml
 
     const entries = await this._history(context, url, start, end);
 
-    const self = this;
-
-    return function*() {
-      for (const i in entries) {
-        yield Promise.resolve(entries[i]);
-      }
-      let i = 0;
-      const p = self._history(url, end + 1, end + chunkSize);
-
-      for (let j = 0; j < 10; j++) {
-        yield p.then(entries => {
-          return Promise.resolve(entries[i++]);
-        });
-      }
-    };
+    for (const entry of entries) {
+      yield entry;
+    }
   }
 
   async _history(context, url, start, end) {

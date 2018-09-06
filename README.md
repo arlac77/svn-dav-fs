@@ -41,14 +41,16 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
         -   [Examples](#examples-1)
     -   [put](#put)
         -   [Parameters](#parameters-4)
+    -   [optionsFromEnvironment](#optionsfromenvironment)
+        -   [Parameters](#parameters-5)
 -   [ActivityCollectionSet](#activitycollectionset-1)
-    -   [Parameters](#parameters-5)
+    -   [Parameters](#parameters-6)
     -   [Properties](#properties)
     -   [repositoryRoot](#repositoryroot)
     -   [absoluteRepositoryRoot](#absoluterepositoryroot)
     -   [pathInsideRepository](#pathinsiderepository)
 -   [encodeProperties](#encodeproperties)
-    -   [Parameters](#parameters-6)
+    -   [Parameters](#parameters-7)
     -   [Examples](#examples-2)
 
 ## SVNHTTPSScheme
@@ -154,6 +156,17 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 -   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 -   `stream` **ReadableStream** 
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+
+### optionsFromEnvironment
+
+Extract options suitable for the constructor
+form the given set of environment variables
+
+#### Parameters
+
+-   `env` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** undefined if no suitable environment variables have been found
 
 ## ActivityCollectionSet
 
