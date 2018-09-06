@@ -475,18 +475,11 @@ Content-Type: text/xml
     });
   }
 
-  async list(context, url, options) {
-    return this.propfind(context, url, options);
-  }
-
-  /*
-  async *_list(context, url, options) {
-    const list = await this.propfind(context, url, options);
-    for (const entry of list) {
+  async *list(context, url, options) {
+    for (const entry of await this.propfind(context, url, options)) {
       yield entry;
     }
   }
-*/
 
   async history(context, url, options = {}) {
     let start;

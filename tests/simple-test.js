@@ -62,13 +62,14 @@ test("can list", async t => {
   const context = undefined;
   const svn = new SVNHTTPSScheme(OPTIONS);
 
-  const entries = await svn.list(
-    context,
-    new URL("https://subversion.assembla.com/svn/delivery_notes/data")
-  );
   const all = new Set();
 
-  entries.forEach(entry => all.add(entry.name));
+  for await (const entry of svn.list(
+    context,
+    new URL("https://subversion.assembla.com/svn/delivery_notes/data")
+  )) {
+    all.add(entry.name);
+  }
 
   t.true(all.has("releases.json"));
   t.true(all.has("comp1"));
