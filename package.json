@@ -71,7 +71,11 @@
     "require": [
       "esm"
     ],
-    "compileEnhancements": false
+    "compileEnhancements": false,
+    "extensions": [
+      "js",
+      "mjs"
+    ]
   },
   "template": {
     "repository": {
