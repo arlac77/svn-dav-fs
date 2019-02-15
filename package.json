@@ -30,7 +30,7 @@
   "dependencies": {
     "hasha": "^3.0.0",
     "sax": "^1.2.4",
-    "url-resolver-fs": "^7.3.6"
+    "url-resolver-fs": "^8.0.0"
   },
   "devDependencies": {
     "ava": "^1.2.1",
