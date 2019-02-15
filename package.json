@@ -23,8 +23,7 @@
     "cover": "c8 --temp-directory build/coverage ava && c8 report -r lcov --temp-directory build/coverage",
     "docs": "documentation readme src/svn.js --section=API",
     "lint": "documentation lint src/svn.js",
-    "posttest": "npm run prepare && markdown-doctest",
-    "prepare": "rollup -c",
+    "posttest": "markdown-doctest && npm run prepare",
     "pretest": "rollup -c tests/rollup.config.js",
     "test": "ava"
   },
@@ -39,13 +38,6 @@
     "documentation": "^9.1.1",
     "esm": "^3.2.4",
     "markdown-doctest": "^0.9.1",
-    "rollup": "^1.1.2",
-    "rollup-plugin-babel": "^4.3.1",
-    "rollup-plugin-cleanup": "^3.1.1",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-executable": "^1.4.4",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
     "semantic-release": "^15.13.3"
   },
   "engines": {
@@ -76,7 +68,7 @@
   },
   "template": {
     "repository": {
-      "url": "https://github.com/arlac77/npm-package-template.git"
+      "url": "https://github.com/arlac77/npm-package-template-esm-only.git"
     }
   }
 }
