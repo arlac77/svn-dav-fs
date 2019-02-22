@@ -4,9 +4,13 @@ import { ActivityCollectionSet } from "./activity-collection-set";
 import { headerIntoSet, encodeProperties } from "./util";
 export { headerIntoSet, encodeProperties };
 
+import { createStream } from "sax";
+import hasha from "hasha";
+
+/*
 const { createStream } = require("sax");
 const hasha = require("hasha");
-
+*/
 const XML_HEADER = '<?xml version="1.0" encoding="utf-8"?>';
 const XML_CONTENT_TYPE = "text/xml";
 const SVN_SKEL_CONTENT_TYPE = "application/vnd.svn-skel";

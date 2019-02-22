@@ -4,8 +4,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/svn.js",
-  "module": "src/svn.js",
+  "main": "src/svn.mjs",
+  "module": "src/svn.mjs",
   "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
   "keywords": [
     "DAV",
@@ -21,10 +21,9 @@
   "license": "BSD-2-Clause",
   "scripts": {
     "cover": "c8 --temp-directory build/coverage ava && c8 report -r lcov --temp-directory build/coverage",
-    "docs": "documentation readme src/svn.js --section=API",
-    "lint": "documentation lint src/svn.js",
-    "posttest": "markdown-doctest && npm run prepare",
-    "pretest": "rollup -c tests/rollup.config.js",
+    "docs": "documentation readme src/svn.mjs --section=API",
+    "lint": "documentation lint src/svn.mjs",
+    "posttest": "markdown-doctest",
     "test": "ava"
   },
   "dependencies": {
