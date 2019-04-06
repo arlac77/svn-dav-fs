@@ -27,7 +27,7 @@
     "test": "ava"
   },
   "dependencies": {
-    "hasha": "^4.0.0",
+    "hasha": "^5.0.0",
     "sax": "^1.2.4",
     "url-resolver-fs": "^8.0.0"
   },
