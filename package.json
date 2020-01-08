@@ -26,7 +26,8 @@
     "docs": "documentation readme src/svn.mjs --section=API",
     "lint": "documentation lint src/svn.mjs",
     "posttest": "markdown-doctest",
-    "test": "ava"
+    "test": "ava",
+    "prepare": "rollup -c"
   },
   "dependencies": {
     "hasha": "^5.0.0",
