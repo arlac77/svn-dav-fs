@@ -34,7 +34,7 @@
     "url-resolver-fs": "^8.0.4"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^3.0.0",
     "c8": "^7.0.0",
     "documentation": "^12.1.4",
     "esm": "^3.2.25",
