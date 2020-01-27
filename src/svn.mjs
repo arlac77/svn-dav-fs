@@ -365,7 +365,7 @@ Content-Type: text/xml
 
   async stat(context, url, options) {
     const acs = await this.activityCollectionSet(context, url);
-    const path = url.href.substring(
+    const path = url.href.slice(
       url.origin.length + acs.repositoryRoot.length
     );
     const u2 = new URL(
@@ -465,7 +465,7 @@ Content-Type: text/xml
           case "baseline-relative-path":
             consume = text => {
               if (rootPathPrefixLength) {
-                entry.name = text.substring(rootPathPrefixLength);
+                entry.name = text.slice(rootPathPrefixLength);
               } else {
                 rootPathPrefixLength = text.length + 1;
                 entry = undefined;

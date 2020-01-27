@@ -37,6 +37,6 @@ export class ActivityCollectionSet {
    * @return {string} path of the url inside of the repository
    */
   get pathInsideRepository() {
-    return this.url.pathname.substring(this.repositoryRoot.length);
+    return this.url.pathname.slice(this.repositoryRoot.length);
   }
 }
