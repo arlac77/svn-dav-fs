@@ -1,0 +1,10 @@
+{
+  "name": "svn-dav-fs",
+  "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
+  "icons": [
+    {
+      "src": "facicon.ico",
+      "sizes": "16x16"
+    }
+  ]
+}
