@@ -33,10 +33,9 @@
     "url-resolver-fs": "^8.0.6"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^3.3.0",
     "c8": "^7.1.0",
     "documentation": "^12.1.4",
-    "esm": "^3.2.25",
     "semantic-release": "^17.0.2"
   },
   "engines": {
@@ -50,21 +49,6 @@
     "url": "https://github.com/arlac77/svn-dav-fs/issues"
   },
   "homepage": "https://github.com/arlac77/svn-dav-fs#readme",
-  "ava": {
-    "babel": false,
-    "files": [
-      "tests/*-test.js",
-      "tests/*-test.mjs"
-    ],
-    "require": [
-      "esm"
-    ],
-    "compileEnhancements": false,
-    "extensions": [
-      "js",
-      "mjs"
-    ]
-  },
   "template": {
     "repository": {
       "url": "https://github.com/arlac77/npm-package-template-esm-only.git"
