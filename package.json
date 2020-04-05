@@ -22,7 +22,7 @@
   ],
   "license": "BSD-2-Clause",
   "scripts": {
-    "test": "ava --timeout 2m",
+    "test": "ava --timeout 2m && overwrite ava --timeout 2m",
     "cover": "c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m && c8 report -r lcov -o build/coverage --temp-directory build/tmp",
     "docs": "documentation readme src/svn.mjs --section=API",
     "lint": "documentation lint src/svn.mjs"
@@ -33,7 +33,7 @@
     "url-resolver-fs": "^8.0.6"
   },
   "devDependencies": {
-    "ava": "^3.5.2",
+    "ava": "^3.6.0",
     "c8": "^7.1.0",
     "documentation": "^12.2.0",
     "semantic-release": "^17.0.4"
