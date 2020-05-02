@@ -8,7 +8,7 @@
   "type": "module",
   "main": "src/svn.mjs",
   "exports": {
-    ".": "./src/svn.mjs",
+    ".": "src/svn.mjs",
     "./": "./"
   },
   "description": "handler for 'svn+https' url scheme (plain js svn dav fs)",
