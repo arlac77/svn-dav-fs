@@ -142,9 +142,12 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ### put
 
--   **See: <http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff>**
--   **See: <http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>**
--   **See: <https://git.tmatesoft.com/repos/svnkit.git>**
+-   **See: <http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff>
+    **
+-   **See: <http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>
+    **
+-   **See: <https://git.tmatesoft.com/repos/svnkit.git>
+    **
 
 #### Parameters
 
