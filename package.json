@@ -6,7 +6,7 @@
   },
   "sideEffects": false,
   "type": "module",
-  "main": "src/svn.mjs",
+  "main": "./src/svn.mjs",
   "exports": {
     ".": "src/svn.mjs"
   },
