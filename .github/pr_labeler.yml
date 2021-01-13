@@ -25,3 +25,5 @@ labels:
   - .github/pr_labeler.yml
 vscode:
   - .vscode/*
+openapi:
+  - openapi/*
