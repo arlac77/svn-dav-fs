@@ -19,33 +19,61 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 ### Table of Contents
 
--   [SVNHTTPSScheme](#svnhttpsscheme)
-    -   [optionsRequest](#optionsrequest)
-        -   [Parameters](#parameters)
-    -   [activityCollectionSet](#activitycollectionset)
-        -   [Parameters](#parameters-1)
-    -   [userAgent](#useragent)
-    -   [clientVersion](#clientversion)
-    -   [davHeader](#davheader)
-    -   [mkcol](#mkcol)
-        -   [Parameters](#parameters-2)
-        -   [Examples](#examples)
-    -   [startTransaction](#starttransaction)
-        -   [Parameters](#parameters-3)
-        -   [Examples](#examples-1)
-    -   [put](#put)
-        -   [Parameters](#parameters-4)
-    -   [optionsFromEnvironment](#optionsfromenvironment)
-        -   [Parameters](#parameters-5)
--   [ActivityCollectionSet](#activitycollectionset-1)
-    -   [Parameters](#parameters-6)
+-   [ActivityCollectionSet](#activitycollectionset)
+    -   [Parameters](#parameters)
     -   [Properties](#properties)
     -   [repositoryRoot](#repositoryroot)
     -   [absoluteRepositoryRoot](#absoluterepositoryroot)
     -   [pathInsideRepository](#pathinsiderepository)
+-   [SVNHTTPSScheme](#svnhttpsscheme)
+    -   [optionsRequest](#optionsrequest)
+        -   [Parameters](#parameters-1)
+    -   [activityCollectionSet](#activitycollectionset-1)
+        -   [Parameters](#parameters-2)
+    -   [userAgent](#useragent)
+    -   [clientVersion](#clientversion)
+    -   [davHeader](#davheader)
+    -   [mkcol](#mkcol)
+        -   [Parameters](#parameters-3)
+        -   [Examples](#examples)
+    -   [startTransaction](#starttransaction)
+        -   [Parameters](#parameters-4)
+        -   [Examples](#examples-1)
+    -   [put](#put)
+        -   [Parameters](#parameters-5)
+    -   [optionsFromEnvironment](#optionsfromenvironment)
+        -   [Parameters](#parameters-6)
 -   [encodeProperties](#encodeproperties)
     -   [Parameters](#parameters-7)
     -   [Examples](#examples-2)
+
+## ActivityCollectionSet
+
+### Parameters
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+### Properties
+
+-   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+-   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+-   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+-   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+
+### repositoryRoot
+
+Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+### absoluteRepositoryRoot
+
+Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+### pathInsideRepository
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** path of the url inside of the repository
 
 ## SVNHTTPSScheme
 
@@ -164,34 +192,6 @@ form the given set of environment variables
 -   `env` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
 
 Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** undefined if no suitable environment variables have been found
-
-## ActivityCollectionSet
-
-### Parameters
-
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
-
-### Properties
-
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
-
-### repositoryRoot
-
-Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-### absoluteRepositoryRoot
-
-Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-### pathInsideRepository
-
-Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** path of the url inside of the repository
 
 ## encodeProperties
 
