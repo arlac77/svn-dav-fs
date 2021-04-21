@@ -3,7 +3,7 @@
 [![minified size](https://badgen.net/bundlephobia/min/svn-dav-fs)](https://bundlephobia.com/result?p=svn-dav-fs)
 [![downloads](http://img.shields.io/npm/dm/svn-dav-fs.svg?style=flat-square)](https://npmjs.org/package/svn-dav-fs)
 [![GitHub Issues](https://img.shields.io/github/issues/arlac77/svn-dav-fs.svg?style=flat-square)](https://github.com/arlac77/svn-dav-fs/issues)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Farlac77%2Fsvn-dav-fs%2Fbadge&style=flat)](https://actions-badge.atrox.dev/arlac77/svn-dav-fs/goto)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Farlac77%2Fsvn-dav-fs%2Fbadge\&style=flat)](https://actions-badge.atrox.dev/arlac77/svn-dav-fs/goto)
 [![Styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![Known Vulnerabilities](https://snyk.io/test/github/arlac77/svn-dav-fs/badge.svg)](https://snyk.io/test/github/arlac77/svn-dav-fs)
@@ -19,49 +19,49 @@ handler for 'svn+https' url scheme (plain js svn dav fs)
 
 ### Table of Contents
 
--   [ActivityCollectionSet](#activitycollectionset)
-    -   [Parameters](#parameters)
-    -   [Properties](#properties)
-    -   [repositoryRoot](#repositoryroot)
-    -   [absoluteRepositoryRoot](#absoluterepositoryroot)
-    -   [pathInsideRepository](#pathinsiderepository)
--   [SVNHTTPSScheme](#svnhttpsscheme)
-    -   [optionsRequest](#optionsrequest)
-        -   [Parameters](#parameters-1)
-    -   [activityCollectionSet](#activitycollectionset-1)
-        -   [Parameters](#parameters-2)
-    -   [userAgent](#useragent)
-    -   [clientVersion](#clientversion)
-    -   [davHeader](#davheader)
-    -   [mkcol](#mkcol)
-        -   [Parameters](#parameters-3)
-        -   [Examples](#examples)
-    -   [startTransaction](#starttransaction)
-        -   [Parameters](#parameters-4)
-        -   [Examples](#examples-1)
-    -   [put](#put)
-        -   [Parameters](#parameters-5)
-    -   [optionsFromEnvironment](#optionsfromenvironment)
-        -   [Parameters](#parameters-6)
--   [encodeProperties](#encodeproperties)
-    -   [Parameters](#parameters-7)
-    -   [Examples](#examples-2)
+*   [ActivityCollectionSet](#activitycollectionset)
+    *   [Parameters](#parameters)
+    *   [Properties](#properties)
+    *   [repositoryRoot](#repositoryroot)
+    *   [absoluteRepositoryRoot](#absoluterepositoryroot)
+    *   [pathInsideRepository](#pathinsiderepository)
+*   [SVNHTTPSScheme](#svnhttpsscheme)
+    *   [optionsRequest](#optionsrequest)
+        *   [Parameters](#parameters-1)
+    *   [activityCollectionSet](#activitycollectionset-1)
+        *   [Parameters](#parameters-2)
+    *   [userAgent](#useragent)
+    *   [clientVersion](#clientversion)
+    *   [davHeader](#davheader)
+    *   [mkcol](#mkcol)
+        *   [Parameters](#parameters-3)
+        *   [Examples](#examples)
+    *   [startTransaction](#starttransaction)
+        *   [Parameters](#parameters-4)
+        *   [Examples](#examples-1)
+    *   [put](#put)
+        *   [Parameters](#parameters-5)
+    *   [optionsFromEnvironment](#optionsfromenvironment)
+        *   [Parameters](#parameters-6)
+*   [encodeProperties](#encodeproperties)
+    *   [Parameters](#parameters-7)
+    *   [Examples](#examples-2)
 
 ## ActivityCollectionSet
 
 ### Parameters
 
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+*   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+*   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 ### Properties
 
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
--   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
--   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `attributes` **[Map](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** 
+*   `davFeatures` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
+*   `allowedMethods` **[Set](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 ### repositoryRoot
 
@@ -87,11 +87,11 @@ Execute options request
 
 #### Parameters
 
--   `context` **Context** execution context
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `body` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** xml lines
+*   `context` **Context** execution context
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `body` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** xml lines
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Request](https://developer.mozilla.org/Add-ons/SDK/High-Level_APIs/request)>** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[Request](https://developer.mozilla.org/Add-ons/SDK/High-Level_APIs/request)>** 
 
 ### activityCollectionSet
 
@@ -99,10 +99,10 @@ query for the activity collection set.
 
 #### Parameters
 
--   `context` **Context** execution context
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `context` **Context** execution context
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[ActivityCollectionSet](#activitycollectionset)>** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[ActivityCollectionSet](#activitycollectionset)>** 
 
 ### userAgent
 
@@ -126,9 +126,9 @@ Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 #### Parameters
 
--   `context` **Context** 
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `tx` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+*   `context` **Context** 
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `tx` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 #### Examples
 
@@ -147,9 +147,9 @@ Start a new transaction
 
 #### Parameters
 
--   `context` **Context** 
--   `url` **ULR** 
--   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+*   `context` **Context** 
+*   `url` **ULR** 
+*   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 #### Examples
 
@@ -168,19 +168,16 @@ Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ### put
 
--   **See: <http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff>
-    **
--   **See: <http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html>
-    **
--   **See: <https://git.tmatesoft.com/repos/svnkit.git>
-    **
+*   **See**: http://svn.apache.org/repos/asf/subversion/trunk/notes/svndiff
+*   **See**: http://stackoverflow.com/questions/24865265/how-to-do-svn-http-request-checkin-commit-within-html
+*   **See**: https://git.tmatesoft.com/repos/svnkit.git
 
 #### Parameters
 
--   `context` **Context** 
--   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
--   `stream` **ReadableStream** 
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+*   `context` **Context** 
+*   `url` **[URL](https://developer.mozilla.org/docs/Web/API/URL/URL)** 
+*   `stream` **ReadableStream** 
+*   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
 
 ### optionsFromEnvironment
 
@@ -189,7 +186,7 @@ form the given set of environment variables
 
 #### Parameters
 
--   `env` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+*   `env` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
 
 Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** undefined if no suitable environment variables have been found
 
@@ -201,7 +198,7 @@ Encodes objects into strings as used by svn
 
 ### Parameters
 
--   `object` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** to be encoded
+*   `object` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** to be encoded
 
 ### Examples
 
