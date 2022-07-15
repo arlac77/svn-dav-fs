@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/svn-dav-fs.svg)](https://www.npmjs.com/package/svn-dav-fs)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![minified size](https://badgen.net/bundlephobia/min/svn-dav-fs)](https://bundlephobia.com/result?p=svn-dav-fs)
+[![Open Bundle](https://bundlejs.com/badge-light.svg)](https://bundlejs.com/?q=svn-dav-fs)
 [![downloads](http://img.shields.io/npm/dm/svn-dav-fs.svg?style=flat-square)](https://npmjs.org/package/svn-dav-fs)
 [![GitHub Issues](https://img.shields.io/github/issues/arlac77/svn-dav-fs.svg?style=flat-square)](https://github.com/arlac77/svn-dav-fs/issues)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Farlac77%2Fsvn-dav-fs%2Fbadge\&style=flat)](https://actions-badge.atrox.dev/arlac77/svn-dav-fs/goto)
