@@ -45,7 +45,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/arlac77/svn-dav-fs"
+    "url": "git+https://github.com/arlac77/svn-dav-fs.git"
   },
   "bugs": {
     "url": "https://github.com/arlac77/svn-dav-fs/issues"
