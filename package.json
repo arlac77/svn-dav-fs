@@ -2,7 +2,8 @@
   "name": "svn-dav-fs",
   "version": "0.0.0-semantic-release",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "exports": {
     ".": "./src/svn.mjs"
